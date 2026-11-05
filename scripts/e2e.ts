@@ -226,8 +226,10 @@ try {
     if (http.length) throw new Error(`unexpected HTTP errors: ${http.slice(0, 5).join("; ")}`);
     console.log(`        (${b!.problems.httpErrors.length} expected 4xx answers from the community: refusals and notFound)`);
   });
-} catch {
+} catch (e) {
   failed = true;
+  // A step prints its own failure; this is for what happens outside one (starting Vite or the browser).
+  if (!results.some((r) => !r.ok)) console.error(`e2e: ${(e as Error)?.stack ?? e}`);
 } finally {
   try { await b?.close(); } catch { /* closed */ }
   stopVite();

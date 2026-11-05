@@ -50,6 +50,16 @@ test("configure: drops the Origin header and turns a dead upstream into a readab
   assert.match(proxyDownMessage("/__vtc", "http://x"), /^The dev server could not reach http:\/\/x/);
 });
 
+/** A free port outside the CORS list. Vite treats `port: 0` as "unset" and falls back to 5173, so the port is chosen here. */
+async function freePort(): Promise<number> {
+  for (;;) {
+    const s = createServer();
+    const p = await new Promise<number>((ok) => s.listen(0, "127.0.0.1", () => ok((s.address() as AddressInfo).port)));
+    await new Promise((ok) => s.close(ok));
+    if (![3000, 5173, 8000].includes(p)) return p;
+  }
+}
+
 const listen = (s: Server) => new Promise<number>((ok) => s.listen(0, "127.0.0.1", () => ok((s.address() as AddressInfo).port)));
 
 test("a real Vite dev server forwards same-origin calls from a port no CORS list has, without the Origin header", async () => {
@@ -58,7 +68,7 @@ test("a real Vite dev server forwards same-origin calls from a port no CORS list
   const up = await listen(upstream);
   const vite = await createVite({
     configFile: false, logLevel: "silent", root: process.cwd(),
-    server: { port: 0, host: "127.0.0.1", proxy: devProxy({ vtaUrl: `http://127.0.0.1:${up}` }) },
+    server: { port: await freePort(), strictPort: true, host: "127.0.0.1", proxy: devProxy({ vtaUrl: `http://127.0.0.1:${up}` }) },
   });
   try {
     await vite.listen();
@@ -82,7 +92,7 @@ test("a real Vite dev server answers 502 with the explanation when the VTA is do
   dead.close(); // nothing listens there now
   const vite = await createVite({
     configFile: false, logLevel: "silent", root: process.cwd(),
-    server: { port: 0, host: "127.0.0.1", proxy: devProxy({ vtaUrl: `http://127.0.0.1:${deadPort}` }) },
+    server: { port: await freePort(), strictPort: true, host: "127.0.0.1", proxy: devProxy({ vtaUrl: `http://127.0.0.1:${deadPort}` }) },
   });
   try {
     await vite.listen();
