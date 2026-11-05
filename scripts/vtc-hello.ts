@@ -1,13 +1,14 @@
 // VTC checkpoint: resolve the community DID, read its public join manifest.
 // No membership needed. Then report the app identity's latest join request, if any.
 import "./lib/cli.js";
-import { decodeCredential, identityFromCredential, newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@buildathon/vta-client";
+import { memberIdentity } from "./lib/member.js";
 import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
 import { env, mode, reachable, vtcUrl } from "./env.js";
 
 const url = vtcUrl();
 const cred = env("VTA_CREDENTIAL");
-const me = cred ? identityFromCredential(decodeCredential(cred)) : newIdentity();
+const me = cred ? memberIdentity(cred) : newIdentity();
 const vtc = await reachable("VTC", url, () => VtcClient.connect(url, me, undefined, env("VTC_DID")));
 console.log(`1. VTC DID        ${vtc.vtcDid}   (MODE=${mode()})`);
 

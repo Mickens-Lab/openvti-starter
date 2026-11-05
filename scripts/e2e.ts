@@ -14,7 +14,7 @@ import "./lib/cli.js";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { mkdirSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { decodeCredential, identityFromCredential } from "@buildathon/vta-client";
+import { memberIdentity } from "./lib/member.js";
 import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
 import { env, vtcUrl } from "./env.js";
 import { Browser, findChrome, tmpProfile } from "./lib/cdp.js";
@@ -34,7 +34,8 @@ const BASE = `http://localhost:${PORT}`;
 const root = process.cwd();
 
 // --- the app identity, to put the community in a known state before the browser starts ----------------
-const me = identityFromCredential(decodeCredential(env("VTA_CREDENTIAL")!));
+// The same identity the page and vtc:join apply as (the did:peer:2 in MODE=tunnel), so the reset below finds the right member.
+const me = memberIdentity(env("VTA_CREDENTIAL")!);
 const vtc = await VtcClient.connect(vtcUrl(), me, undefined, env("VTC_DID"));
 async function resetIdentity() {
   try {

@@ -2,7 +2,8 @@
 // The VTC decides by the signer's records at the moment of the call (see docs/VTC-SURFACE.md).
 //   npm run vtc:refusals
 import "./lib/cli.js";
-import { TT, decodeCredential, identityFromCredential, newIdentity } from "@buildathon/vta-client";
+import { TT, newIdentity } from "@buildathon/vta-client";
+import { memberIdentity } from "./lib/member.js";
 import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
 import { die, env, reachable, vtcUrl } from "./env.js";
 
@@ -11,7 +12,7 @@ if (!cred) die("no VTA_CREDENTIAL in .env. Run `npm run up` first.");
 const url = vtcUrl();
 const callers = {
   stranger: newIdentity(),
-  "app identity": identityFromCredential(decodeCredential(cred)),
+  "app identity": memberIdentity(cred),
 };
 const tasks = [
   "vtc/join-requests/manifest/0.4", // public

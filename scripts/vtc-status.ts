@@ -2,14 +2,14 @@
 // admitted, the member portal proof (`/v1/member/me`: role, joinedAt, personhood).
 //   npm run vtc:status
 import "./lib/cli.js";
-import { decodeCredential, identityFromCredential } from "@buildathon/vta-client";
+import { memberIdentity } from "./lib/member.js";
 import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
 import { die, env, reachable, refusal, vtcUrl } from "./env.js";
 
 const cred = env("VTA_CREDENTIAL");
 if (!cred) die("VTA_CREDENTIAL not set. Run `npm run up` first.");
 const url = vtcUrl();
-const me = identityFromCredential(decodeCredential(cred));
+const me = memberIdentity(cred);
 const vtc = await reachable("VTC", url, () => VtcClient.connect(url, me, undefined, env("VTC_DID")));
 console.log(`identity  ${me.did}\ncommunity ${vtc.vtcDid}`);
 
