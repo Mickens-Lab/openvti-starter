@@ -7,7 +7,7 @@ Labels: **[verified]** observed live (`MODE=tunnel`, pinned images), **[unverifi
 
 ## What works
 
-- The VTA and VTC connect to the kit's mediator, advertise `DIDCommMessaging` and `TSPTransport` in their DID documents, and `messaging/ping/0.1` reports `tsp`, `didcomm`, `rest` **[verified]**.
+- The VTA and VTC connect to the kit's mediator, advertise `DIDCommMessaging` and `TSPTransport` in their DID documents, and `messaging/ping/0.2` reports `tsp`, `didcomm`, `rest` **[verified]**.
   This is a **capability check, not a peer ping.** The status panel's Messaging row reads "transport connected ..., not a peer ping" and means exactly that; the peer ping is `npm run tsp:ping` (below).
 - A VTC approval queues Trust Task pushes over DIDComm and the mediator accepts them (outbox `Queued` then `Sent`) **[verified]**.
 - Everything else (every Trust Task this kit sends) travels over REST, in every mode. A Trust Task is a signed JSON document; REST and messaging only differ in how it is carried.
@@ -16,12 +16,12 @@ Labels: **[verified]** observed live (`MODE=tunnel`, pinned images), **[unverifi
 
 `packages/tsp-client` is a small TypeScript TSP client (built on `@openvtc/pnm-core` and `@openvtc/vti-tsp-js`, Apache-2.0, pinned exactly). `npm run tsp:ping` and the page
 `templates/tsp-ping` (`npm run tsp:ping:browser` drives it in headless Chromium) log in to the mediator as the app's `did:key`, resolve the VTA's `did:webvh` to TSP keys, form
-a TSP relationship, and send a signed `messaging/ping/0.1` in the TSP binding envelope (`{"type": ".../binding/tsp/0.1/envelope", "document": <Trust Task>}`).
+a TSP relationship, and send a signed `messaging/ping/0.2` in the TSP binding envelope (`{"type": ".../binding/tsp/0.1/envelope", "document": <Trust Task>}`).
 
 **Verified live (`MODE=tunnel`, pinned images including mediator 0.45.0, 2026-10-30, two separate bring-ups):**
 - **The pong.** `npm run tsp:ping` (Node) and `npm run tsp:ping:browser` (the `templates/tsp-ping` page in headless Chromium) each end in `pong from the VTA ... status ok, protocols [tsp, didcomm, rest], nonce echoed`
   after the relationship invite was accepted **[verified]**. `npm run tunnel:probe` (and so `npm run up`) now includes the same ping as a row **[verified]**. The pong is the VTA's answer to a signed
-  `messaging/ping/0.1`, routed client -> mediator -> VTA and back, all TSP 1.0. The client checks the pong by its `type`, its
+  `messaging/ping/0.2`, routed client -> mediator -> VTA and back, all TSP 1.0. The client checks the pong by its `type`, its
   `threadId` (the ping's `id`) and its in-band `issuer`/`recipient`: the VTA (0.65.0) sends both, `issuer` exactly the VTA's DID (no
   fragment) and `recipient` exactly the pinger's DID, and signs the pong for `authentication` with the VTA's `#key-0` **[verified
   2026-10-31, one machine, one run]**.
@@ -164,8 +164,8 @@ approval response (`npm run vtc:approve`) is where a CLI-driven flow sees the cr
 
 ## Notes for anyone extending the TSP client
 
-- **Ping version.** The kit sends `messaging/ping/0.1`, the version the pinned VTA was checked against; `0.2` exists in
-  the registry and in `@openvtc/trust-tasks` 0.28.1 but was not tried against the pinned VTA.
+- **Ping version.** The kit sends `messaging/ping/0.2`. VTA 0.72 serves only 0.2 (0.65 served 0.1); the request is the same and
+  the pong's `serverTime` became `respondedAt` (the client reads either).
 - **A restarted VTA forgets the relationship.** The client invites once per session; after a VTA restart, open a new
   session (invite again) or requests go unanswered.
 - **Replies are checked by `type`.** A `trust-task-error` reply surfaces its code; an in-band `issuer`/`recipient` that

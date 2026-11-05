@@ -1,7 +1,7 @@
 # @buildathon/tsp-client
 
 Talk to the VTA over TSP through the mediator (`MODE=tunnel`, [docs/MESSAGING.md](../../docs/MESSAGING.md)): log in to the mediator as a `did:key` or a `did:peer:2`, open the raw-TSP socket, send a signed
-`messaging/ping/0.1` and read the pong, or receive frames (the credential pushes from the VTC). TSP 1.0, built on `@openvtc/pnm-core`'s login and socket helpers.
+`messaging/ping/0.2` and read the pong, or receive frames (the credential pushes from the VTC). TSP 1.0, built on `@openvtc/pnm-core`'s login and socket helpers.
 Node 22+ and browsers (a browser needs the mediator's CORS opened for its origin, [docs/MODES.md](../../docs/MODES.md)). DEV ONLY.
 
 ```ts

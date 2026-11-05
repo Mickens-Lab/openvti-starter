@@ -28,8 +28,8 @@
     "mediator": {
       "image": "mediator-buildathon",
       "repo": "https://github.com/affinidi/affinidi-messaging-mediator",
-      "ref": "7e378c032316d0cbc5f3091b5d0dfe5febede77d",
-      "version": "0.45.0",
+      "ref": "e6e2c63654bb43bb7feb732834702cd940b2bcce",
+      "version": "0.48.0",
       "features": "tsp,secrets-aws",
       "service": "affinidi-messaging-mediator"
     },
@@ -41,7 +41,7 @@
       "validated": "2024.6.1",
       "note": "Host binary on PATH (not pinned by this repo); quick tunnels only. Validated with this version in the tunnel spike."
     },
-    "why": "MODE=tunnel (docs/MODES.md): the mediator and the VTA/VTC messaging setup were validated against this mediator tag (v0.45.0, built with tsp; the mediator lives in its own repository since 0.42, the same version the VTA 0.65.0 lockfile names). Build it with `npm run images:build mediator`.",
+    "why": "MODE=tunnel (docs/MODES.md): the mediator and the VTA/VTC messaging setup were built against this mediator tag (v0.48.0, built with tsp; the mediator lives in its own repository since 0.42, the same version the VTA 0.72.0 lockfile names). Advanced from v0.45.0 on 2026-11-04 with the VTA/VTC; see PINS_LOG.md for what was re-verified. Build it with `npm run images:build mediator`.",
     "note": "Advance only deliberately via docs/PINS.md. The mediator is open-ACL in this kit by design (docs/MODES.md)."
   },
   "images": {

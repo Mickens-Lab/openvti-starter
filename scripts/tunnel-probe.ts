@@ -50,14 +50,14 @@ add(advertises.length === 2 ? "ok" : "FAIL", "DID document advertises messaging"
 try {
   const admin = await VtaClient.connect(u.vta, loadAdmin(), undefined);
   await admin.authenticate();
-  const ping = await admin.call(`${TT}/messaging/ping/0.1`, {});
+  const ping = await admin.call(`${TT}/messaging/ping/0.2`, {});
   const v = messagingVerdict(protocolsOf(ping));
-  add(v.state === "ok" ? "ok" : "FAIL", "VTA messaging (messaging/ping/0.1)", v.text);
+  add(v.state === "ok" ? "ok" : "FAIL", "VTA messaging (messaging/ping/0.2)", v.text);
 } catch (e) {
-  add("FAIL", "VTA messaging (messaging/ping/0.1)", `call failed: ${String((e as Error).message).slice(0, 200)}`);
+  add("FAIL", "VTA messaging (messaging/ping/0.2)", `call failed: ${String((e as Error).message).slice(0, 200)}`);
 }
 
-// 3b. a real TSP round trip: a signed messaging/ping/0.1 to the VTA through the mediator, answered by a pong (needs the app credential in .env)
+// 3b. a real TSP round trip: a signed messaging/ping/0.2 to the VTA through the mediator, answered by a pong (needs the app credential in .env)
 const appCred = env("VTA_CREDENTIAL");
 const vtaDid = env("VTA_DID");
 if (appCred && vtaDid && state.mediatorDid) {

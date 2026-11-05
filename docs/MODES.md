@@ -27,7 +27,7 @@ Features and the mode they need (everything in the README and [TRY-THIS](TRY-THI
 | Trust Tasks, the dashboard, roles lab, `npm run e2e`, `npm run test:roles` | yes **[verified]** | yes **[verified: e2e 13/13, roles 36/36 through the public URLs]** | yes (see [FARM.md](FARM.md)) |
 | [Approve on a second device](APPROVALS.md) (software approver) | yes **[verified]** | yes **[verified]** | no: a hosted VTA's policy is set in its portal |
 | Membership credential reaches the member | no (messaging off) | frames reach the applicant's TSP listener: by default it applies as a `did:peer:2` naming the mediator, so the VTC pushes with no ping first (`npm run tsp:peer-push`) **[verified]**; with `VTC_APPLICANT=did:key`, the `did:key` after it spoke TSP first (`npm run tsp:listen`) **[verified]** ([MESSAGING.md](MESSAGING.md#tunnel-mode-delivers-the-credential-to-the-applicant)); no wallet-side storage, and `credentialsDelivered` stays false because it reports the member's own credential sent back, not frame arrival ([MESSAGING.md](MESSAGING.md#what-credentialsdelivered-means)) | **[unverified]** |
-| TSP ping and pong (`npm run tsp:ping`) | no | yes, and the pong comes back **[verified]** with mediator 0.45.0; `tunnel:probe` runs it ([MESSAGING.md](MESSAGING.md)) | **[unverified]** |
+| TSP ping and pong (`npm run tsp:ping`) | no | yes, and the pong comes back **[verified]** with mediator 0.45.0 (VTA 0.65) and 0.48.0 (VTA 0.72); `tunnel:probe` runs it ([MESSAGING.md](MESSAGING.md)) | **[unverified]** |
 | DIDComm round trip, a phone as approver | no | **no DIDComm client in the kit** ([MOBILE-WALLET.md](MOBILE-WALLET.md)) | **[unverified]** |
 
 In the dashboard the membership card's "Credential delivery" row says which of these applies to the mode the page was built for.
@@ -118,10 +118,10 @@ _Verified live:_ with `MEDIATOR_CORS_ALLOW_ORIGIN=http://localhost:3000` the med
   one machine]**. Upstream estimates 20+ minutes and 8 GB of RAM, and `npm run images:build mediator` warns when less than that is
   available. Running it (mediator 10 MB, redis 5 MB, VTA 16 MB, VTC 27 MB, each `cloudflared` about 33 MB resident) is light.
 - **Messaging: a TSP round trip is verified, DIDComm is not.** (What this kit can and cannot build on it: [MESSAGING.md](MESSAGING.md).) Verified: the mediator answers through its public URL, the VTA and
-  VTC connect to it, the VTA's DID document lists `TSPTransport`, `DIDCommMessaging` and `VTARest`, `messaging/ping/0.1` reports `tsp`, `didcomm`, `rest`, the VTC advertises both transports as serviceable,
+  VTC connect to it, the VTA's DID document lists `TSPTransport`, `DIDCommMessaging` and `VTARest`, `messaging/ping/0.2` reports `tsp`, `didcomm`, `rest`, the VTC advertises both transports as serviceable,
   a signed TSP ping sent with `npm run tsp:ping` (and from the browser page) gets a pong from the VTA through the mediator, and after a join and an approval the VTC's two `credential-exchange/issue/0.1`
   frames arrive at the applicant's TSP listener: by default a `did:peer:2` whose `TSPTransport` service names the mediator, with no ping first (`npm run tsp:peer-push`), or the `did:key` with `VTC_APPLICANT=did:key` after it spoke TSP first (`npm run tsp:listen`). This needs the pinned mediator, v0.45.0: the first pin (0.33.1) read only TSP Rev 3 and refused the TSP 1.0 the VTA and
-  VTC send. The status panel's `messaging/ping/0.1` is still only a capability check, not a peer ping. **Not** verified: any DIDComm message arriving at a peer (the kit has no DIDComm client), a wallet
+  VTC send. The status panel's `messaging/ping/0.2` is still only a capability check, not a peer ping. **Not** verified: any DIDComm message arriving at a peer (the kit has no DIDComm client), a wallet
   storing the credential, a Farm-hosted mediator, arm64, and Windows or macOS hosts. The tunnel mediator's DID is a short `did:webvh` bound to its tunnel host, so it resolves over HTTPS through that host, like the VTA's and VTC's (a `did:peer:2` mediator DID made the applicant's DID too long for the resolver's 1000 bytes; [MESSAGING.md](MESSAGING.md#tunnel-mode-delivers-the-credential-to-the-applicant)). The flag `credentials_delivered` stays false either way: it turns true only when the member sends its own membership credential back ([MESSAGING.md](MESSAGING.md#what-credentialsdelivered-means)).
 - **A silent REST fallback is made loud.** The VTA keeps serving REST when its mediator connection fails and only logs a warning, so the
   probe and the status panel's Messaging row read the VTA's own protocol list and show `MESSAGING DEGRADED` (a failure) when `didcomm` or
@@ -182,7 +182,7 @@ shared beyond the run. The status panel's Mode row (card 1) says the same in sho
 
 ## Images and pins
 
-`pins.json` records the mediator (affinidi-messaging-mediator commit `7e378c03`, tag v0.45.0, features `tsp,secrets-aws`), the redis tag, and the
+`pins.json` records the mediator (affinidi-messaging-mediator commit `e6e2c636`, tag v0.48.0, features `tsp,secrets-aws`), the redis tag, and the
 VTA build features. Two changes to the images you already know:
 
 - **The VTA image must be built with `tsp`.** The VTI Dockerfile's default feature list has none, and then the VTA refuses

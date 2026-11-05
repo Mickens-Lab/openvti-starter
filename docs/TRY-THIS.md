@@ -181,12 +181,12 @@ You should see the demo print `approved and executed` with the context renamed. 
 *Mode: `tunnel` only. Start it with the mediator open to the page: `MODE=tunnel MEDIATOR_CORS_ALLOW_ORIGIN=http://localhost:3000 npm run up`. Needs the images in [MODES.md](MODES.md).*
 
 ```sh
-npm run tsp:ping                   # login, relationship invite, signed messaging/ping/0.1 over TSP
+npm run tsp:ping                   # login, relationship invite, signed messaging/ping/0.2 over TSP
 npm run dev -w @buildathon/tsp-ping   # the same in a browser: http://localhost:3000, press "Send ping"
 docker compose logs vta | grep -E "tsp|trust-task"     # what the VTA did with it
 ```
 
-With the pinned images (mediator 0.45.0) you should see the client log in, send, and end with `pong from the VTA ... nonce echoed` (the page shows the same verdict). That is **verified** in tunnel mode.
+With the pinned images (mediator 0.48.0) you should see the client log in, send, and end with `pong from the VTA ... nonce echoed` (the page shows the same verdict). That is **verified** in tunnel mode.
 In the VTA log you see `TSP trust-task dispatched ... status=200 OK`. Try `npm run tsp:ping -- --throwaway` (a DID the VTA does not know: 403) and the page with the credential field cleared.
 If you use an older mediator image (`MEDIATOR_IMAGE`) the ping times out and the VTA log says `failed to send TSP reply ... unsupported TSP major version`: that mediator does not read TSP 1.0 ([MESSAGING.md](MESSAGING.md)).
 

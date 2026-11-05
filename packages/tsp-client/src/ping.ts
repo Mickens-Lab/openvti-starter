@@ -1,5 +1,5 @@
 // TSP ping: a throwaway did:key logs in to the mediator, resolves the VTA's DID, and sends a signed
-// messaging/ping/0.1 Trust Task to the VTA over TSP; the VTA's sealed answer is the "pong".
+// messaging/ping/0.2 Trust Task to the VTA over TSP; the VTA's sealed answer is the "pong".
 // Built on @openvtc/pnm-core (mediator login, DID -> TSP keys, TspChannel) and @openvtc/vti-tsp-js (the wire format).
 import { emitTspTrace } from "./trace.js";
 import {
@@ -12,7 +12,7 @@ import { classifyDocument, rfc3339 } from "@buildathon/vta-client";
 import { TspSession, type TspKeys } from "./session.js";
 import type { PeerIdentity } from "./peer.js";
 
-export const PING_TYPE = "https://trusttasks.org/spec/messaging/ping/0.1";
+export const PING_TYPE = "https://trusttasks.org/spec/messaging/ping/0.2";
 export const PING_RESPONSE_TYPE = `${PING_TYPE}#response`;
 
 export interface PingOptions {
@@ -39,12 +39,14 @@ export interface PingResult {
   /** The throwaway client DID that logged in. */
   clientDid: string;
   nonce: string;
-  /** The VTA's pong payload (serverTime, status, protocols, nonce echo). */
+  /** The VTA's pong payload (respondedAt, status, protocols, nonce echo; 0.1 called it serverTime). */
   pong: PongPayload;
   elapsedMs: number;
 }
 
 export interface PongPayload {
+  respondedAt?: string;
+  /** The 0.1 name of `respondedAt`; kept so an older VTA's pong still reads. */
   serverTime?: string;
   status?: string;
   protocols?: string[];
@@ -62,7 +64,7 @@ export function isPong(p: unknown, nonce: string): p is PongPayload {
 /** One line a human can read from a pong. */
 export function describePong(r: PingResult): string {
   const p = r.pong;
-  return `pong from the VTA in ${r.elapsedMs} ms: status ${p.status}, protocols [${(p.protocols ?? []).join(", ")}], nonce echoed, server time ${p.serverTime}`;
+  return `pong from the VTA in ${r.elapsedMs} ms: status ${p.status}, protocols [${(p.protocols ?? []).join(", ")}], nonce echoed, server time ${p.respondedAt ?? p.serverTime}`;
 }
 
 /**
@@ -180,7 +182,7 @@ export async function tspPing(opts: PingOptions): Promise<PingResult> {
     id = doc.id;
     // The ping spec lets the proof be omitted over TSP; the VTA requires one by local policy (`proofRequired`).
     await signOutboundTask(doc, documentSigner(c.signing, "authentication"));
-    log("sending messaging/ping/0.1 over TSP");
+    log("sending messaging/ping/0.2 over TSP");
     const reply = await c.session.request(doc, timeoutMs, (d) => d.threadId === doc.id);
     checkPingReply(doc, reply, c.did, opts.vtaDid);
     const pong = reply.payload as PongPayload;

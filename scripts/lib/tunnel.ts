@@ -118,7 +118,7 @@ export type MessagingState = "ok" | "degraded" | "unknown";
 export interface MessagingVerdict { state: MessagingState; text: string }
 
 /**
- * Judge the VTA's messaging from what `messaging/ping/0.1` reports ("protocols" it can serve).
+ * Judge the VTA's messaging from what `messaging/ping/0.2` reports ("protocols" it can serve).
  * A VTA whose mediator connection failed keeps serving REST and only logs a WARN, so a missing
  * didcomm/tsp here is the loud signal. "ok" means transport connected; it does NOT prove a round trip.
  */

@@ -120,7 +120,7 @@ test("VTC public-profile transports must be advertised AND serviceable", () => {
 test("pins carry the mediator, the VTA feature list with tsp, and the build files agree", () => {
   const p = pins();
   assert.match(p.messaging.mediator.ref, /^[0-9a-f]{40}$/);
-  assert.equal(p.messaging.mediator.version, "0.45.0");
+  assert.equal(p.messaging.mediator.version, "0.48.0");
   assert.ok(p.messaging.mediator.features.split(",").includes("tsp"));
   assert.ok(p.vti.vta.features!.split(",").includes("tsp"));
   assert.match(read("docker/mediator.Dockerfile"), /ARG MEDIATOR_REF\b/);

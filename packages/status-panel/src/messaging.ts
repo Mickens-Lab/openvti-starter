@@ -8,7 +8,7 @@ export type MessagingPill = "ok" | "warn" | "bad" | "unknown" | "info";
 export interface MessagingRow { pill: MessagingPill; label: string; value: string; note?: string; fix?: string }
 
 /** The trust task a VTA answers with the protocols it can serve (an authenticated, no-argument call). */
-export const PING_TASK = "https://trusttasks.org/spec/messaging/ping/0.1";
+export const PING_TASK = "https://trusttasks.org/spec/messaging/ping/0.2";
 
 /** Protocol names from a ping payload: a bare array or `{ protocols: [...] }`. */
 export function protocolsOf(payload: unknown): string[] | undefined {
@@ -19,7 +19,7 @@ export function protocolsOf(payload: unknown): string[] | undefined {
 export interface MessagingInput {
   mode: "local" | "tunnel" | "farm";
   services: DidService[];
-  /** From messaging/ping/0.1; undefined when it was not asked or failed. */
+  /** From messaging/ping/0.2; undefined when it was not asked or failed. */
   protocols?: string[];
   pingError?: string;
   /** The DID document was readable (otherwise `services` is empty because nothing was read). */

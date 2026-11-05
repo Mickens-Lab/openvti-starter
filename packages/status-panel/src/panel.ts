@@ -18,7 +18,7 @@ export interface PanelClient {
   token?: string;
   whoami(): Promise<Record<string, any>>;
   discover(): Promise<string[]>;
-  /** Optional generic Trust Task call (VtaClient has it); used for messaging/ping/0.1 in tunnel mode. */
+  /** Optional generic Trust Task call (VtaClient has it); used for messaging/ping/0.2 in tunnel mode. */
   call?(type: string, payload?: Record<string, unknown>): Promise<unknown>;
 }
 
