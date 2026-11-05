@@ -5,23 +5,23 @@
     "repo": "https://github.com/OpenVTC/verifiable-trust-infrastructure",
     "vta": {
       "image": "vta-buildathon",
-      "tag": "vta-service-v0.65.0",
-      "ref": "fc157f76f1177a147ebaa5478176466fd5b4a4af",
-      "version": "0.65.0",
+      "tag": "vta-service-v0.72.0",
+      "ref": "26d0da81a1ae2df800ee6b9c1806bb3c3c7a9d2f",
+      "version": "0.72.0",
       "service": "vta-service",
       "features": "setup,rest,didcomm,tsp,cli-synthesis,aws-secrets,webvh",
       "featuresNote": "The VTI Dockerfile default has no `tsp`, and the VTA then refuses services.tsp = true (MODE=tunnel). images:build passes this list as the FEATURES build arg for every VTA image, so one image serves all modes."
     },
     "vtc": {
       "image": "vtc-buildathon",
-      "tag": "vtc-service-v0.15.0",
-      "ref": "93d36996c1ca6b1136870a91607d9f2e4f134ead",
-      "version": "0.15.0",
+      "tag": "vtc-service-v0.20.0",
+      "ref": "26d0da81a1ae2df800ee6b9c1806bb3c3c7a9d2f",
+      "version": "0.20.0",
       "service": "vtc-service"
     },
-    "pinnedOn": "2026-10-29",
-    "why": "Aligned with the VTA Farm: the VTA is the release the portal offers as image 0.65.0-fc157f76 (vta-service-v0.65.0), the VTC is the release a Farm-hosted VTC runs (vtc-service-v0.15.0). Both images are built from their own tag by `npm run images:build all`.",
-    "note": "The two releases come from DIFFERENT monorepo commits (fc157f76 and 93d36996), so each image is built from its own ref. The earlier single pin fff94fc6 (fc157f76 plus an examples-only commit) is retired."
+    "pinnedOn": "2026-11-04",
+    "why": "Advanced to the 0.72 release (vta-service-v0.72.0). The VTC is the release cut from the same commit (vtc-service-v0.20.0), so both images build from one ref. The earlier pins (VTA fc157f76 / 0.65.0 and VTC 93d36996 / 0.15.0) matched the VTA Farm; the Farm is NOT yet re-validated against 0.72.",
+    "note": "Both pins are release commit 26d0da81 (chore: release #2411). Not yet re-verified end to end: see PINS_LOG.md."
   },
   "messaging": {
     "pinnedOn": "2026-10-29",

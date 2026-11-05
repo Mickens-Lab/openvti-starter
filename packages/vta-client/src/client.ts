@@ -17,15 +17,18 @@ export { TrustTaskError };
 
 export const TT = "https://trusttasks.org/spec";
 export const TASK = {
-  discovery: `${TT}/trust-task-discovery/0.1`,
+  discovery: `${TT}/trust-task-discovery/0.3`,
   challenge: `${TT}/auth/challenge/0.1`,
   authenticate: `${TT}/auth/authenticate/0.3`,
   whoami: `${TT}/auth/whoami/0.1`,
   contextsCreate: `${TT}/vta/contexts/create/1.0`,
   contextsList: `${TT}/vta/contexts/list/1.0`,
-  aclGrant: `${TT}/acl/grant/0.1`,
+  aclGrant: `${TT}/acl/grant/0.2`,
   contextsUpdate: `${TT}/vta/contexts/update/1.0`,
 } as const;
+
+/** acl/*\/0.2 authority scope limited to one context (and its descendants). */
+const contextScope = (context: string) => ({ scope: "contexts" as const, contexts: [context] });
 
 export const DEFAULT_URL = "http://localhost:8100";
 
@@ -228,7 +231,9 @@ export class VtaClient {
   async grantAcl(subject: string, context: string, role = "application", label = `${context} app`): Promise<boolean> {
     return this.idempotent(() =>
       this.call(TASK.aclGrant, {
-        entry: { subject, role, scopes: [context], label },
+        // acl/grant/0.2 states every axis explicitly (0.1's `scopes` is gone): act in this context, every key it reaches,
+        // and the role's whole capability ceiling.
+        entry: { subject, role, act: contextScope(context), keys: { scope: "all" }, capabilities: { scope: "ceiling" }, label },
         reason: "buildathon provisioning",
       }),
     );
@@ -247,7 +252,9 @@ export class VtaClient {
         entry: {
           subject,
           role: "admin",
-          scopes: [context],
+          act: contextScope(context),
+          keys: { scope: "all" },
+          capabilities: { scope: "ceiling" },
           label,
           expiresAt: rfc3339(new Date(Date.now() + expiresInMs)),
           ext: { "org.openvtc.handoff": true },
@@ -262,7 +269,7 @@ export class VtaClient {
    * request, not enough to do anything else. Over messaging an approver needs no entry at all; over REST it needs this.
    */
   async grantApprover(subject: string, label = "approver"): Promise<boolean> {
-    return this.idempotent(() => this.call(TASK.aclGrant, { entry: { subject, role: "monitor", scopes: [], label }, reason: "approvals demo" }));
+    return this.idempotent(() => this.call(TASK.aclGrant, { entry: { subject, role: "monitor", act: { scope: "none" }, keys: { scope: "none" }, capabilities: { scope: "ceiling" }, label }, reason: "approvals demo" }));
   }
 
   private async idempotent(fn: () => Promise<unknown>): Promise<boolean> {

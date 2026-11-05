@@ -56,12 +56,12 @@ with `npm run images:export` / `images:import` (`docker save` / `docker load`; [
 
 ## What is pinned now
 
-Two refs, because the two releases come from different monorepo commits:
+One ref: the 0.72 release commit is both `vta-service-v0.72.0` and `vtc-service-v0.20.0` (the earlier pins were two refs, matched to the Farm):
 
 | Image | Tag | Ref | Why |
 |---|---|---|---|
-| `vta-buildathon` | `vta-service-v0.65.0` | `fc157f76` | The Farm portal's selector offers it as image `0.65.0-fc157f76`; it is what the Farm runs. |
-| `vtc-buildathon` | `vtc-service-v0.15.0` | `93d36996` | A Farm-hosted VTC ran vtc-service 0.15.0 when observed. |
+| `vta-buildathon` | `vta-service-v0.72.0` | `26d0da81` | Advanced from 0.65.0 on 2026-11-04. **Not yet re-validated end to end, and not what the Farm ran when last observed (0.65.0).** |
+| `vtc-buildathon` | `vtc-service-v0.20.0` | `26d0da81` | The VTC cut from the same release commit as the VTA. Previously 0.15.0 (`93d36996`), which a Farm VTC ran when observed. |
 
 For `MODE=tunnel` ([MODES.md](MODES.md)) there are more pins, in `pins.json` under `messaging`:
 
@@ -77,7 +77,7 @@ Farm participants must pick the image `0.65.0-fc157f76`, never the portal defaul
 
 ## To do: version negotiation in the clients
 
-The clients hard-code Trust Task versions (`vta-client`: `acl/grant/0.1`, `trust-task-discovery/0.1`, `auth/*`;
+The clients hard-code Trust Task versions (`vta-client`: `acl/grant/0.2`, `trust-task-discovery/0.3` (moved from 0.1 for the 0.72 pin, so it no longer works against a 0.65 VTA such as the Farm's), `auth/*`;
 `vtc-client`: manifest 0.4 with a 0.3 fallback, list 0.2 with a 0.1 fallback). They should ask the peer what it serves
 (trust-task discovery, or the OpenAPI document) and pick the highest common version, so one kit works across Farm
 releases (a 0.67 VTA already drops `acl/grant/0.1` and `trust-task-discovery/0.1`) instead of being fixed to one pin.

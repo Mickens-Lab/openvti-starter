@@ -54,7 +54,7 @@ const aclTasks = served.filter((t) => t.includes("/spec/acl/"));
 console.log(served.length, aclTasks);
 ```
 
-- **VTA**: `vta.discover()` calls `trust-task-discovery/0.1` with no patterns and needs a bearer **[src]**. `npm run hello`
+- **VTA**: `vta.discover()` calls `trust-task-discovery/0.3` with no patterns and needs a bearer **[src]**. `npm run hello`
   prints the count. The CHEATSHEET says about 300 more tasks are served than the seven the client names.
 - **VTC**: any signer may call `trust-task-discovery/0.3`; on the local VTC 0.15.0 a fresh stranger got the full list
   of 305 URIs (observed in `docs/VTC-SURFACE.md`; not re-run here). `vtc.call("https://trusttasks.org/spec/trust-task-discovery/0.3", {})`
