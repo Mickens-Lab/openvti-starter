@@ -45,8 +45,23 @@ stops with "denied or lapsed" and does not ask again **[verified]**. For a test 
 The rule that is seeded: `vta/contexts/update/1.0` needs 1 approval from the set `demo-approvers`, requester excluded. Pending requests
 last 15 minutes and an approval 10 **[docs]**.
 
+## With a phone wallet as the approver (untested)
+
+```sh
+npm run reset
+MODE=tunnel npm run approvals:setup -- --approver-did <the phone's DID>   # approver set = phone, then the software approver as a laptop fallback
+npm run up -- --tunnel
+MODE=tunnel npm run approvals:demo -- --phone                            # waits; the request should appear on the phone
+```
+
+`APPROVER_DID` in `.env` may be a comma-separated list; the VTA entrypoint puts each into the `demo-approvers` set. Checked on VTA 0.72.0 with a stand-in DID in the phone's place:
+the VTA starts with both DIDs in the set, enforcement stays on, and the software approver (second in the list) approved and the request executed **[verified]**; bad `--approver-did`
+values and `--phone --self-approve` are refused. Not tried with a real phone: whether the VTA accepts a non-`did:key` approver, and whether the push reaches the wallet, are
+**[unverified]** ([MOBILE-WALLET.md](MOBILE-WALLET.md)). If it does not arrive, `npm run approver` still approves with the software key.
+
 ## Things that were not as documented
 
+- **VTA 0.72 serves `task-consent/decision/0.2` only** (the request is still 0.1; 0.2 only adds the optional `actionId` and `evidence`). The 0.65-era client sent 0.1 and got `unsupportedVersion` on approve; the client now sends 0.2 **[verified on 0.72.0, MODE=local]**.
 - **The config field names are camelCase** (`taskType`, `approverSet`, `minApprovals`, `excludeRequester`); the VTA's docs show snake_case and
   the VTA 0.65.0 rejected it ("unknown field") **[verified]**. The setup wizard cannot carry a policy section, so `vta-entrypoint.sh` edits the
   generated `config.toml` and refuses to start if enforcement did not switch on.

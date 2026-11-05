@@ -16,7 +16,13 @@ if (existsSync(APPROVER_FILE) && !process.argv.includes("--new")) {
   saveApprover(newIdentity());
 }
 const { did } = (await import("./lib/approver.js")).loadApprover();
-updateEnv({ APPROVER_DID: did });
-console.log(`approver DID: ${did}`);
+// --approver-did <did>: a phone wallet's DID. The approver set then holds the phone first and the software approver second,
+// so `npm run approver` still works as a laptop fallback.
+const i = process.argv.indexOf("--approver-did");
+const phone = i < 0 ? undefined : process.argv[i + 1];
+if (i >= 0 && (!phone || phone.startsWith("--") || /[\s,"]/.test(phone))) die("--approver-did needs one DID (no spaces, commas or quotes).");
+updateEnv({ APPROVER_DID: phone ? `${phone},${did}` : did });
+if (phone) console.log(`phone approver DID: ${phone}`);
+console.log(`software approver DID: ${did}`);
 console.log(`wrote ${APPROVER_FILE} (private key, git-ignored) and APPROVER_DID to .env`);
 console.log("next: npm run up (on a fresh stack: after `npm run reset` if one exists), then npm run approvals:demo");

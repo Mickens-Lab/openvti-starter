@@ -127,7 +127,8 @@ test("grantHandoff sends an admin entry with the one-time hand-off marker and an
   await c.grantHandoff("did:key:z6Mksetup", "vtc");
   const e = seen[0].doc.payload.entry;
   assert.equal(seen[0].doc.type, TASK.aclGrant);
-  assert.deepEqual([e.role, e.scopes, e.ext], ["admin", ["vtc"], { "org.openvtc.handoff": true }]);
+  assert.deepEqual([e.role, e.act, e.keys, e.capabilities, e.ext], ["admin", { scope: "contexts", contexts: ["vtc"] }, { scope: "all" }, { scope: "ceiling" }, { "org.openvtc.handoff": true }]);
+  assert.equal(e.scopes, undefined, "acl/grant/0.2 has no `scopes`");
   assert.ok(Date.parse(e.expiresAt) > Date.now());
 });
 

@@ -19,7 +19,7 @@ import { classifyReply, type Reply } from "./reply.js";
 import type { Identity } from "./identity.js";
 
 export const CONSENT_REQUEST = "https://trusttasks.org/spec/task-consent/request/0.1";
-export const CONSENT_DECISION = "https://trusttasks.org/spec/task-consent/decision/0.1";
+export const CONSENT_DECISION = "https://trusttasks.org/spec/task-consent/decision/0.2";
 export const MATCH_CODE_LEN = 6;
 /** The task the approvals demo gates (a harmless rename of a context). */
 export const TASK_CONTEXT_UPDATE = "https://trusttasks.org/spec/vta/contexts/update/1.0";

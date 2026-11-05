@@ -95,10 +95,12 @@ TOML
   if [ -n "${APPROVER_DID:-}" ]; then
     # The generated config already has a [policy] table (enforcement = false, approvals = [], an empty approver_sets
     # table), so edit those lines rather than adding a second [policy].
+    # APPROVER_DID may be one DID or a comma-separated list (e.g. a phone wallet plus the software approver).
+    APPROVER_LIST=$(printf '%s' "$APPROVER_DID" | sed -e 's/[[:space:]]//g' -e 's/,/","/g')
     sed -i \
       -e '/^\[policy\]$/,/^\[policy\.approver_sets\]$/ s/^enforcement = false$/enforcement = true/' \
       -e '/^\[policy\]$/,/^\[policy\.approver_sets\]$/ { /^approvals = \[\]$/d }' \
-      -e "s|^\[policy\.approver_sets\]\$|[policy.approver_sets]\ndemo-approvers = [\"$APPROVER_DID\"]|" \
+      -e "s|^\[policy\.approver_sets\]\$|[policy.approver_sets]\ndemo-approvers = [\"$APPROVER_LIST\"]|" \
       "$CONFIG"
     # Field names are camelCase here; the VTA's docs show snake_case, which this VTA rejects ("unknown field").
     cat >> "$CONFIG" <<TOML
@@ -111,7 +113,7 @@ minApprovals     = 1
 excludeRequester = true
 TOML
     grep -q '^enforcement = true$' "$CONFIG" || { echo "approvals demo: could not switch policy.enforcement on; refusing to start with a rule that gates nothing" >&2; exit 1; }
-    echo "approvals demo: consent required for vta/contexts/update/1.0, approver set = 1 software approver, enforcement on" >&2
+    echo "approvals demo: consent required for vta/contexts/update/1.0, approver set = $(printf '%s' "$APPROVER_DID" | sed -e 's/[[:space:]]//g' -e 's/,/, /g'), enforcement on" >&2
   fi
   echo "$PUBLIC_URL" > "$MARKER"
 fi
