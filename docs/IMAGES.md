@@ -28,6 +28,8 @@ other, prints the estimate first, warns if memory is low, and reports how long e
 built from a checkout of the upstream VTI repository next to this one (`git clone ... ../verifiable-trust-infrastructure`, or add `-- --clone`
 and the script does it); the mediator needs no checkout but about 8 GB of memory. Details and times: [PINS.md](PINS.md#where-the-images-come-from).
 
+Local builds run on a resource-limited buildx builder so they cannot starve or crash the machine: 6 GB memory with no swap, a quarter of the CPU cores (cargo is pinned to that many cores, so its parallel jobs fit in the memory cap), low CPU priority (`nice` on the docker client alone would not reach the daemon that compiles). Change it per run with `npm run setup -- --memory 8g --cpus 4` (`--no-limits` builds unlimited), or once for all runs by putting `BUILD_MEMORY=8g` and `BUILD_CPUS=4` in `.env` (the environment works too; a flag wins over both). Needs `docker buildx`.
+
 To get images without building them yourself, a colleague with the same CPU architecture can send you theirs: see
 [Sharing images you built](#sharing-images-you-built).
 
@@ -77,8 +79,8 @@ Everything below is how prebuilt images are meant to work once `images.available
 
 | Image | Name | Tag from | Example |
 |---|---|---|---|
-| VTA | `vta-buildathon` | `vti.vta.ref` | `ghcr.io/mickens-lab/vta-buildathon:fc157f76` |
-| VTC | `vtc-buildathon` | `vti.vtc.ref` | `ghcr.io/mickens-lab/vtc-buildathon:93d36996` |
+| VTA | `vta-buildathon` | `vti.vta.ref` | `ghcr.io/mickens-lab/vta-buildathon:26d0da81` |
+| VTC | `vtc-buildathon` | `vti.vtc.ref` | `ghcr.io/mickens-lab/vtc-buildathon:26d0da81` |
 | mediator | `mediator-buildathon` | `messaging.mediator.ref` | `ghcr.io/mickens-lab/mediator-buildathon:7e378c03` |
 
 `pins.json` `images.<kind>.digest` (initially `null`) is the multi-arch index digest. Once recorded, `images:pull` and `up` pull by

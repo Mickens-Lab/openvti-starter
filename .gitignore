@@ -17,3 +17,4 @@ dist/
 # your own apps (npm run new): not part of the kit
 apps/*
 !apps/README.md
+.images/
