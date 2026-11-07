@@ -125,3 +125,13 @@ export function cleartextFor(e: Envelope): Cleartext {
   const title = e.kind === "file" ? e.name : e.kind === "note" ? e.title : e.kind === "profile" ? e.displayName : e.text.slice(0, 80);
   return { title, description: e.kind, body: encodeEnvelope(e), tags: [e.kind] };
 }
+
+/** The image type judged from the bytes (PNG, JPEG, GIF, WebP), never from the author's claim. Undefined otherwise. */
+export function sniffImage(b: Uint8Array): "image/png" | "image/jpeg" | "image/gif" | "image/webp" | undefined {
+  const at = (i: number, ...v: number[]) => v.every((x, k) => b[i + k] === x);
+  if (at(0, 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return "image/png";
+  if (at(0, 0xff, 0xd8, 0xff)) return "image/jpeg";
+  if (at(0, 0x47, 0x49, 0x46, 0x38) && (b[4] === 0x37 || b[4] === 0x39) && b[5] === 0x61) return "image/gif";
+  if (at(0, 0x52, 0x49, 0x46, 0x46) && at(8, 0x57, 0x45, 0x42, 0x50)) return "image/webp";
+  return undefined;
+}
