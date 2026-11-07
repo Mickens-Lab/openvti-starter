@@ -1,7 +1,8 @@
-# Handoff: rooms-client, steps 1–8 of the collaboration plan
+# Handoff: rooms-client, steps 1–10 of the collaboration plan
 
 Status 2026-11-07. Branch `feature/dataroom-collab`. The plan is [2026-11-07-dataroom-collab-plan.md](2026-11-07-dataroom-collab-plan.md).
-The work stopped at a clean point because of the context budget. Every commit passes the package tests and typecheck.
+`packages/rooms-client` is complete (steps 1–10). Every commit passes the package tests and typecheck. What is left is the UI
+template (step 11) and the docs (step 12).
 
 ## Done
 
@@ -22,45 +23,25 @@ The work stopped at a clean point because of the context budget. Every commit pa
 | `mock/host.ts` | `MockRoomHost(hostDid?, now?)`: `createRoom`, `setEpoch`, `send`, `transport(me)`, `fetchHandler()` (checks proof, issuer and recipient), `storedBytes(roomId)`, `inject`, `calls`; `mockPresentation(roomId, subject, action)` |
 | `mock/keys.ts` | `MockKeyOracle(localMlsKeys, subjectDid, {versions?})`: a `TaskCaller` for `VtaKeyOracle` |
 | `mock/clock.ts` | `ManualClock` (`advance`, `pending`), `settle()` |
+| `session.ts` | `RoomSession.open({roomId, host, keys?, self, profile?, selfCard?, source?, start?})`: `items`, `item`, `history`, `post`, `saveNote`, `upload`, `fileBytes`, `search(q, "names" \| "text")`, `onChange`, `profiles`, `feed`, `close` |
 
-Tests: `test/{wire,host,keys,envelope,feed,search,profiles}.test.ts`. There are 47 tests and all pass.
+Tests: `test/{wire,host,keys,envelope,feed,search,profiles,session,integration}.test.ts`. There are 61 tests and all pass.
+
+The public API, a quick start and the verified/unverified table are in [packages/rooms-client/README.md](../../packages/rooms-client/README.md).
+Build the UI from that README.
 
 ## Left
 
-1. **`src/session.ts` `RoomSession`** (step 9). The suggested shape:
-   - `RoomSession.open({roomId, host: HostClient, keys?: KeyService, self: string, profile?: {displayName, avatar?}, source?, selfCard?})`
-     calls `host.info`, which gives the visibility. A sealed tier requires `keys`.
-   - `items(): Item[]`, sorted by version, where `Item = {key, version, author?, envelope, status}`. Notes collapse by
-     `envelope.id`, and the newest version wins.
-   - `post(text, format)`, `saveNote(title, body, id?)`, `upload(name, mediaType, bytes)`, `fileBytes(item)`, `search(q, mode)`,
-     `onChange`, `close`. `profiles` is a `ProfileResolver`.
-   - Writes:
-     - open rooms: `put({key: recordKeyFor(env,"open"), expectedVersion: 0, cleartext: cleartextFor(env), blobs?})`. A file goes
-       up first with `host.blobUpload`, and its envelope carries `blobRef`. A profile overwrites (no `expectedVersion`).
-     - sealed rooms: `version = feed.watermark + 1`, then `keys.seal(roomId, key, version, utf8(encodeEnvelope(env)))`, then
-       `put({key: opaqueKey, expectedVersion: 0, sealed})`. A file is inline only, and anything over `INLINE_FILE_CAP` is refused
-       with a clear error.
-     - every write: `feed.markSeen(key, version)`, add the item locally, then `feed.kick()`.
-   - Reads (the feed's `get`): `host.get`, then decode `cleartext.body`, or `keys.open(roomId, key, sealedVersion(rec.version,
-     rec.sealed), rec.sealed)`, then `decodeEnvelope`.
-   - Index into `SearchIndex`:
-     - chat: `text`;
-     - note: `title` and `body`;
-     - file: `name`, and `text` when `isIndexableText` (inline bytes, or a lazy `blobDownload` on open rooms).
-   - Offer profiles to the resolver with `rec.author`.
-   - Retracted records: remove them from the items and from the index.
-   - Publish your own profile once, when it is missing or stale.
-2. **`test/integration.test.ts`**: two `RoomSession`s on one `MockRoomHost` through
-   `roomHostTransport({fetch: host.fetchHandler()})`, for an open room and an attributed room. For the attributed room, Alice runs
-   `LocalMlsKeys.createRoom` and `addMembers([bob.keyPackage()])`, Bob runs `join`, and each member is wrapped in
-   `VtaKeyOracle(new MockKeyOracle(keys, did))`. The test:
-   - Alice posts chat, a markdown note, a PNG, a GIF and a text file;
-   - Bob's feed gets each of them (drive it with `ManualClock` or `feed.sync()`);
-   - both search modes find them;
-   - `storedBytes(sealedRoom)` contains none of the plaintexts.
-3. **`packages/rooms-client/README.md`**: the public API above plus the session, a quick start, and the verified/unverified table
-   below. Then run `check-docs`.
-4. Update `src/index.ts` (it exports everything listed above) to add `session.js`.
+1. **Step 11, `templates/collab-room`** (plan section 3, step 11, and sections 5 and 6). Notes for it:
+   - Mock mode: one in-browser `MockRoomHost` reached through `roomHostTransport({fetch: host.fetchHandler()})`, seeded with an
+     `open` and an `attributed` room. For the sealed room, build two `LocalMlsKeys` and join them as `test/integration.test.ts` does.
+   - `useRoom` wraps `RoomSession`: re-read `session.items()` on every `onChange`, re-resolve authors listed in `change.profiles`,
+     and wire `document.visibilitychange` to `(session.feed.source as PollSource).setVisible(...)`. `LiveBadge` reads
+     `PollSource.status` and `onStatus`.
+   - Narrow items on `item.envelope.kind`. Images: `sniffImage(await session.fileBytes(item))`, shown through a `blob:` URL.
+   - Sealed uploads over 256 KiB throw a readable error: show it.
+2. **Step 12, docs**: a row in the README templates table, [ARCHITECTURE.md](../ARCHITECTURE.md) layout and tests rows, and a TRY-THIS
+   exercise for mock mode.
 
 ## State and how to run
 
@@ -82,8 +63,12 @@ Tests: `test/{wire,host,keys,envelope,feed,search,profiles}.test.ts`. There are 
 - `isVersionConflict` matches `versionConflict`/`conflict`/`alreadyExists` codes or `details.reason: "conflict"`. The host's real
   code is [unverified].
 - `roomHostTransport` needs `hostDid` to be passed in. How a room-host publishes its DID is [unverified].
-- A sealed version comes from `sealed.version ?? record.version` [inferred]. The session seals with `watermark + 1` before the put.
-  If another write lands in between, the record still opens because `sealed.version` is carried.
+- A sealed version comes from `sealed.version ?? record.version` [inferred]. A sealed write runs `feed.sync()` first and seals for
+  `watermark + 1`. If another write lands in between, the record still opens because `sealed.version` is carried, which a real
+  VTA's seal reply is [unverified] to include.
+- Open-room files are always blobs (never inline). Text files there are downloaded on the first full-text search, once.
+- Anyone in a room may save a new version of a note (newest wins). A record key stays bound to its first envelope id, and an id
+  keeps its kind.
 - The mock host tracks the highest epoch it has seen, not owner commits.
 - Unverified live:
   - any real host or VTA call;
