@@ -131,8 +131,8 @@ PCS tasks through a VTC. So the bundle schemas above are the reference, not the 
   - refusal wording.
 - **`templates/polls`** (`@buildathon/polls`) is a Node CLI and starting point, in the style of `hello-node` and
   `inbox-verifier`:
-  - `npm run demo` runs the whole flow against the in-process mock, offline;
-  - `npm start -- <create|list|show|vote|results|close|cancel>` runs against the URLs in `.env`.
+  - `npm run demo -w @buildathon/polls` runs the whole flow against the in-process mock, offline;
+  - `npm start -w @buildathon/polls -- <create|list|show|vote|results|close|cancel>` runs against the URLs in `.env`.
 - **Mock:** `packages/polls-client/src/mock.ts` is one `node:http` server playing the VTC registrar, the member VTA
   and the ballot box, with the rules above. It does no crypto. The integration test and the demo both use it.
 
@@ -191,3 +191,12 @@ PCS tasks through a VTC. So the bundle schemas above are the reference, not the 
 6. **Cast delay?** Random 0 to 20 s by default, as upstream does. Tests, the demo and the mock pass `castDelayMs: 0`.
 7. **Who may create?** A signer with `vtc.elections.manage` (the kit's admin key in `.vta/admin.json`). The CLI uses
    it for create, close and cancel when `POLL_ADMIN=1`.
+
+## Status (end of 2026-11-07)
+
+- **Done:** steps 1 to 6.
+- **Tests:** `npm test -w @buildathon/polls-client` passes 25 of 25, including 4 integration tests against the HTTP mock.
+  `npm test -w @buildathon/polls` passes 3 of 3.
+- **Runs:** `npm run demo -w @buildathon/polls` runs end to end, and the CLI was driven against `npm run mock -w @buildathon/polls`.
+- **Checks:** `tsc --noEmit` (root, polls-client and polls), `check:generic` and `check:docs` are clean.
+- **Not done:** any live run. The pinned VTC serves no elections, and the stack has no ballot box.
