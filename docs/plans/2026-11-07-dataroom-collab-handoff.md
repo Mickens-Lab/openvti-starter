@@ -1,76 +1,96 @@
-# Handoff: rooms-client, steps 1–10 of the collaboration plan
+# Handoff: data-room collaboration, steps 1–12 of the plan
 
 Status 2026-11-07. Branch `feature/dataroom-collab`. The plan is [2026-11-07-dataroom-collab-plan.md](2026-11-07-dataroom-collab-plan.md).
-`packages/rooms-client` is complete (steps 1–10). Every commit passes the package tests and typecheck. What is left is the UI
-template (step 11) and the docs (step 12).
+**All twelve steps are done.** `packages/rooms-client` (steps 1–10) and `templates/collab-room` (step 11) are in, with the docs
+(step 12). Every commit passes its workspace's tests and typecheck. Nothing has been pushed.
 
 ## Done
 
-`packages/rooms-client` (`@buildathon/rooms-client`, with the `./mock` subpath):
+### `packages/rooms-client` (steps 1–10)
+
+`@buildathon/rooms-client`, with the `./mock` subpath. The public API, a quick start and the verified/unverified table are in
+[packages/rooms-client/README.md](../../packages/rooms-client/README.md).
 
 | Module | What it has |
 |---|---|
-| `tasks.ts` | `ROOMS_TASK`, `KEYS_TASK` (0.2 and 0.1), `LIST_PAGE_CAP`, `STORAGE_EXPORTER_LABEL`, `MLS_SUITE`, `CHUNK_MIN/MAX` |
-| `wire.ts` | wire types; `parseListPage` (`nextCursor ?? cursor`), `parseGetReply` (flat binding or `{record}`), `parsePutReply`, `parseInfo`, `blobManifest`, `blobRefOf`, `chunkWire` (every chunk field name in one place), `b64u`/`unb64u`/`utf8`/`fromUtf8`, `isSealedTier` |
-| `host.ts` | `HostClient(transport, presenter, now?)`: `info`, `listPage`, `list` (follows cursors), `get`, `put` (sealed must be `expectedVersion: 0`), `curate`, `blobUpload` (proxied, fresh upload did:key), `blobDownload`. Transports: `vtcTransport(vtc)`, `roomHostTransport({url, hostDid, me, fetch, mount})`. Also `signDoc`, `isVersionConflict`, `RateLimitedError.retryAfterMs` |
-| `keys.ts` | `KeyService {present, seal, open}`, `sealedVersion(recordVersion, sealed)` |
-| `vta-keys.ts` | `VtaKeyOracle(taskCaller)`: 0.2, then 0.1 only via `versionStepAllowed`, remembered per task |
-| `local-mls.ts` | `LocalMlsKeys(memberId, {present?})`: `createRoom`, `keyPackage`, `addMembers` (returns `{welcome, commit, epoch}`), `removeMember`, `join`, `applyCommit`, `seal`, `open`, `epoch`, `members`, `has`, `snapshot`, `LocalMlsKeys.restore`. Also `sealWithKey`, `openWithKey`, `recordAad` |
-| `envelope.ts` | `openvti.collab/1` envelope: `makeChat`, `makeNote(title, body, id?)`, `makeFile(name, type, bytes, {inline} or {blobRef})`, `makeProfile(subject, name, avatar?)`, `encodeEnvelope`, `decodeEnvelope`, `recordKeyFor(env, visibility)`, `cleartextFor`, `ulid`, `opaqueKey`, `didHash`, `sniffImage`, `INLINE_FILE_CAP` (256 KiB), `AVATAR_CAP` |
-| `feed.ts` | `Feed({list, get, source?, sinceVersion?})`: `start`, `stop`, `kick`, `sync`, `markSeen`, `onChange({added, updated, retracted, failed})`, `watermark`. `PollSource({clock, visibleMs, hiddenMs, maxBackoffMs, visible})`: `setVisible`, `status`, `onStatus`, `nextDelay`. `ChangeSource`, `Clock`, `systemClock` |
-| `search.ts` | `SearchIndex`: `upsert(SearchItem)`, `remove(id)`, `searchNames(q)`, `searchText(q)`; `normalize`, `parseQuery`, `isIndexableText`, `TEXT_INDEX_CAP` |
-| `profiles.ts` | `ProfileResolver({self?, selfCard?})`: `offer(profile, author, version)`, `resolveSync`, `resolve`, `roomProfile`; `shortDid`, `identicon` |
-| `mock/host.ts` | `MockRoomHost(hostDid?, now?)`: `createRoom`, `setEpoch`, `send`, `transport(me)`, `fetchHandler()` (checks proof, issuer and recipient), `storedBytes(roomId)`, `inject`, `calls`; `mockPresentation(roomId, subject, action)` |
-| `mock/keys.ts` | `MockKeyOracle(localMlsKeys, subjectDid, {versions?})`: a `TaskCaller` for `VtaKeyOracle` |
-| `mock/clock.ts` | `ManualClock` (`advance`, `pending`), `settle()` |
-| `session.ts` | `RoomSession.open({roomId, host, keys?, self, profile?, selfCard?, source?, start?})`: `items`, `item`, `history`, `post`, `saveNote`, `upload`, `fileBytes`, `search(q, "names" \| "text")`, `onChange`, `profiles`, `feed`, `close` |
+| `tasks.ts`, `wire.ts` | Type URIs and version table; wire types and parsers (`nextCursor ?? cursor`, flat or `{record}` get replies, chunk field names) |
+| `host.ts` | `HostClient` (`info`, `list`, `get`, `put`, `curate`, `blobUpload`, `blobDownload`) over `vtcTransport(vtc)` or `roomHostTransport({url, hostDid, me, fetch})` |
+| `keys.ts`, `vta-keys.ts`, `local-mls.ts` | `KeyService`; `VtaKeyOracle` (`rooms/keys/*` at 0.2, 0.1 on an allowed step-down); `LocalMlsKeys` (ts-mls, the pinned suite, `sealed.rs` record format) |
+| `envelope.ts`, `feed.ts`, `search.ts`, `profiles.ts` | `openvti.collab/1` envelope; `Feed` + `PollSource`; `SearchIndex`; `ProfileResolver` |
+| `session.ts` | `RoomSession` ties them together |
+| `mock/` | `MockRoomHost`, `MockKeyOracle`, `ManualClock` |
 
-Tests: `test/{wire,host,keys,envelope,feed,search,profiles,session,integration}.test.ts`. There are 61 tests and all pass.
+### `templates/collab-room` (step 11)
 
-The public API, a quick start and the verified/unverified table are in [packages/rooms-client/README.md](../../packages/rooms-client/README.md).
-Build the UI from that README.
+`@buildathon/collab-room`, React 18 + Vite, laid out like `templates/community-dashboard` (same pinned dependency versions, tsconfig,
+`vite.config.ts` env and `/__vta` `/__vtc` proxy via `scripts/lib/dev-proxy.ts`, Vitest + jsdom for `test/ui`). Its README has the
+modes, the rendering rules and the verified/unverified table: [templates/collab-room/README.md](../../templates/collab-room/README.md).
+
+| File | What it has |
+|---|---|
+| `vite.config.ts` | `COLLAB_MODE=mock\|live` (from the environment or the repo-root `.env`); default mock unless `COLLAB_ROOM` is set |
+| `src/render.ts` | Inert markdown: source to a block/inline tree to React elements; links only http(s)/mailto with the URL shown and `rel="noopener noreferrer"`; images as links; raw HTML as text; nesting capped |
+| `src/state.ts` | Pure view state: ordering, chat window and auto-scroll, composer and note drafts, `classifyFile` (images by `sniffImage` only; SVG and unknown download-only; UTF-8 text at most 1 MiB, `.md` as markdown), highlights, labels |
+| `src/backend.ts`, `src/mock.ts`, `src/live.ts` | Backend interface; the seeded mock (open room with three members and hostile content; attributed room with real two-member MLS; simulated Bob posting every 12 s); live wiring (VtcClient from the credential, `roomMemberships()`, `HostClient` over `vtcTransport`, `VtaKeyOracle` over `VtaClient`) |
+| `src/demo-media.ts` | The mock's PNG and animated GIF, generated in code (no binary files in the tree) |
+| `src/hooks.ts` | `useSession`, `useRoom` (onChange, `PollSource.onStatus`, `visibilitychange` to `setVisible`), `useFileBytes`, `useObjectUrl` (revoked on unmount) |
+| `src/components/` | `RoomPicker`, `ChatView`, `NotesView`, `FilesView`, `ItemBody`, `Author`, `SearchBar`, `LiveBadge` |
+
+### Docs (step 12)
+
+- Root README: repo-map rows for `packages/rooms-client` and `templates/collab-room`, a templates-table row, the exercise list.
+- [docs/ARCHITECTURE.md](../ARCHITECTURE.md): layout rows for both, the React section, and tests rows for both.
+- [docs/TRY-THIS.md](../TRY-THIS.md): exercise 8d, the collaboration room in mock mode (no stack needed).
+- `docs/STATUS.md` has no per-template table, so it was left unchanged.
+
+## Tests and how to run
+
+From the repo root, with `umask 002`, `TMPDIR=/var/tmp/dataroom-collab`, under `nice -n 10` and `timeout`:
+
+| Command | Result at the last commit |
+|---|---|
+| `npm test -w @buildathon/collab-room` | node:test 16/16 pass (`render` 8, `state` 7, `mock` 1); Vitest 9/9 pass in 7 files (`markdown` 3, `files`, `author`, `live`, `search`, `chat`, `rooms`) |
+| `npm run typecheck -w @buildathon/collab-room` | clean |
+| `npm test -w @buildathon/rooms-client` | 61/61 pass |
+| `npm run typecheck -w @buildathon/rooms-client` | clean |
+| `npx tsc --noEmit` (root; covers `templates/*/src` and `packages/*`) | clean |
+| `npx tsx scripts/check-generic.ts`, `npx tsx scripts/check-docs.ts` | ok |
+| `npx vite build` in `templates/collab-room` (output to a scratch directory) | builds |
+
+Run the UI:
+
+```sh
+npm run dev -w @buildathon/collab-room                    # mock mode, no stack
+COLLAB_MODE=live npm run dev -w @buildathon/collab-room   # live mode, needs the stack's .env (unverified live)
+```
+
+## Deviations
+
+- Live mode signs as the credential's `did:key`. It does not copy the dashboard's tunnel-mode `did:peer:2` choice, because a room
+  presentation names the member's subject, and the plan did not settle which DID that is in tunnel mode.
+- Live mode calls `vta.authenticate()` and continues if it fails: `rooms/keys/*` are signed documents and it is [unverified] whether
+  the VTA wants a session for them.
+- Markdown headings render two levels down (`#` is `<h3>`), so a body never outranks the page's own headings.
+- `.md` files are previewed only when valid UTF-8 and at most 1 MiB; bytes are fetched for a preview only up to 8 MiB
+  (`PREVIEW_FETCH_CAP`); larger files are download-only.
+- Avatars come from `ProfileResolver` as `data:` URLs (already sniffed there), not `blob:` URLs. Only file items use `blob:`.
+- The mock's simulated member alternates rooms, so each room gets a new message every 24 s.
+
+## Verified and unverified
+
+- **Verified (tests, Node and jsdom, against the mock host)**: chat, notes, files, search modes, attribution and live polling on both
+  tiers; markdown inert; images by sniffed bytes through revoked `blob:` URLs; SVG and mislabelled files download-only; the sealed
+  room's stored bytes hold no plaintext; the sealed 256 KiB upload cap message.
+- **Verified**: the page builds with `vite build`.
+- **Unverified**: the page in a real browser (jsdom only; no headless browser run); live mode end to end (`vtc/rooms/memberships/list`,
+  `rooms/*` at a VTC, `rooms/keys/*` at a VTA), because no room exists in the local stack and joining one needs community rooms;
+  ts-mls ↔ openmls interop; the host's record size cap; `sealed.version` in a real VTA's seal reply; everything else listed in the
+  rooms-client README's table.
 
 ## Left
 
-1. **Step 11, `templates/collab-room`** (plan section 3, step 11, and sections 5 and 6). Notes for it:
-   - Mock mode: one in-browser `MockRoomHost` reached through `roomHostTransport({fetch: host.fetchHandler()})`, seeded with an
-     `open` and an `attributed` room. For the sealed room, build two `LocalMlsKeys` and join them as `test/integration.test.ts` does.
-   - `useRoom` wraps `RoomSession`: re-read `session.items()` on every `onChange`, re-resolve authors listed in `change.profiles`,
-     and wire `document.visibilitychange` to `(session.feed.source as PollSource).setVisible(...)`. `LiveBadge` reads
-     `PollSource.status` and `onStatus`.
-   - Narrow items on `item.envelope.kind`. Images: `sniffImage(await session.fileBytes(item))`, shown through a `blob:` URL.
-   - Sealed uploads over 256 KiB throw a readable error: show it.
-2. **Step 12, docs**: a row in the README templates table, [ARCHITECTURE.md](../ARCHITECTURE.md) layout and tests rows, and a TRY-THIS
-   exercise for mock mode.
+Nothing from the plan. Possible next steps:
 
-## State and how to run
-
-- ts-mls 1.6.4 is installed in the workspace (`packages/rooms-client/node_modules/ts-mls`).
-- `@noble/ciphers` is **2.1.1**, not the 2.4.0 at the root, because ts-mls 1.6.4 has an exact non-optional peer on 2.1.1.
-  npm nests both packages under the workspace.
-- Commands (run from the repo root, with `umask 002`, `TMPDIR=/var/tmp/dataroom-collab`, under `nice -n 10` and `timeout`):
-  `npm test -w @buildathon/rooms-client`, `npm run typecheck -w @buildathon/rooms-client`, `npx tsx scripts/check-generic.ts`,
-  `npx tsx scripts/check-docs.ts`.
-
-## Deviations and unverified
-
-- `records/get/0.2`: the generated binding is flat (the record's fields at the top level), not `{record: {...}}`. The parser accepts
-  both.
-- Chunk field names (`uploadId, index, digestMultibase, data`; download `downloadId, index`) come from the generated
-  `@openvtc/trust-tasks` bindings. They are not checked against a live host.
-- `records/curate/0.1` (used for retract) is not in the pinned VTC's served matrix. The mock gives a curate a new room-wide version
-  [inferred].
-- `isVersionConflict` matches `versionConflict`/`conflict`/`alreadyExists` codes or `details.reason: "conflict"`. The host's real
-  code is [unverified].
-- `roomHostTransport` needs `hostDid` to be passed in. How a room-host publishes its DID is [unverified].
-- A sealed version comes from `sealed.version ?? record.version` [inferred]. A sealed write runs `feed.sync()` first and seals for
-  `watermark + 1`. If another write lands in between, the record still opens because `sealed.version` is carried, which a real
-  VTA's seal reply is [unverified] to include.
-- Open-room files are always blobs (never inline). Text files there are downloaded on the first full-text search, once.
-- Anyone in a room may save a new version of a note (newest wins). A record key stays bound to its first envelope id, and an id
-  keeps its kind.
-- The mock host tracks the highest epoch it has seen, not owner commits.
-- Unverified live:
-  - any real host or VTA call;
-  - ts-mls ↔ openmls interop;
-  - the record size cap.
+1. A headless-browser run of the mock page (the kit's `scripts/lib/cdp.ts` drives Chromium for the dashboard's e2e).
+2. Live mode against a VTC with `[rooms.community]`, messaging and `[rooms.files]` configured.
+3. An openmls interop vector (plan open question 3), sealed blob files via `rooms/keys/file-key`, and epoch-chain backfill.
