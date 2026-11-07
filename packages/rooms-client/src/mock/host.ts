@@ -169,7 +169,8 @@ export class MockRoomHost {
     if (!p.sealed && !p.cleartext) fail(400, "malformedPayload", "a body is required");
     if (sealedTier && p.expectedVersion !== 0) fail(400, "rooms:createOnly", "sealed records are create-only (expectedVersion: 0)");
     if (sealedTier && !/^[A-Za-z0-9_-]{16,}$/.test(key)) fail(400, "rooms:opaqueKeyRequired", "sealed rooms need opaque keys");
-    if (p.sealed && p.sealed.epoch !== r.epoch) fail(409, "rooms:staleEpoch", `the room is at epoch ${r.epoch}`, { details: { epoch: r.epoch } });
+    // The real host learns epochs from the owner's commits (rooms/epoch/*); the mock follows the highest it has seen.
+    if (p.sealed) r.epoch = Math.max(r.epoch, Number(p.sealed.epoch));
     const cur = r.records.get(key);
     if (p.expectedVersion !== undefined && (cur?.version ?? 0) !== p.expectedVersion) {
       fail(409, "rooms:versionConflict", "the record moved", { details: { reason: "conflict", version: cur?.version ?? 0 } });

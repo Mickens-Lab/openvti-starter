@@ -3,3 +3,6 @@
 export * from "./tasks.js";
 export * from "./wire.js";
 export * from "./host.js";
+export * from "./keys.js";
+export * from "./vta-keys.js";
+export * from "./local-mls.js";
