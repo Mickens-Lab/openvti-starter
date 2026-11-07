@@ -1,0 +1,25 @@
+{
+  "name": "@buildathon/rooms-client",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "description": "Data room client: signed rooms/* Trust Tasks to a host, sealed tiers through a key service (VTA oracle or local MLS), content envelope, change feed, client-side search, profiles. Node and browser.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./mock": "./src/mock/index.ts"
+  },
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@buildathon/vta-client": "*",
+    "@buildathon/vtc-client": "*",
+    "@noble/ciphers": "2.1.1",
+    "@noble/hashes": "2.4.0",
+    "@openvtc/trust-tasks-proof": "0.1.6",
+    "@scure/base": "2.4.0",
+    "ts-mls": "1.6.4"
+  }
+}
