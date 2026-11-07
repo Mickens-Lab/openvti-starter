@@ -10,3 +10,4 @@ export * from "./envelope.js";
 export * from "./feed.js";
 export * from "./search.js";
 export * from "./profiles.js";
+export * from "./session.js";
