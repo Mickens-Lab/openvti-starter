@@ -1,0 +1,21 @@
+{
+  "name": "@buildathon/polls-client",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "private": true,
+  "description": "Community polls on the VTI election tasks: build and validate a poll, create it at the VTC, vote through the member's VTA and the ballot box, read the result. Node and browser; an in-process mock for tests.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./mock": "./src/mock.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@buildathon/vta-client": "*",
+    "@buildathon/vtc-client": "*",
+    "@openvtc/trust-tasks-proof": "0.1.6"
+  }
+}
