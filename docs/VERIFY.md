@@ -93,7 +93,7 @@ The easy way is `npm run images:verify`. It does the following, and you can do e
 ```sh
 # 1. The digest you have is the digest pins.json records (the digest is the identity; the tag is a hint)
 jq -r '.images.vta.digest' pins.json
-docker image inspect ghcr.io/mickens-lab/vta-buildathon:fc157f76 --format '{{json .RepoDigests}}'
+docker image inspect ghcr.io/mickens-lab/vta-buildathon:26d0da81 --format '{{json .RepoDigests}}'
 
 # 2. The GitHub attestation: signed by this repository's images workflow
 DIGEST=$(jq -r '.images.vta.digest' pins.json)          # "null" until the digests are recorded
@@ -107,7 +107,7 @@ cosign verify "ghcr.io/mickens-lab/vta-buildathon@$DIGEST" \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 
 # 4. The labels: what the image says it was built from
-docker image inspect ghcr.io/mickens-lab/vta-buildathon:fc157f76 --format '{{json .Config.Labels}}' | jq
+docker image inspect ghcr.io/mickens-lab/vta-buildathon:26d0da81 --format '{{json .Config.Labels}}' | jq
 jq '.vti.vta | {ref, features}' pins.json      # org.buildathon.vti-ref and org.buildathon.vta-features must equal these
 
 # 5. The SBOM of your platform's image (the per-platform digest is inside the index)
@@ -159,12 +159,12 @@ be), and how many layers match from the bottom. A difference in the ID is theref
 `dockerfile-sha256` is a real finding. Making the build reproducible would mean pinning the base images by digest and the apt packages by
 version (a snapshot mirror); that is not done.
 
-(An existing local `vtc-buildathon:local` and its `:93d36996` tag having the same ID only means one was tagged from the other.)
+(An existing local `vtc-buildathon:local` and its `:26d0da81` tag having the same ID only means one was tagged from the other.)
 
 ## Audit what goes in
 
 - **The pins.** `pins.json` is the single source of the upstream commits. Check them against upstream yourself:
-  `git ls-remote https://github.com/OpenVTC/verifiable-trust-infrastructure vta-service-v0.65.0` should print the `vti.vta.ref` commit
+  `git ls-remote https://github.com/OpenVTC/verifiable-trust-infrastructure vta-service-v0.72.0` should print the `vti.vta.ref` commit
   (tags can be moved; the commit is what is built). `npm run pins:check` does this for the release tags if you have a checkout, and
   [PINS_LOG.md](../PINS_LOG.md) says why each pin is what it is.
 - **The Dockerfiles.** The VTC and mediator Dockerfiles are in this repository: [`docker/vtc.Dockerfile`](../docker/vtc.Dockerfile) and

@@ -54,7 +54,7 @@ single demo or a phone experiment, and take it down afterwards.
       2. **Participants build in advance.** Send `npm ci && npm run setup` a week ahead ("start it before bed; about 1 hour, needs about 10 GB disk and 8 GB RAM free"). Do not have a room build at once over venue Wi-Fi: each build downloads crates and base images.
       3. **Build at the event** only for a few people, as the last resort. `npm run doctor` tells each person the exact command and time.
 - [ ] **Test the plan on a clean laptop with no images:** `npm ci`, `npm run doctor` (it should list the images to build or import), import or build, `npm run pins:check`, `npm run up`, `npm run hello`.
-      Build from the pinned refs, not from whatever is checked out: `npm run images:build all` uses VTA `vta-service-v0.65.0`, VTC `vtc-service-v0.15.0` ([VTC.md](VTC.md) for times; tags
+      Build from the pinned refs, not from whatever is checked out: `npm run images:build all` uses VTA `vta-service-v0.72.0`, VTC `vtc-service-v0.15.0` ([VTC.md](VTC.md) for times; tags
       `<image>:<short-sha>` and `:local`). `npm run pins:check` should show no drift on the image refs. Before advancing a pin, re-verify the local VTA + VTC path and the farm note ([PINS.md](PINS.md)).
 - [ ] **Later, not now: publishing prebuilt images.** If the organisation ever allows public packages, the workflow in [IMAGES.md](IMAGES.md) (never run, unverified) publishes signed multi-arch images; then set
       `images.available` to `true` in `pins.json`, record the digests, and verify with [VERIFY.md](VERIFY.md). Until then none of that is on the critical path.

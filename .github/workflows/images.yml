@@ -9,7 +9,7 @@
 #          so no QEMU. The VTA and VTC are built from the VTI monorepo fetched at the exact pinned commit (verified);
 #          the mediator Dockerfile fetches its own source at the pinned commit. Each leg pushes its image BY DIGEST only.
 #   merge  per image: stitches the per-arch digests into one multi-arch tag <registry>/<name>:<short ref>
-#          (for example ghcr.io/<org>/vta-buildathon:fc157f76), checks both platforms are in it, pulls it and checks
+#          (for example ghcr.io/<org>/vta-buildathon:26d0da81), checks both platforms are in it, pulls it and checks
 #          the labels, and records the index digest.
 #   attest   per image and architecture: an SBOM (SPDX, by syft) and a SLSA build provenance attestation for that
 #            platform image, both signed keylessly by GitHub (actions/attest-*), stored in GitHub's attestation store

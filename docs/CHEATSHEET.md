@@ -39,13 +39,13 @@ Trust Task background, finding, using, developing and evaluating tasks: [trust-t
 
 | Name | Type URI suffix | Who |
 |---|---|---|
-| discovery | `trust-task-discovery/0.1` | authenticated app |
+| discovery | `trust-task-discovery/0.3` | authenticated app |
 | challenge | `auth/challenge/0.1` | any, no bearer |
 | authenticate | `auth/authenticate/0.3` | any, no bearer; returns `tokens.accessToken` |
 | whoami | `auth/whoami/0.1` | authenticated app |
 | contextsCreate | `vta/contexts/create/1.0` | admin |
 | contextsList | `vta/contexts/list/1.0` | admin |
-| aclGrant | `acl/grant/0.1` | admin |
+| aclGrant | `acl/grant/0.2` | admin |
 
 All are prefixed `https://trusttasks.org/spec/`. The VTA serves about 300 more;
 `npm run hello` shows the count and `vta.discover()` lists them.

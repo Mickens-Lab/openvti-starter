@@ -3,7 +3,7 @@
 #
 #   docker build -f docker/vtc.Dockerfile -t vtc-buildathon:local /path/to/verifiable-trust-infrastructure
 #
-# Built from vtc-service-v0.15.0 (pins.json). `tsp` MUST stay in FEATURES: re-checked at
+# Built from vtc-service-v0.20.0 (pins.json). `tsp` MUST stay in FEATURES: re-checked at
 # 0.15.0, registry/messaging.rs `tsp_envelope` still calls the tsp-gated
 # outbound::seal_trust_task_tsp unconditionally, so a build without it fails (and `tsp` is in
 # the crate's default features anyway).
