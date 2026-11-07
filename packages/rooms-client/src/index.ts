@@ -7,3 +7,4 @@ export * from "./keys.js";
 export * from "./vta-keys.js";
 export * from "./local-mls.js";
 export * from "./envelope.js";
+export * from "./feed.js";
