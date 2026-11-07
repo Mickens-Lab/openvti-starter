@@ -6,3 +6,4 @@ export * from "./host.js";
 export * from "./keys.js";
 export * from "./vta-keys.js";
 export * from "./local-mls.js";
+export * from "./envelope.js";
