@@ -59,7 +59,7 @@ Both read the credential `npm run up` wrote to `.env` and call the VTA (`whoami`
 
 [docs/TRY-THIS.md](docs/TRY-THIS.md) has guided exercises, easy to advanced, each with commands and expected output:
 a first signed call, the status page, join a community and see the member screens, tamper/replay/wrong-recipient
-against the inbox verifier, reading refusals, calling a task you have not used, a read-only look at the Farm, and ideas to extend,
+against the inbox verifier, reading refusals, calling a task you have not used, a read-only look at the Farm, a collaboration room on data rooms (mock mode, no stack), and ideas to extend,
 plus approving a gated task from a second key ([docs/APPROVALS.md](docs/APPROVALS.md)). Each exercise names the mode it needs.
 
 ## Repo map
@@ -69,9 +69,11 @@ plus approving a gated task from a second key ([docs/APPROVALS.md](docs/APPROVAL
 | `packages/vta-client`, `packages/vtc-client` | Discover, authenticate, sign and call any Trust Task; VTC join and member helpers. Node and browser. Each has a README with an example ([vta-client](packages/vta-client/README.md), [vtc-client](packages/vtc-client/README.md)). |
 | `packages/tsp-client` | Log in to the mediator, open the TSP socket, send a signed ping and read the pong; `connectTsp` receives frames. Node and browser. See its [README](packages/tsp-client/README.md). |
 | `packages/status-panel` | Dependency-free connection-status panel (vanilla TypeScript). |
+| `packages/rooms-client` | VTI data rooms: signed `rooms/*` calls to a room host, sealed tiers through a key service (VTA oracle or in-page MLS), chat/note/file envelope, polling feed, in-memory search, author profiles; `./mock` has an in-process host. See its [README](packages/rooms-client/README.md). |
 | `templates/inbox-verifier` | Server that accepts signed documents (works offline). |
 | `templates/web-vta-app` | Browser app with a status page and optional wallet (vanilla TypeScript). |
 | `templates/community-dashboard` | React dashboard for the VTC member journey. |
+| `templates/collab-room` | React collaboration space on data rooms (chat, notes, files, search, live polling); runs with no stack in mock mode. |
 | `templates/tsp-ping` | Browser page that sends a TSP ping to the VTA (`MODE=tunnel`; sends a TSP ping and shows the pong, see docs/MESSAGING.md). |
 | `templates/mcp-agent` | Stub for an AI agent with a scoped VTA identity. |
 | `scripts/` | The npm commands (`up`, `hello`, `vtc:*`, `farm:*`, `vta:call`, checks). |
@@ -101,6 +103,7 @@ public, ephemeral quick-tunnel URLs, for messaging and TSP; heavy first build) o
 | [`templates/web-vta-app`](templates/web-vta-app) | `npm run dev -w @buildathon/web-vta-app` | Browser apps that talk to the VTA. Optional wallet. |
 | [`templates/mcp-agent`](templates/mcp-agent) | see its README | AI agents with a scoped VTA identity. Partial: a stub. |
 | [`templates/community-dashboard`](templates/community-dashboard) | `npm run dev -w @buildathon/community-dashboard` | A React + TypeScript dashboard for the whole member journey with a VTC, no session: visit, apply (with a signed-request preview), pending (polls every 10 s, withdraw), member (card, directory, my card, renew, leave), re-apply, plus an "Under the hood" log of every Trust Task call. Its membership card has a per-mode "Credential delivery" note. Needs a VTC. Driven end to end in headless Chromium against the local stack; states are marked verified/inferred in its README. |
+| [`templates/collab-room`](templates/collab-room) | `npm run dev -w @buildathon/collab-room` | A React collaboration space on VTI data rooms: chat history (load older, plain/markdown), notes with versions, files, two search modes (file names, full text), live updates by polling and author names/avatars, on an open and an MLS-sealed room. Mock mode (the default) runs an in-browser room host with a simulated member, no stack; `COLLAB_MODE=live` wires the VTC and VTA and is unverified live. Markdown and files render inert. Tested in Node and jsdom only. |
 
 Six track ideas are in [`docs/TRACKS.md`](docs/TRACKS.md); endpoints, task names
 and env vars are in [`docs/CHEATSHEET.md`](docs/CHEATSHEET.md).

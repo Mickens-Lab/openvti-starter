@@ -10,10 +10,12 @@ How the pieces fit, where things live, and how to extend them. Everything here i
 | `packages/vtc-client` | `VtcClient`: the same for a community: join manifest, join, status, withdraw, member helpers (card, directory, renew, leave, groups, `memberProof()`), admin list/decide. `onCall` reports every call (used by the dashboard). |
 | `packages/tsp-client` | `tspPing` and `connectTsp`: log in to the mediator with a `did:key`, open the raw-TSP socket, send a signed `messaging/ping/0.2` and read the pong, or receive frames (the VTC's credential pushes). Packs TSP 1.0 on `pnm-core`'s login and socket helpers (`MODE=tunnel`). Node and browser. |
 | `packages/status-panel` | `mountStatusPanel(el, opts)`: reachability, DID services, version vs pin, session, capabilities. Plain TypeScript, no dependencies. |
+| `packages/rooms-client` | Data rooms: `HostClient` (signed `rooms/*` to a VTC or room-host), `KeyService` (`VtaKeyOracle` for `rooms/keys/*` at the VTA, `LocalMlsKeys` for in-page MLS with ts-mls), the `openvti.collab/1` envelope, `Feed`/`PollSource` (polling with `sinceVersion`), `SearchIndex`, `ProfileResolver`, and `RoomSession` tying them together. `./mock`: `MockRoomHost`, `MockKeyOracle`, `ManualClock`. Node and browser. [README](../packages/rooms-client/README.md). |
 | `templates/inbox-verifier` | Node server that accepts signed documents and applies the consumer checks (recipient, freshness, proof, schema, replay). `src/inbox.ts` is the place to start. Works offline. |
 | `templates/hello-node`, `templates/hello-web` | The minimal starting points (about 15 lines each: sign in, `whoami`, memory put/list). `npm run new -- <name> --from <template>` copies one to `apps/<name>`, a git-ignored workspace for your own code. |
 | `templates/web-vta-app` | Browser app: the status panel plus an optional wallet panel. Vanilla TypeScript, Vite. |
 | `templates/community-dashboard` | React + Vite dashboard for the VTC member journey. `state.ts` maps signed-call results to a screen; `components/` renders it. |
+| `templates/collab-room` | React + Vite collaboration space on `rooms-client`: chat, notes, files, two search modes, live polling, attribution. `state.ts` and `render.ts` (inert markdown to React elements) are plain modules; `mock.ts` seeds an in-browser mock host (default, `COLLAB_MODE=mock`), `live.ts` wires the VTC and VTA (unverified live). |
 | `templates/tsp-ping` | Browser page that sends the TSP ping and shows the pong (Vite, port 3000; `MODE=tunnel`). |
 | `templates/mcp-agent` | Stub: provisions a scoped identity and writes an MCP host config. Not verified end to end. |
 | `scripts/` | The npm commands. `env.ts` (`.env` and admin key files), `up.ts`, `keygen.ts`, `provision.ts`, `hello.ts`, `call.ts`, `vtc-*.ts`, `farm-*.ts`, `images-build.ts`, `pins*.ts`, `banner.ts`, `tunnel-probe.ts`, `tsp-ping*.ts`, `tsp-listen.ts`, `approvals-*.ts`, `approver.ts`, the live tests `test-roles.ts` and `e2e.ts`, and the checks `check-generic.ts`, `check-docs.ts`, `security-check.ts`. `scripts/lib/` has the shared helpers (tunnels, compose, approvals, the CDP browser driver). |
@@ -76,8 +78,8 @@ flowchart LR
 
 ## Framework-free and React
 
-- Framework-free TypeScript: `vta-client`, `vtc-client`, `status-panel`, `inbox-verifier`, `web-vta-app`, all scripts.
-- React 18 (with `@vitejs/plugin-react`): only `templates/community-dashboard`. Its logic is kept out of components on purpose: `state.ts`, `criteria.ts`, `format.ts`, `poll.ts` are plain modules with unit tests; `hooks.ts` and `components/` are the React layer; the status panel is mounted from a small React wrapper.
+- Framework-free TypeScript: `vta-client`, `vtc-client`, `rooms-client`, `status-panel`, `inbox-verifier`, `web-vta-app`, all scripts.
+- React 18 (with `@vitejs/plugin-react`): `templates/collab-room` (the same split: `state.ts`, `render.ts`, `mock.ts` plain and unit-tested, `hooks.ts` and `components/` thin) and `templates/community-dashboard`. Its logic is kept out of components on purpose: `state.ts`, `criteria.ts`, `format.ts`, `poll.ts` are plain modules with unit tests; `hooks.ts` and `components/` are the React layer; the status panel is mounted from a small React wrapper.
 
 ## Tests
 
@@ -90,6 +92,8 @@ flowchart LR
 | `packages/status-panel/test` | Parsing of probe results |
 | `templates/inbox-verifier/test` | Accept, replay, tamper, wrong recipient, malformed |
 | `templates/community-dashboard/test` | State mapping, criteria, formatting, polling; `test/ui` component tests against a fake community (Vitest, jsdom) |
+| `packages/rooms-client/test` | Wire parsers, `HostClient` against `MockRoomHost` (paging, conflicts, blobs), `LocalMlsKeys` and `VtaKeyOracle` against `MockKeyOracle`, envelope, feed on a manual clock, search, profiles, `RoomSession`, and a two-member integration test on an open and a sealed room |
+| `templates/collab-room/test` | Inert markdown renderer, view state, the seeded mock; `test/ui` component tests on the mock host (Vitest, jsdom): markdown inert, images by sniffed bytes through `blob:` URLs, attribution, live items, search modes, both tiers |
 
 None of them needs a running VTA. `npm run typecheck` runs `tsc` in the root and every workspace.
 

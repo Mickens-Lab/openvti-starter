@@ -1,7 +1,7 @@
 # Try this
 
-Exercises 1 to 9, easy to advanced, plus 8b and 8c. Exercises 1 to 7, 8b and 8c were run (the first against the local stack with `WITH_VTC=1 npm run up`, 8c in tunnel mode) and the output shown is what they printed;
-exercises 8 and 9 are marked "Idea, not run". DIDs, ids and timestamps differ on your machine. This is a playground: [SECURITY.md](SECURITY.md).
+Exercises 1 to 9, easy to advanced, plus 8b, 8c and 8d. Exercises 1 to 7, 8b and 8c were run (the first against the local stack with `WITH_VTC=1 npm run up`, 8c in tunnel mode) and the output shown is what they printed;
+exercise 8d needs no stack and was checked by its component tests (jsdom), not in a browser; exercises 8 and 9 are marked "Idea, not run". DIDs, ids and timestamps differ on your machine. This is a playground: [SECURITY.md](SECURITY.md).
 
 Start the stack once: `npm ci && npm run up` (the community, VTC, is on by default; `WITH_VTC=0` leaves it out). Stop it with `npm run down`, wipe it with `npm run reset`. Each exercise names the mode it needs;
 `npm run up -- --tunnel` (public quick-tunnel URLs, messaging on, [MODES.md](MODES.md)) starts tunnel mode for that run, and later commands follow the stack that is running.
@@ -205,6 +205,33 @@ only the mediator ([MODES.md](MODES.md#browser-access-cors)). Apply in the page,
 page turns to "member". It still says frames arriving is not `credentialsDelivered`. Without the CORS setting, *Listen* fails with
 `Could not start listening: ...` and the exact `MEDIATOR_CORS_ALLOW_ORIGIN=<origin>` line. Do not run `npm run tsp:listen` as the same DID at
 the same time: a frame may go to either listener.
+
+## 8d. A collaboration room on data rooms (mock mode, no stack)
+
+*Mode: none needed. Mock mode (`COLLAB_MODE=mock`, the default when `COLLAB_ROOM` is not set) runs a data-room host inside the page; no VTA,
+VTC or Docker. `COLLAB_MODE=live` uses the VTC and VTA instead and is unverified live (no room exists in the local stack).*
+
+```sh
+npm run dev -w @buildathon/collab-room       # open http://localhost:5173 (or the port Vite prints)
+```
+
+After a moment of setup (a real two-member MLS group for the sealed room) you see two rooms: **Project room (open)**, plaintext, and
+**Deal room (attributed)**, MLS-sealed so the host stores only ciphertext. Things to try:
+
+- **Chat**: the newest 20 messages, oldest first; press **Load older**. Toggle **Plain text / Markdown on** and send `a **bold** move`.
+  Messages show **Bob Builder** with an avatar (his room profile), a short `did:key:…` with an identicon for Carol (no profile), and **You**.
+  Hover a name for the full DID.
+- **Live**: the badge reads "Live (polling every 3 s)". Bob is simulated and posts every 12 s, alternating between the two rooms; his message appears with no reload. Switch to
+  another tab and back: the badge says the poll slowed to 15 s while hidden.
+- **Notes**: open "Kickoff agenda". Its `<script>`, `<img onerror>` and `javascript:` link show as plain text, the `example.org` link shows its URL,
+  and the markdown image is a link that was never loaded. **Edit**, change it, **Save new version**: the version count goes up.
+- **Files**: `site-plan.png` and the animated `celebration.gif` are shown (judged by their bytes); `diagram.svg` and `photo.png` (claims to be a PNG,
+  is HTML) are download-only with the reason; the text and `.md` files are shown inline. In the sealed room, upload a file over 256 KiB to see the limit.
+- **Search**: "File names" for `celebration`, then switch to "Full text" for `riverside` or `"contingency reserve"`; press a result to jump to it.
+
+Everything lives in page memory and is gone on reload. The tests behind each point: `npm test -w @buildathon/collab-room`. How it is built:
+[templates/collab-room/README.md](../templates/collab-room/README.md) and [packages/rooms-client/README.md](../packages/rooms-client/README.md).
+If it fails: a blank page with an error usually means the workspace is not installed (`npm ci` at the repo root).
 
 ## 9. Extend it: your own task and an extension
 
