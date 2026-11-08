@@ -69,6 +69,7 @@ export const VTC_TASK = {
   // Rooms offered to the member.
   roomsOffersList: `${TT}/vtc/rooms/offers/list/0.4`,
   roomsMembershipsList: `${TT}/vtc/rooms/memberships/list/0.1`,
+  roomsOffersAccept: `${TT}/vtc/rooms/offers/accept/0.1`,
 } as const;
 
 export const DEFAULT_VTC_URL = "http://localhost:8200";
@@ -584,6 +585,13 @@ export class VtcClient {
   relationships(opts: Record<string, unknown> = {}) { return this.call(VTC_TASK.relationshipsList, opts); }
   roomOffers(opts: Record<string, unknown> = {}) { return this.call(VTC_TASK.roomsOffersList, opts); }
   roomMemberships(opts: Record<string, unknown> = {}) { return this.call(VTC_TASK.roomsMembershipsList, opts); }
+  /**
+   * Accept a room offer (`rooms/offers/accept/0.1`). On an `open` room send no KeyPackage: the reply is `{roomId, state: "admitted", epoch}`.
+   * On an `attributed` or `private` room pass the KeyPackage your VTA minted (`rooms/keys/key-package`) and the reply also carries the
+   * `welcome` (and maybe a `ratchetTree`) to hand that VTA (`rooms/keys/welcome`). Refused `notFound` when no open or recently accepted
+   * offer to that room is addressed to the signer. Verified live on an open room; the sealed path is not.
+   */
+  acceptRoomOffer(roomId: string, keyPackage?: string) { return this.call(VTC_TASK.roomsOffersAccept, { roomId, ...(keyPackage ? { keyPackage } : {}) }); }
 
   // --- member: the portal session (the only member session there is) -------------------------
 

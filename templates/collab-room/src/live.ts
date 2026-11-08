@@ -4,7 +4,7 @@
 //  - rooms come from vtc/rooms/memberships/list (admitted ones), or COLLAB_ROOM names one directly;
 //  - rooms/* go to the VTC over /__vtc (HostClient over vtcTransport);
 //  - presentations, seals and opens come from the member's VTA over /__vta (VtaKeyOracle over VtaClient: rooms/keys/*).
-import { HostClient, RoomSession, VtaKeyOracle, vtcTransport, type Visibility } from "@buildathon/rooms-client";
+import { HostClient, RoomSession, VtaKeyOracle, offerFallbackPresenter, vtcTransport, type RoomOfferLike, type Visibility } from "@buildathon/rooms-client";
 import { VtaClient, decodeCredential, identityFromCredential } from "@buildathon/vta-client";
 import { VtcClient } from "@buildathon/vtc-client";
 import type { Backend, RoomRef } from "./backend.ts";
@@ -22,7 +22,11 @@ export async function createLiveBackend(): Promise<Backend> {
   const vta = await VtaClient.fromCredential(credential, abs(__VTA_BROWSER_URL__), undefined, { resolveDid: !__FARM__ });
   try { await vta.authenticate(); } catch { /* rooms/keys/* are signed documents; a session is not required for them [unverified] */ }
   const keys = new VtaKeyOracle(vta);
-  const host = new HostClient(vtcTransport(vtc), (roomId, action) => keys.present(roomId, action));
+  // Presentations come from the member's VTA. On an open room, when the VTA refuses (the member DID is the app did:key, which it does
+  // not hold as a persona), the offer's own credentials are presented instead; sealed rooms never fall back. Verified live on an open room.
+  let offers: Promise<RoomOfferLike[]> | undefined;
+  const offerFor = async (roomId: string) => (await (offers ??= vtc.roomOffers().then((r: any) => (r.items ?? []) as RoomOfferLike[]))).find((o) => o.roomId === roomId);
+  const host = new HostClient(vtcTransport(vtc), offerFallbackPresenter((roomId, action) => keys.present(roomId, action), offerFor));
 
   return {
     mode: "live",

@@ -20,6 +20,8 @@ muscle memory keep working; a test fails if a script is missing from this page.
 | `TRACE=1 <command>` then `npm run trace` | Record every client call (VTA and VTC REST, TSP ping) to `.vta/trace.jsonl`, then show them one per line: time, client, task, outcome, ms, who to whom, id. `-- --follow` keeps printing, `--json` for raw, `--clear` deletes. Payloads and keys are never logged |
 | `npm run repl` | A Node REPL with `vta` (authenticated), `vtc`, `call(slug, payload)`, `tasks(words)` and top-level await |
 | `npm run vtc:hello` / `vtc:join` / `vtc:approve` / `vtc:status` | Community: read the join manifest / apply / admin approves / where do I stand |
+| `npm run rooms:list` / `rooms:accept -- <room DID>` | Data rooms: the rooms offered to you and held / accept an offer (open rooms; a sealed room is explained, not attempted) ([ROOMS.md](ROOMS.md)) |
+| `npm run rooms:info -- <room DID>` / `rooms:post -- <room DID> "text"` / `rooms:read -- <room DID>` | Data rooms: tier, epoch and limits / post a chat message (`--markdown`, `--name`) and read it back / print the history (`--follow` keeps watching). `ROOM_ID` in `.env` replaces the argument |
 | `npm run tsp:ping` / `tsp:listen` | `MODE=tunnel`: TSP ping and pong / receive the credential frames the VTC pushes |
 | `npm run tsp:peer-push` | `MODE=tunnel`, live check: the default `did:peer:2` applicant receives its credential over TSP with no ping first (listener, join, approve, status; ignores `VTC_APPLICANT=did:key` in `.env`; docs/MESSAGING.md) |
 

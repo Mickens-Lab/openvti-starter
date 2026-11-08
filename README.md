@@ -87,7 +87,7 @@ Code tour with a diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 ## Docs
 
 [Docs index](docs/README.md): [TRY-THIS](docs/TRY-THIS.md), [ARCHITECTURE](docs/ARCHITECTURE.md), [CHEATSHEET](docs/CHEATSHEET.md),
-[VTC](docs/VTC.md), [VTC-SURFACE](docs/VTC-SURFACE.md), [ROLES](docs/ROLES.md), [MODES](docs/MODES.md), [FARM](docs/FARM.md), [PINS](docs/PINS.md), [EVENT](docs/EVENT.md),
+[VTC](docs/VTC.md), [VTC-SURFACE](docs/VTC-SURFACE.md), [ROOMS](docs/ROOMS.md), [ROLES](docs/ROLES.md), [MODES](docs/MODES.md), [FARM](docs/FARM.md), [PINS](docs/PINS.md), [EVENT](docs/EVENT.md),
 [TRACKS](docs/TRACKS.md), [SECURITY](docs/SECURITY.md), [Trust Tasks guide](docs/trust-tasks/README.md).
 
 ## Modes
@@ -106,7 +106,7 @@ public, ephemeral quick-tunnel URLs, for messaging and TSP; heavy first build) o
 | [`templates/mcp-agent`](templates/mcp-agent) | see its README | AI agents with a scoped VTA identity. Partial: a stub. |
 | [`templates/polls`](templates/polls) | `npm run demo -w @buildathon/polls` | Community polls (VTI elections): create, list, vote, results, close. Offline against a mock; the pinned VTC does not serve elections, so not verified live. |
 | [`templates/community-dashboard`](templates/community-dashboard) | `npm run dev -w @buildathon/community-dashboard` | A React + TypeScript dashboard for the whole member journey with a VTC, no session: visit, apply (with a signed-request preview), pending (polls every 10 s, withdraw), member (card, directory, my card, renew, leave), re-apply, plus an "Under the hood" log of every Trust Task call. Its membership card has a per-mode "Credential delivery" note. Needs a VTC. Driven end to end in headless Chromium against the local stack; states are marked verified/inferred in its README. |
-| [`templates/collab-room`](templates/collab-room) | `npm run dev -w @buildathon/collab-room` | A React collaboration space on VTI data rooms: chat history (load older, plain/markdown), notes with versions, files, two search modes (file names, full text), live updates by polling and author names/avatars, on an open and an MLS-sealed room. Mock mode (the default) runs an in-browser room host with a simulated member, no stack; `COLLAB_MODE=live` wires the VTC and VTA and is unverified live. Markdown and files render inert. Tested in Node and jsdom only. |
+| [`templates/collab-room`](templates/collab-room) | `npm run dev -w @buildathon/collab-room` | A React collaboration space on VTI data rooms: chat history (load older, plain/markdown), notes with versions, files, two search modes (file names, full text), live updates by polling and author names/avatars, on an open and an MLS-sealed room. Mock mode (the default) runs an in-browser room host with a simulated member, no stack; `COLLAB_MODE=live` wires the VTC and VTA: verified live for an open room (chat), sealed rooms unverified ([docs/ROOMS.md](docs/ROOMS.md)). Markdown and files render inert. Tested in Node and jsdom only. |
 
 Six track ideas are in [`docs/TRACKS.md`](docs/TRACKS.md); endpoints, task names
 and env vars are in [`docs/CHEATSHEET.md`](docs/CHEATSHEET.md).
@@ -131,6 +131,7 @@ The ones you need in the first hour (all of them, grouped: [docs/COMMANDS.md](do
 | `TRACE=1 npm run hello` then `npm run trace` | See every signed call the clients made, one line each (task, outcome, ms, who to whom) |
 | `npm run repl` | A REPL with `vta` and `vtc` already signed in and top-level await: `await vta.whoami()` |
 | `npm run vtc:hello` / `vtc:join` / `vtc:approve` / `vtc:status` | Community: read the join manifest / apply / admin approves / where do I stand |
+| `npm run rooms:list` / `rooms:accept` / `rooms:post` / `rooms:read` | Data rooms: rooms offered to you / accept an offer / post / read ([docs/ROOMS.md](docs/ROOMS.md)) |
 | `npm run tsp:ping` / `tsp:listen` | `MODE=tunnel`: send a signed TSP ping and print the pong / receive the credential frames the VTC pushes ([docs/MESSAGING.md](docs/MESSAGING.md)) |
 | `npm run roles:matrix` / `approvals:demo` / `security:check` | Who can call what / approve a gated task from a second key / key-hygiene scan ([ROLES](docs/ROLES.md), [APPROVALS](docs/APPROVALS.md), [SECURITY](docs/SECURITY.md)) |
 | `npm run images:verify` / `images:compare` | Check what you run: is the image the pinned one, built and signed by this repository's workflow, with the pinned labels (`-- --local` for your own build; [docs/VERIFY.md](docs/VERIFY.md)) |

@@ -49,7 +49,7 @@ For a sealed room, create it `attributed`, pass `keys` (a `KeyService`) to `Room
 `HostClient` presenter. `test/integration.test.ts` does both tiers with two members end to end.
 
 Live mode builds the same `HostClient` over `vtcTransport(vtcClient)` (the VTC's `/v1/trust-tasks`) or `roomHostTransport({url, hostDid,
-me})`, and the KeyService is `new VtaKeyOracle(vtaClient)`, whose `present` is the presenter. Live mode is unverified (see the table below).
+me})`, and the KeyService is `new VtaKeyOracle(vtaClient)`, whose `present` is the presenter. Live mode: open rooms verified, sealed rooms not (see the table below). For an `open` room wrap the presenter, `offerFallbackPresenter((r, a) => keys.present(r, a), (roomId) => offerFor(roomId))`, so an app `did:key` the VTA does not hold as a persona still works with the credentials in its offer. Command line and walkthrough: [docs/ROOMS.md](../../docs/ROOMS.md).
 
 ## RoomSession
 
@@ -117,6 +117,7 @@ From `@buildathon/rooms-client`:
 | `session` | `RoomSession`, `RoomSessionOpts`, `SessionItem`, `SessionChange`, `ItemEnvelope`, `ItemKind`, `SearchMode`, `NameResult`, `TextResult` |
 | `host` | `HostClient(transport, presenter, now?)`: `presentation`, `info`, `listPage`, `list`, `get`, `put`, `curate`, `blobUpload`, `blobDownload`. `vtcTransport(vtc)`, `roomHostTransport({url, hostDid, me, fetch?, mount?})`, `HostTransport`, `Presenter`, `signDoc`, `isVersionConflict`, `RateLimitedError` |
 | `keys` | `KeyService {present(roomId, action), seal(roomId, key, version, plaintext), open(roomId, key, version, sealed)}`, `sealedVersion` |
+| `offers` | `offerPresentation(offer)`, `offerFallbackPresenter(primary, lookup)`, `RoomOfferLike`, `OfferLookup`: a Presentation from the credentials in a `rooms/offers/list` item, and a Presenter that asks the VTA first and uses the offer's credentials for an `open` room when the VTA refuses |
 | `vta-keys` | `VtaKeyOracle(taskCaller)`: `rooms/keys/{present,seal,open}` at 0.2, stepping down to 0.1 only when the refusal allows it. `TaskCaller` |
 | `local-mls` | `LocalMlsKeys(memberId, {present?})`: `createRoom`, `keyPackage`, `addMembers` → `{welcome, commit, epoch}`, `removeMember`, `join`, `applyCommit`, `seal`, `open`, `epoch`, `members`, `has`, `snapshot`, `LocalMlsKeys.restore`. `sealWithKey`, `openWithKey`, `recordAad` |
 | `envelope` | `makeChat`, `makeNote`, `makeFile`, `makeProfile`, `encodeEnvelope`, `decodeEnvelope`, `recordKeyFor`, `cleartextFor`, `ulid`, `opaqueKey`, `didHash`, `sniffImage`, `ENVELOPE_PROFILE`, `INLINE_FILE_CAP`, `AVATAR_CAP`, and the envelope types |
@@ -163,8 +164,9 @@ and `VtaKeyOracle` against `MockKeyOracle`, envelope, feed (fake clock: dedupe, 
 | Everything above against `MockRoomHost` and `MockKeyOracle`, in Node | Verified by the tests in this package. |
 | Record sealing format (ChaCha20-Poly1305, 12-byte nonce, AAD `roomId\|key\|version\|epoch`, base64url without padding) | Written from vti-rooms `sealed.rs` at the pin; checked only against itself, no upstream vector. |
 | A sealed room's stored bytes hold no plaintext | Verified against the mock host only. |
-| Any real VTC or room-host call (`rooms/*`) | **Unverified live.** No room exists in the local stack. |
-| `rooms/keys/*` against a real VTA | **Unverified live.** Joining a room needs community rooms, which local mode leaves off. |
+| `rooms/offers/{list,accept}`, `rooms/memberships/list`, `rooms/info` and chat `records/put` + `records/list` on an **open** room at a real VTC (0.26.0), presenting the offer's own credentials | **Verified live** 2026-11-08 (`npm run rooms:post` / `rooms:read`; one host, one run). Notes, files, search and the live feed against a real host: unverified. |
+| Any other real VTC or room-host call (`rooms/*`) | **Unverified live.** The local stack has no room. |
+| `rooms/keys/{present,key-package}` against a real VTA (0.72.0, ic3 Farm) for a sealed room | **Refused live** 2026-11-08: the VTA holds no credential for the app `did:key` ("not a persona you may act as"); a persona DID the VTA holds is the likely fix, untried. `seal`, `open`, `welcome`: unverified. [docs/ROOMS.md](../../docs/ROOMS.md) |
 | ts-mls ↔ openmls interop (Welcome, exporter) | **Unverified.** Both follow RFC 9420; no cross-implementation vector was run. |
 | The host's maximum record size (sealed files inline up to 256 KiB make records of about 470 KB) | **Unverified.** A real host may refuse them. |
 | `rooms/records/curate/0.1` (retract, pin) | **Unverified.** Not served by the pinned VTC's matrix; the mock gives a curate a new room-wide version [inferred]. |

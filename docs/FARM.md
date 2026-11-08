@@ -76,10 +76,10 @@ MODE=farm npm run up         # = npm run farm:setup the first time
 
 `farm:setup` mints `.vta/admin.json` and prints the **Admin DID**. Then, in the portal:
 
-> **Out of step with the kit since 2026-11-04.** The kit now targets VTA 0.72.0 / VTC 0.20.0 and sends `acl/grant/0.2`, `trust-task-discovery/0.3`, `task-consent/decision/0.2` and `messaging/ping/0.2`. A VTA created from the `0.65.0-fc157f76` image below serves the older versions, so `provision` and the approvals demo will answer `unsupportedVersion` against it. A `0.72.0-*` image is what matches, but **whether the portal offers one is not verified** (the image list needs a logged-in account). Look at the dropdown, and if there is none, use local mode. The 0.65.0 results below are history.
+> **Pick `0.72.0-26d0da81` (verified 2026-11-08, ic3).** The kit targets VTA 0.72.0 / VTC 0.20.0 and sends `acl/grant/0.2`, `trust-task-discovery/0.3`, `task-consent/decision/0.2` and `messaging/ping/0.2`. The ic3 portal offers a `0.72.0-26d0da81` image; an agent created from it reported vta-service 0.72.0 (`farm:check`: equals the pin), and `vta:provision` and `hello` passed (292 Trust Tasks, app capabilities include `room-present` and `room-open`). A VTA from the older `0.65.0-fc157f76` image serves older task versions, so `provision` and the approvals demo answer `unsupportedVersion` against it; the 0.65.0 results further down are history. Not re-verified on firstperson. Rooms on the Farm: [ROOMS.md](ROOMS.md).
 
 1. Open https://vtafarm.ic3.dev (`FARM=ic3`, preferred; `farm:setup` prints the URL for the selected Farm), sign up with a passkey (invite link if asked).
-2. Create an agent (name, image). **In the image selector pick `0.65.0-fc157f76`** (the pinned release `vta-service-v0.65.0`). **Do not keep the portal's default image** (`VTI-Eucalyptus-49f5f1be [latest]`, vta-service 0.56.0): it predates the Trust Task versions this kit sends. `npm run farm:check` and `farm:canary` read the deployed agent's version and print a loud warning if it is not the pin. For a VTC, a community is "on request".
+2. Create an agent (name, image). **In the image selector pick `0.72.0-26d0da81`** (the pinned release `vta-service-v0.72.0`). **Do not keep the portal's default image** (`VTI-Eucalyptus-49f5f1be [latest]`, vta-service 0.56.0): it predates the Trust Task versions this kit sends. `npm run farm:check` and `farm:canary` read the deployed agent's version and print a loud warning if it is not the pin. For a VTC, a community is "on request".
 3. On the agent's **Connections** tab choose "Connect to PNM" and paste the DID `farm:setup` printed into **Admin DID**.
    Wait for "Running". (On firstperson.dev this step fails with `unsupportedVersion: acl/grant/0.2`, a Farm-side bug; on ic3.dev it works. See "Two Farms".)
 4. Copy into `.env`: `VTA_URL=https://vta-<name>.<domain>`, `VTA_DID=did:webvh:...` (or just `FARM_AGENT=<name>`: both are derived),
@@ -115,6 +115,16 @@ step in vtafarm-api). That is the same `did:key` role the local VTA seeds, so
 before and on the day of the event** ([EVENT.md](EVENT.md)); it is read-only (GET/HEAD/OPTIONS, about 2 s apart)
 and prints a stamped table. Hosts live in `scripts/farm-hosts.json`; `FARM_AGENT` / `VTA_URL` / `VTC_URL` (yours) add your own agent and community to the probe; without them only the hosts are checked and it prints "no agent configured, version not checked".
 When the result differs from this table, add a new dated block here and update the `farm` block of `pins.json`.
+
+### Snapshot: 2026-11-08 (an ic3 agent created from the `0.72.0-26d0da81` image)
+
+| Check | Result |
+|---|---|
+| `farm:check` | vta-service **0.72.0**, equals the pin; `/health` 200; `/openapi.json` 0.72.0 |
+| `vta:provision`, `hello` | context and app identity created; discovery lists 292 Trust Tasks; `auth/whoami` capabilities include `room-present` and `room-open` |
+| Rooms tasks served | `rooms/keys/{present,seal,open,key-package,welcome}` at 0.2 / 0.1 and the `rooms/owner/*` family |
+| `vta/webvh/dids/create/1.2` as the app identity | refused: no `KeyMint` capability (the `application` role does not carry it) |
+| A community with rooms (a VTC 0.26.0 hosted outside the Farm) | joined, an open room offered, accepted, posted and read back; a sealed room refused at the VTA ([ROOMS.md](ROOMS.md)) |
 
 ### Snapshot: 2026-11-07 (read-only `farm:probe`, no account)
 
