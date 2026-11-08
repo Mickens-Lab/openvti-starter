@@ -226,7 +226,7 @@ After a moment of setup (a real two-member MLS group for the sealed room) you se
 - **Notes**: open "Kickoff agenda". Its `<script>`, `<img onerror>` and `javascript:` link show as plain text, the `example.org` link shows its URL,
   and the markdown image is a link that was never loaded. **Edit**, change it, **Save new version**: the version count goes up.
 - **Files**: `site-plan.png` and the animated `celebration.gif` are shown (judged by their bytes); `diagram.svg` and `photo.png` (claims to be a PNG,
-  is HTML) are download-only with the reason; the text and `.md` files are shown inline. In the sealed room, upload a file over 256 KiB to see the limit.
+  is HTML) are download-only with the reason; the text and `.md` files are shown inline. In the sealed room, upload a file over 32 KiB to see the limit.
 - **Search**: "File names" for `celebration`, then switch to "Full text" for `riverside` or `"contingency reserve"`; press a result to jump to it.
 
 Everything lives in page memory and is gone on reload. The tests behind each point: `npm test -w @buildathon/collab-room`. How it is built:

@@ -64,6 +64,30 @@ Things that are not obvious, all seen live:
 - **The offer is single use.** The invitation inside it is consumed by the join. If a run dies half way, `rooms:status` shows whether the VTA holds the room; if not, ask the owner for a new offer.
 - **Hosting.** `create` needs a DID host registered on the VTA (`vta/webvh/servers/list`); ic3 has one (`control`). Pass `--server <id>` for another.
 
+## Notes, files, search and the live feed
+
+Same flags in both flows; add `--app` to act as the app `did:key` when `ROOM_PERSONA` is set (an open room offered to the app `did:key`).
+
+```sh
+npm run rooms:note -- <room DID> "Agenda" "1. budget 2. timeline"            # a note
+npm run rooms:note -- <room DID> "Agenda" "... 3. hiring" --id <note id>     # a new version of that note (the newest wins)
+npm run rooms:upload -- <room DID> ./plan.txt                                # a file
+npm run rooms:search -- <room DID> hiring                                    # full text: chat, notes, file names, text files
+npm run rooms:search -- <room DID> plan --names                              # file names only
+npm run rooms:download -- <room DID> <item id> ./out.txt                     # bytes, checked against the envelope's SHA-256
+npm run rooms:read -- <room DID> --follow                                    # keep watching; new items print as they arrive
+```
+
+Limits, measured on the live host (2026-11-08):
+
+| Where | Limit |
+|---|---|
+| Open room file | Blob upload in chunks; a 1 MiB file round-tripped byte for byte. The host reports 100 MiB per file |
+| Sealed (attributed) room file | **About 34 KB.** The host refuses any document over 65,536 bytes (`rooms/records/put/0.3`), and a sealed inline file inflates about 1.8x plus 4.5 KB. 34,300 bytes passed, 36,000 failed. The client stops at 32 KiB with a clear message. Sealed blob files are not implemented |
+| Notes and chat | A 40,000-character note passed on both tiers (not inflated like binary) |
+
+Search runs in the client over decrypted content; the host has no search. The live feed polls (3 s); it survives another command logging in as the same identity (a VTA session is one token per identity, and the client logs in again once when it is superseded).
+
 ## Refusals and what they mean
 
 | You see | Meaning | Fix |
@@ -73,6 +97,8 @@ Things that are not obvious, all seen live:
 | `this VTA holds no AuthorityCredential ... to a persona you may act as` | Open room: the kit never shows this (it presents the offer's credentials). Sealed: the app `did:key` was offered, or `rooms:accept` has not run | Flow B |
 | `the chain's leaf grants to <app did:key>, but it was presented by <persona>` | A room call was signed as the persona | Use the kit's commands; the app `did:key` signs room calls |
 | `does not carry the KeyMint capability` / `VaultWrite` | The application role cannot mint DIDs or store credentials | Needs `.vta/admin.json`; `rooms:persona create` and `rooms:accept` fall back to it |
+| `HTTP 401 token superseded` | Another process logged in as the same identity | The client logs in again and retries once; nothing to do |
+| `the document is N bytes; ... accepts at most 65536` | A sealed file is too big for the host's document cap | Stay under 32 KiB, or use an open room |
 | `invitation ... has already been used` | The offer was already used to join | `rooms:status`; ask for a new offer if the VTA does not hold the room |
 | `unsupportedVersion` / `unsupportedType` on a rooms task | The host runs other task versions than the client sends | Check the host's `GET /health` version and [VTC.md](VTC.md) |
 
@@ -85,7 +111,10 @@ Things that are not obvious, all seen live:
 | A persona `did:webvh` minted by the VTA; the VTA signing a community join request for it; the VTC accepting that proof | **live**, 2026-11-08 |
 | Attributed room: offer to the persona, `rooms/keys/key-package`, `offers/accept` with the KeyPackage, `rooms/keys/welcome`, `rooms/keys/present`, `rooms/info`, a sealed post and read back (epoch 2) | **live**, 2026-11-08, one run, one host |
 | The VTA serves `rooms/keys/{present,seal,open,key-package,welcome,list}`; the app has `room-present` and `room-open` | **live** (`hello`, discovery, the run above) |
-| Notes, files, search, the live feed, profiles against a real host | **unverified** (only chat was posted) |
+| Notes (two versions, newest wins), file upload and download (SHA-256 checked), full-text and file-name search, on an open room and on an attributed room | **live**, 2026-11-08 |
+| Open-room file of 1 MiB (chunked blobs); live feed following a second process's post | **live** |
+| Sealed files over about 34 KB | **refused by the host** (64 KiB document cap); the client limit is 32 KiB |
+| Profiles/avatars; a second member; the feed across an epoch change | **unverified** |
 | `private` rooms; a second member in the same sealed room; epoch changes (commits) | **unverified** |
-| ts-mls <-> openmls interop; the host's record size cap | **unverified** (the sealed run exercised the VTA's own MLS, not ts-mls) |
+| ts-mls <-> openmls interop | **unverified** (the sealed run exercised the VTA's own MLS, not ts-mls) |
 | This kit's pinned VTC (0.20.0) as a room host | **unverified**: the live runs used a 0.26.0 host. The local stack has no rooms |

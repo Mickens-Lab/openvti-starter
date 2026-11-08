@@ -5,20 +5,26 @@
 //   npm run rooms:info   -- <room DID>         # tier, epoch, limits (read-only)
 //   npm run rooms:post   -- <room DID> "text"  [--markdown] [--name "Display Name"]
 //   npm run rooms:read   -- <room DID> [--follow]
+//   npm run rooms:note   -- <room DID> "Title" "body" [--id <note id>]    # save a note (--id saves a new version of that note)
+//   npm run rooms:upload -- <room DID> <file path> [--type text/plain]    # add a file
+//   npm run rooms:search -- <room DID> "words" [--names]                  # full text, or file names with --names
+//   npm run rooms:download -- <room DID> <item id> [out path]             # a file's bytes (checked against its SHA-256)
+// Add --app to any command to act as the app did:key although ROOM_PERSONA is set (open rooms offered to it).
 // <room DID> may be left out when ROOM_ID=<room DID> is in .env. Walkthrough and what is verified: docs/ROOMS.md.
 import "./lib/cli.js";
 import { TrustTaskError, VtaClient } from "@buildathon/vta-client";
 import { VtcClient } from "@buildathon/vtc-client";
 import { HostClient, RoomSession, VtaKeyOracle, joinFromOffer, offerFallbackPresenter, vtcTransport, type RoomOfferLike } from "@buildathon/rooms-client";
 import { ADMIN_FILE, die, env, loadAdmin, mode, reachable, refusal, vtcUrl } from "./env.js";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, extname } from "node:path";
 import { memberIdentity } from "./lib/member.js";
 import { flag, option, positionals } from "./lib/rooms-args.js";
 import { communityNext, statusLines } from "./lib/rooms-status.js";
 
 const [cmd, ...rest] = process.argv.slice(2);
-const USAGE = "usage: npm run rooms:<status|list|info|accept|post|read> [-- <room DID> [text]]   (docs/ROOMS.md)";
-if (!cmd || !["status", "list", "info", "accept", "post", "read"].includes(cmd)) die(USAGE);
+const USAGE = "usage: npm run rooms:<status|list|info|accept|post|read|note|upload|search|download> [-- <room DID> [args]]   (docs/ROOMS.md)";
+if (!cmd || !["status", "list", "info", "accept", "post", "read", "note", "upload", "search", "download"].includes(cmd)) die(USAGE);
 
 const cred = env("VTA_CREDENTIAL");
 if (!cred) die("VTA_CREDENTIAL not set. Run `npm run up` (local) or `npm run farm:setup` + `npm run vta:provision` (farm) first.");
@@ -26,7 +32,7 @@ const url = vtcUrl();
 // The member is the app did:key, or, with ROOM_PERSONA=<did> in .env (npm run rooms:persona), a persona DID the VTA holds and signs for.
 const vta = await VtaClient.fromCredential(cred, env("VTA_URL") ?? die("VTA_URL not set"), undefined, { resolveDid: mode() !== "farm" });
 try { await vta.authenticate(); } catch { /* rooms/keys/* are signed documents; a session is not required for them */ }
-const persona = env("ROOM_PERSONA");
+const persona = flag(rest, "app") ? undefined : env("ROOM_PERSONA"); // --app: act as the app did:key even when ROOM_PERSONA is set
 const me = persona ? vta.personaIdentity(persona) : memberIdentity(cred);
 const keys = new VtaKeyOracle(vta);
 const vtc = await reachable("VTC", url, () => VtcClient.connect(url, me, undefined, env("VTC_DID")));
@@ -45,6 +51,7 @@ async function call<T>(what: string, fn: () => Promise<T>): Promise<T> {
     return await fn();
   } catch (e) {
     if (e instanceof TrustTaskError) die(`${what}: the host refused (HTTP ${e.status}): ${refusal(e.body)}${hint(refusal(e.body))}`);
+    if (e instanceof Error) die(`${what}: ${e.message}`);
     throw e;
   }
 }
@@ -157,10 +164,15 @@ const id = need();
 const cardName = async () => {
   try { return ((await vtc.myCard()) as any)?.card?.values?.displayName as string | undefined; } catch { return undefined; }
 };
-const name = option(rest, "name") ?? (cmd === "post" ? await cardName() : undefined);
+const name = option(rest, "name") ?? (cmd === "post" || cmd === "note" || cmd === "upload" ? await cardName() : undefined);
 const room = await call("open the room", () => RoomSession.open({ roomId: id, host, keys, self: appMe.did, ...(name ? { profile: { displayName: name } } : {}), start: cmd === "read" && flag(rest, "follow") }));
 const label = (did?: string) => (did ? room.profiles.resolveSync(did).label : "?");
-const line = (i: any) => `[${i.version}] ${label(i.author)}: ${i.envelope?.text ?? i.envelope?.title ?? i.envelope?.name ?? "(" + i.kind + ")"}`;
+const line = (i: any) => {
+  const e = i.envelope;
+  const what = e?.kind === "note" ? `note "${e.title}" (${String(e.body).length} chars)` : e?.kind === "file" ? `file ${e.name} (${e.mediaType}, ${e.size} bytes)` : e?.text ?? `(${i.kind})`;
+  return `[${i.version}] ${i.id}  ${label(i.author)}: ${what}`;
+};
+const MEDIA: Record<string, string> = { ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json", ".csv": "text/csv", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".pdf": "application/pdf" };
 
 if (cmd === "post") {
   const text = pos.slice(1).join(" ");
@@ -173,7 +185,57 @@ if (cmd === "post") {
   process.exit(0);
 }
 
+if (cmd === "note") {
+  const [title, body] = [pos[1], pos.slice(2).join(" ")];
+  if (!title || !body) die('npm run rooms:note -- <room DID> "Title" "body" [--id <note id>]');
+  const item = await call("save note", () => room.saveNote(title, body, option(rest, "id")));
+  await room.feed.sync();
+  console.log(`saved note ${item.id} at version ${item.version}\nread back: ${line(room.item(item.id) ?? item)}`);
+  room.close();
+  process.exit(0);
+}
+
+if (cmd === "upload") {
+  const path = pos[1] ?? die("npm run rooms:upload -- <room DID> <file path> [--type text/plain]");
+  if (!existsSync(path)) die(`${path}: no such file`);
+  const bytes = new Uint8Array(readFileSync(path));
+  const type = option(rest, "type") ?? MEDIA[extname(path).toLowerCase()] ?? "application/octet-stream";
+  const item = await call("upload", () => room.upload(basename(path), type, bytes));
+  await room.feed.sync();
+  console.log(`uploaded ${item.id} at version ${item.version}\nread back: ${line(room.item(item.id) ?? item)}`);
+  room.close();
+  process.exit(0);
+}
+
+if (cmd === "search") {
+  const q = pos.slice(1).join(" ") || die('npm run rooms:search -- <room DID> "words" [--names]');
+  const names = flag(rest, "names");
+  const hits: any[] = names ? await room.search(q, "names") : await room.search(q, "text");
+  console.log(`${hits.length} ${names ? "file-name" : "full-text"} hit(s) for "${q}"`);
+  for (const h of hits) console.log(`  ${line(h.item)}${h.snippet ? `\n      ...${h.snippet}...` : ""}`);
+  room.close();
+  process.exit(0);
+}
+
+if (cmd === "download") {
+  const itemId = pos[1] ?? die("npm run rooms:download -- <room DID> <item id> [out path]");
+  const item = room.item(itemId);
+  if (!item || (item.envelope as any).kind !== "file") die(`${itemId} is not a file in this room. \`npm run rooms:read -- <room DID>\` lists the ids.`);
+  const bytes = await call("download", () => room.fileBytes(item as any));
+  const out = pos[2];
+  if (out) { writeFileSync(out, bytes); console.log(`wrote ${bytes.length} bytes to ${out} (SHA-256 matched the envelope)`); }
+  else console.log(`${bytes.length} bytes, SHA-256 matched the envelope. Add an out path to save them.`);
+  room.close();
+  process.exit(0);
+}
+
 for (const i of room.items()) console.log(line(i));
 if (!flag(rest, "follow")) { room.close(); process.exit(0); }
 console.log("-- following (Ctrl-C to stop) --");
-room.onChange((c) => { for (const i of [...c.added, ...c.updated]) console.log(line(i)); });
+const src = room.feed.source as any;
+if (src) src.onStatus = (st: string, err?: unknown) => { if (st !== "live") console.log(`-- feed ${st}${err ? `: ${String((err as Error).message ?? err).slice(0, 200)}` : ""}`); };
+room.onChange((c) => {
+  for (const i of [...c.added, ...c.updated]) console.log(line(i));
+  for (const f of c.failed) console.log(`-- could not read ${f.key} (version ${f.version}): ${String((f.error as Error)?.message ?? f.error).slice(0, 300)}`);
+  if (c.removed.length) console.log(`-- removed: ${c.removed.join(", ")}`);
+});

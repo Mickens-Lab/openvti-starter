@@ -1,4 +1,4 @@
-// Files: upload, list (newest first) with an inert preview each, download. Sealed rooms carry files inline up to 256 KiB;
+// Files: upload, list (newest first) with an inert preview each, download. Sealed rooms carry files inline up to 32 KiB;
 // a larger upload is refused by the session with a readable message, shown here.
 import { useLayoutEffect, useRef, useState } from "react";
 import type { SessionItem } from "@buildathon/rooms-client";
@@ -47,7 +47,7 @@ export function FilesView({ files, focus }: { files: SessionItem[]; focus?: stri
         <label htmlFor="file-upload">Upload a file</label>
         <input id="file-upload" ref={input} type="file" multiple disabled={busy} onChange={(e) => void upload(e.currentTarget.files)} />
         <p className="muted small-text">
-          {session.sealed ? "Sealed room: files are sealed inline in the record, at most 256 KiB each." : "Open room: files are stored as blobs the host can read."}
+          {session.sealed ? "Sealed room: files are sealed inline in the record, at most 32 KiB each." : "Open room: files are stored as blobs the host can read."}
         </p>
         {error && <p className="note bad" role="alert">{error}</p>}
       </div>

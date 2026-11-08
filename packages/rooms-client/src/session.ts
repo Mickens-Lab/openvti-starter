@@ -163,7 +163,7 @@ export class RoomSession {
     let env: FileEnvelope;
     if (this.sealed) {
       if (bytes.length > INLINE_FILE_CAP) {
-        throw new Error(`"${name}" is ${bytes.length} bytes; files in a ${this.visibility} room are sealed inline and limited to ${INLINE_FILE_CAP} bytes (256 KiB). Sealed blob files are not implemented.`);
+        throw new Error(`"${name}" is ${bytes.length} bytes; files in a ${this.visibility} room are sealed inline and limited to ${INLINE_FILE_CAP} bytes (32 KiB; the host takes documents of at most 65536 bytes). Sealed blob files are not implemented.`);
       }
       env = makeFile(name, mediaType, bytes, { inline: true });
     } else {

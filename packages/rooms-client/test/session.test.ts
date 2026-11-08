@@ -120,7 +120,7 @@ test("sealed room: a KeyService is required; records are opaque and sealed; file
   assert.match(m.key, /^[A-Za-z0-9_-]{22}$/);
   const t = await s.upload("notes.txt", "text/plain", utf8("inline secret words"));
   assert.ok(t.envelope.inline);
-  await assert.rejects(s.upload("big.bin", "application/octet-stream", new Uint8Array(INLINE_FILE_CAP + 1)), /limited to 262144 bytes/);
+  await assert.rejects(s.upload("big.bin", "application/octet-stream", new Uint8Array(INLINE_FILE_CAP + 1)), /limited to 32768 bytes/);
   // Inline text is indexed without any blob call.
   assert.equal((await s.search("secret words", "text")).length, 1);
   const stored = Buffer.from(host.storedBytes(SEALED)).toString("latin1");

@@ -43,6 +43,12 @@ export async function fetchVtaDid(baseUrl: string, fetchImpl: typeof fetch = fet
   return did;
 }
 
+/** Whether a refusal says the bearer session is gone: 401 `token superseded`, `expired`, or `needs a session`. */
+export function isSessionLost(e: unknown): boolean {
+  if (!(e instanceof TrustTaskError) || e.status !== 401) return false;
+  return /token superseded|token expired|session expired|needs a session/i.test(JSON.stringify(e.body ?? ""));
+}
+
 /** One call the client made, reported to {@link VtaClient.onCall} after it settles. */
 export interface CallEvent {
   /** Trust Task type URI. */
@@ -192,7 +198,18 @@ export class VtaClient {
     payload: Record<string, unknown> = {},
     opts: { bearer?: boolean } = {},
   ): Promise<R> {
-    return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+    try {
+      return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+    } catch (e) {
+      // A session is one token per identity: another process authenticating as the same identity supersedes it (HTTP 401
+      // "token superseded"). A client that had a session logs in again and retries that one call, so a long-running reader
+      // survives a second command. Bounded to one retry per call; two busy processes take turns, they do not loop.
+      if (opts.bearer !== false && this.token && isSessionLost(e)) {
+        await this.authenticate();
+        return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+      }
+      throw e;
+    }
   }
 
   /**

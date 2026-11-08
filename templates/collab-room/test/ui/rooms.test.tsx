@@ -39,7 +39,7 @@ describe("rooms", () => {
       expect(await screen.findByRole("img", { name: "sealed-wave.gif" }, SLOW)).toBeTruthy();
       const big = new File([new Uint8Array(300 * 1024)], "big.bin", { type: "application/octet-stream" });
       await userEvent.upload(screen.getByLabelText("Upload a file"), big);
-      expect((await screen.findByRole("alert", undefined, SLOW)).textContent).toMatch(/256 KiB/);
+      expect((await screen.findByRole("alert", undefined, SLOW)).textContent).toMatch(/32 KiB/);
     } finally { backend.close(); }
   });
 });

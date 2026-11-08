@@ -23,7 +23,7 @@ COLLAB_MODE=live npm run dev -w @buildathon/collab-room   # live mode: VTC + VTA
     profile, so she shows as a short DID). Chat history, a markdown note full of hostile markup, a PNG, an animated GIF, an
     SVG with a script, a file that claims `image/png` but is HTML, a text file and a `.md` file;
   - **Deal room (attributed)**: real two-member MLS (`LocalMlsKeys`, ts-mls) between you and Bob. The host stores ciphertext
-    only; files are sealed inline (at most 256 KiB; a larger upload shows the session's message).
+    only; files are sealed inline (at most 32 KiB, the host's 64 KiB document cap; a larger upload shows the session's message).
   - Bob is simulated: every 12 s he posts the next line of a script, alternating between the rooms, so the live feed is visible.
   - Keys and content live in memory only and vanish on reload.
 - **live** (open and attributed rooms verified live through the same library by the `rooms:*` commands; this page in a browser, and sealed rooms from this page, are not): the identity is the app credential (`VTA_CREDENTIAL`, as in `community-dashboard`), signing as

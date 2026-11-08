@@ -1,5 +1,5 @@
 // Tiny argument helpers for scripts/rooms.ts: `--flag`, `--name value`, and the non-option words.
-const VALUE_OPTIONS = new Set(["name"]);
+const VALUE_OPTIONS = new Set(["name", "id", "type"]);
 
 export const flag = (args: string[], name: string): boolean => args.includes(`--${name}`);
 
