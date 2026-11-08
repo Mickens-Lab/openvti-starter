@@ -124,7 +124,8 @@ When the result differs from this table, add a new dated block here and update t
 | `vta:provision`, `hello` | context and app identity created; discovery lists 292 Trust Tasks; `auth/whoami` capabilities include `room-present` and `room-open` |
 | Rooms tasks served | `rooms/keys/{present,seal,open,key-package,welcome}` at 0.2 / 0.1 and the `rooms/owner/*` family |
 | `vta/webvh/dids/create/1.2` as the app identity | refused: no `KeyMint` capability (the `application` role does not carry it) |
-| A community with rooms (a VTC 0.26.0 hosted outside the Farm) | joined, an open room offered, accepted, posted and read back; a sealed room refused at the VTA ([ROOMS.md](ROOMS.md)) |
+| `vta/webvh/dids/create/1.2` as the admin, `keys/sign-document`, `vault/credentials/receive` | worked: the VTA minted a persona `did:webvh` on the ic3 DID host (`control`), signed a community join request for it, and stored room credentials (the application role lacks `KeyMint` and `VaultWrite`) |
+| A community with rooms (a VTC 0.26.0 hosted outside the Farm) | open room: joined, offered, accepted, posted, read back. Attributed room, as the persona: key-package, accept, welcome, sealed post and read back ([ROOMS.md](ROOMS.md)) |
 
 ### Snapshot: 2026-11-07 (read-only `farm:probe`, no account)
 

@@ -39,6 +39,12 @@ export class VtaKeyOracle implements KeyService {
     return { presentation: p, ...(typeof r.expiresAt === "string" ? { expiresAt: r.expiresAt } : {}) };
   }
 
+  /** The rooms this VTA holds group state for, one entry per room and member it may act as (`rooms/keys/list/0.2`). Key custody, not membership. */
+  async held(): Promise<{ roomId: string; member: string; epoch: number }[]> {
+    const r = await this.vta.call(KEYS_TASK.list, {});
+    return Array.isArray(r?.rooms) ? r.rooms.filter((x: any) => typeof x?.roomId === "string" && typeof x?.member === "string").map((x: any) => ({ roomId: x.roomId, member: x.member, epoch: Number(x.epoch) })) : [];
+  }
+
   /** Join step 1 on a sealed room: the VTA mints an MLS KeyPackage for the offer's invitation (`rooms/keys/key-package/0.2`). */
   async keyPackage(roomId: string, invitation: string): Promise<{ keyPackage: string; expiresAt?: string; alreadyMinted?: boolean }> {
     const r = await this.vta.call(KEYS_TASK.keyPackage, { roomId, invitation });

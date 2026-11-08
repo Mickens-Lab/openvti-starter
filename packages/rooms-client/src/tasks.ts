@@ -27,6 +27,7 @@ export const KEYS_TASK = {
   sealV01: `${TT}/rooms/keys/seal/0.1`,
   open: `${TT}/rooms/keys/open/0.2`,
   openV01: `${TT}/rooms/keys/open/0.1`,
+  list: `${TT}/rooms/keys/list/0.2`,
   keyPackage: `${TT}/rooms/keys/key-package/0.2`,
   welcome: `${TT}/rooms/keys/welcome/0.1`,
 } as const;

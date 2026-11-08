@@ -20,9 +20,10 @@ muscle memory keep working; a test fails if a script is missing from this page.
 | `TRACE=1 <command>` then `npm run trace` | Record every client call (VTA and VTC REST, TSP ping) to `.vta/trace.jsonl`, then show them one per line: time, client, task, outcome, ms, who to whom, id. `-- --follow` keeps printing, `--json` for raw, `--clear` deletes. Payloads and keys are never logged |
 | `npm run repl` | A Node REPL with `vta` (authenticated), `vtc`, `call(slug, payload)`, `tasks(words)` and top-level await |
 | `npm run vtc:hello` / `vtc:join` / `vtc:approve` / `vtc:status` | Community: read the join manifest / apply / admin approves / where do I stand |
-| `npm run rooms:list` / `rooms:accept -- <room DID>` | Data rooms: the rooms offered to you and held / accept an offer (open rooms; a sealed room is explained, not attempted) ([ROOMS.md](ROOMS.md)) |
+| `npm run rooms:status` | Data rooms: membership, offers, and the one command to run next ([ROOMS.md](ROOMS.md)) |
+| `npm run rooms:list` / `rooms:accept -- <room DID>` | Data rooms: the offers and held rooms / join from an offer (open: the accept; sealed, as a persona: stores the room's credentials in the VTA, then key-package, accept, welcome; safe to repeat) |
 | `npm run rooms:info -- <room DID>` / `rooms:post -- <room DID> "text"` / `rooms:read -- <room DID>` | Data rooms: tier, epoch and limits / post a chat message (`--markdown`, `--name`) and read it back / print the history (`--follow` keeps watching). `ROOM_ID` in `.env` replaces the argument |
-| `npm run rooms:persona -- create\|use <did>\|join\|status` | Sealed rooms need a persona DID the VTA holds: mint one (admin key), adopt one, apply to the community as it, check. Saves `ROOM_PERSONA`, which every `rooms:*` command then acts as ([ROOMS.md](ROOMS.md)) |
+| `npm run rooms:persona -- setup` (or `create`\|`use <did>`\|`join`\|`status`) | Sealed rooms need a persona DID the VTA holds: `setup` mints one (admin key) and applies to the community as it. Saves `ROOM_PERSONA`, which every `rooms:*` command then acts as ([ROOMS.md](ROOMS.md)) |
 | `npm run tsp:ping` / `tsp:listen` | `MODE=tunnel`: TSP ping and pong / receive the credential frames the VTC pushes |
 | `npm run tsp:peer-push` | `MODE=tunnel`, live check: the default `did:peer:2` applicant receives its credential over TSP with no ping first (listener, join, approve, status; ignores `VTC_APPLICANT=did:key` in `.env`; docs/MESSAGING.md) |
 

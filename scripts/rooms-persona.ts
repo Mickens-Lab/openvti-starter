@@ -1,5 +1,6 @@
 // A persona DID for data rooms. A sealed room's keys live in your VTA, and the VTA only acts for a DID it holds (a "persona"), never for
 // the app did:key. So for attributed and private rooms the community member (and the room's invitee) must be a DID the VTA holds.
+//   npm run rooms:persona -- setup [--name "Display Name"]          # create (if none yet) then join: the whole persona setup in one command
 //   npm run rooms:persona -- create [--server <id>] [--label "..."]   # mint a did:webvh in your app's context (needs the admin key)
 //   npm run rooms:persona -- use <did>                                # adopt a DID the VTA already holds
 //   npm run rooms:persona -- join [--name "Display Name"]             # apply to the community as the persona (the VTA signs)
@@ -11,8 +12,9 @@ import { VtcClient, pickCriterion } from "@buildathon/vtc-client";
 import { die, env, loadAdmin, mode, reachable, refusal, updateEnv, vtcUrl } from "./env.js";
 import { flag, option, positionals } from "./lib/rooms-args.js";
 
-const [cmd, ...rest] = process.argv.slice(2);
-if (!cmd || !["create", "use", "join", "status"].includes(cmd)) die("usage: npm run rooms:persona -- <create|use <did>|join|status>   (docs/ROOMS.md)");
+const [cmd0, ...rest] = process.argv.slice(2);
+if (!cmd0 || !["setup", "create", "use", "join", "status"].includes(cmd0)) die("usage: npm run rooms:persona -- <setup|create|use <did>|join|status>   (docs/ROOMS.md)");
+let cmd = cmd0 === "setup" ? (process.env.ROOM_PERSONA || env("ROOM_PERSONA") ? "join" : "create") : cmd0;
 const vtaUrl = env("VTA_URL") ?? die("VTA_URL not set");
 const context = env("VTA_CONTEXT") ?? "my-app";
 const known = mode() === "farm" ? env("VTA_DID") : undefined;
@@ -39,9 +41,11 @@ if (cmd === "create") {
     const r = (await admin.call("https://trusttasks.org/spec/vta/webvh/dids/create/1.2", { contextId: context, serverId, label: option(rest, "label") ?? "rooms persona", portable: true })) as { did?: string };
     if (!r.did) die(`the VTA created a DID but returned none: ${JSON.stringify(r).slice(0, 300)}`);
     updateEnv({ ROOM_PERSONA: r.did });
-    console.log(`persona ${r.did}\nsaved as ROOM_PERSONA. Next: npm run rooms:persona -- join`);
+    process.env.ROOM_PERSONA = r.did;
+    console.log(`persona ${r.did}\nsaved as ROOM_PERSONA.`);
   } catch (e) { fail("create the persona DID", e); }
-  process.exit(0);
+  if (cmd0 !== "setup") { console.log("Next: npm run rooms:persona -- join"); process.exit(0); }
+  cmd = "join";
 }
 
 if (cmd === "use") {
@@ -56,7 +60,7 @@ if (cmd === "use") {
   process.exit(0);
 }
 
-const persona = env("ROOM_PERSONA") ?? die("no persona yet: npm run rooms:persona -- create");
+const persona = process.env.ROOM_PERSONA ?? env("ROOM_PERSONA") ?? die("no persona yet: npm run rooms:persona -- setup");
 const vta = await asApp();
 const me = vta.personaIdentity(persona);
 const url = vtcUrl();
@@ -84,6 +88,7 @@ try {
     const s = await vtc.joinStatus(requestId);
     console.log("status:", JSON.stringify(s));
     if (s.status === "pending") console.log(`pending: an administrator must approve ${persona} in the community's admin console.`);
+    if (s.status === "approved") console.log(`approved. Give the room owner this DID to offer a sealed room to: ${persona}\nthen: npm run rooms:status`);
   } else {
     const id = env("ROOM_PERSONA_REQUEST_ID");
     if (id) console.log("join:", JSON.stringify(await vtc.joinStatus(id)));

@@ -38,6 +38,7 @@
     "farm:check": "tsx scripts/farm-check.ts",
     "farm:probe": "tsx scripts/farm-probe.ts",
     "farm:canary": "tsx scripts/farm-canary.ts",
+    "rooms:status": "tsx scripts/rooms.ts status",
     "rooms:list": "tsx scripts/rooms.ts list",
     "rooms:accept": "tsx scripts/rooms.ts accept",
     "rooms:info": "tsx scripts/rooms.ts info",

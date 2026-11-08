@@ -1,6 +1,7 @@
 // Data rooms from the command line, as the app identity that is a member of your community (the VTC in .env).
+//   npm run rooms:status                       # where you stand, and the one command to run next
 //   npm run rooms:list                         # rooms offered to you, and rooms you hold
-//   npm run rooms:accept -- <room DID>         # accept an offer (open rooms; sealed rooms are explained, not attempted)
+//   npm run rooms:accept -- <room DID>         # accept an offer (open: the accept; sealed: key-package, accept, welcome, as the persona)
 //   npm run rooms:info   -- <room DID>         # tier, epoch, limits (read-only)
 //   npm run rooms:post   -- <room DID> "text"  [--markdown] [--name "Display Name"]
 //   npm run rooms:read   -- <room DID> [--follow]
@@ -9,13 +10,15 @@ import "./lib/cli.js";
 import { TrustTaskError, VtaClient } from "@buildathon/vta-client";
 import { VtcClient } from "@buildathon/vtc-client";
 import { HostClient, RoomSession, VtaKeyOracle, joinFromOffer, offerFallbackPresenter, vtcTransport, type RoomOfferLike } from "@buildathon/rooms-client";
-import { die, env, mode, reachable, refusal, vtcUrl } from "./env.js";
+import { ADMIN_FILE, die, env, loadAdmin, mode, reachable, refusal, vtcUrl } from "./env.js";
+import { existsSync } from "node:fs";
 import { memberIdentity } from "./lib/member.js";
 import { flag, option, positionals } from "./lib/rooms-args.js";
+import { communityNext, statusLines } from "./lib/rooms-status.js";
 
 const [cmd, ...rest] = process.argv.slice(2);
-const USAGE = "usage: npm run rooms:<list|info|accept|post|read> [-- <room DID> [text]]   (docs/ROOMS.md)";
-if (!cmd || !["list", "info", "accept", "post", "read"].includes(cmd)) die(USAGE);
+const USAGE = "usage: npm run rooms:<status|list|info|accept|post|read> [-- <room DID> [text]]   (docs/ROOMS.md)";
+if (!cmd || !["status", "list", "info", "accept", "post", "read"].includes(cmd)) die(USAGE);
 
 const cred = env("VTA_CREDENTIAL");
 if (!cred) die("VTA_CREDENTIAL not set. Run `npm run up` (local) or `npm run farm:setup` + `npm run vta:provision` (farm) first.");
@@ -27,6 +30,10 @@ const persona = env("ROOM_PERSONA");
 const me = persona ? vta.personaIdentity(persona) : memberIdentity(cred);
 const keys = new VtaKeyOracle(vta);
 const vtc = await reachable("VTC", url, () => VtcClient.connect(url, me, undefined, env("VTC_DID")));
+// Room calls (rooms/info, records) are signed by whoever asked the VTA for the presentation: its authority chain grants to the CALLER
+// (rooms/keys/present), so the app did:key signs them, acting for the persona. Membership calls (offers, accept) are the persona's own.
+const appMe = memberIdentity(cred);
+const appVtc = persona ? await reachable("VTC", url, () => VtcClient.connect(url, appMe, undefined, env("VTC_DID"))) : vtc;
 const pos = positionals(rest);
 const roomId = pos[0] ?? env("ROOM_ID");
 
@@ -46,8 +53,11 @@ function hint(text: string): string {
   if (/notAMember/.test(text)) return "\nhint: this identity is not an active member of the community yet. `npm run vtc:join`, then an admin approves it (docs/ROOMS.md, step 1).";
   if (/no open or recently accepted offer/.test(text)) return "\nhint: no offer to this room is addressed to you. Ask the room's owner to add this DID, wait a minute, then `npm run rooms:list` (docs/ROOMS.md, step 2).";
   if (/holds no AuthorityCredential/.test(text)) {
-    return "\nhint: your VTA refused to present for this room because the room admitted your app did:key, which the VTA does not hold as a persona. Open rooms work anyway (the offer's own credentials are used). Sealed rooms need a persona DID the VTA holds (docs/ROOMS.md, \"Attributed and private rooms\").";
+    return persona
+      ? "\nhint: your VTA does not hold this room's credentials. `npm run rooms:accept -- <room DID>` stores them in its vault and joins (docs/ROOMS.md, \"Attributed and private rooms\")."
+      : "\nhint: your VTA refused to present for this room because the room admitted your app did:key, which the VTA does not hold as a persona. Open rooms work anyway (the offer's own credentials are used). Sealed rooms need a persona DID the VTA holds: `npm run rooms:persona -- setup` (docs/ROOMS.md, \"Attributed and private rooms\").";
   }
+  if (/already been used/.test(text)) return "\nhint: this offer was already used to join. `npm run rooms:status` shows whether the VTA holds the room.";
   return "";
 }
 
@@ -56,7 +66,24 @@ let cache: Promise<RoomOfferLike[]> | undefined;
 const lookup = async (id: string) => (await (cache ??= offersOf())).find((o) => o.roomId === id);
 
 /** HostClient whose presenter asks the member's VTA, and for an open room falls back to the offer's own credentials. */
-const hostClient = (): HostClient => new HostClient(vtcTransport(vtc), offerFallbackPresenter((r, a) => keys.present(r, a), lookup));
+const hostClient = (): HostClient => new HostClient(vtcTransport(appVtc), offerFallbackPresenter((r, a) => keys.present(r, a), lookup));
+
+const heldRooms = async (): Promise<Set<string>> => {
+  try { return new Set((await keys.held()).filter((h) => h.member === me.did).map((h) => h.roomId)); } catch { return new Set(); }
+};
+
+if (cmd === "status") {
+  const offers = (await offersOf()) as (RoomOfferLike & { label?: string })[];
+  let member = true;
+  try { await vtc.myCard(); } catch (e) { if (e instanceof TrustTaskError) member = false; else throw e; }
+  console.log(`community ${vtc.vtcDid}\nidentity  ${me.did}  (${persona ? "a persona the VTA holds" : "the app did:key"})\nmember    ${member ? "yes" : "no"}`);
+  const first = communityNext({ persona: !!persona, member });
+  if (first) { console.log(`\nnext: ${first}`); process.exit(0); }
+  const lines = statusLines({ persona: !!persona, member, offers, held: await heldRooms() });
+  if (!lines.length) console.log("\nno rooms offered to this identity. Ask a room owner to add this DID (docs/ROOMS.md, step 2).");
+  for (const l of lines) console.log(`\n${l.label}  [${l.visibility}]  ${l.status}\n  ${l.roomId}\n  next: ${l.next}`);
+  process.exit(0);
+}
 
 if (cmd === "list") {
   const offers = await offersOf();
@@ -68,6 +95,38 @@ if (cmd === "list") {
   process.exit(0);
 }
 
+/**
+ * A sealed room's presentation is minted by the VTA from the room's credentials, which it must hold in its vault. In production the VTC
+ * delivers them over messaging (off here), so we hand it the ones in the offer: vault/credentials/receive. The application role has no
+ * VaultWrite, so this falls back to the admin key (.vta/admin.json) and says so. It writes only to your own VTA.
+ */
+async function storeRoomCredentials(offer: RoomOfferLike) {
+  const T = "https://trusttasks.org/spec/vault/credentials/receive/0.1";
+  const context = env("VTA_CONTEXT") ?? "my-app";
+  let writer: VtaClient = vta;
+  for (const k of ["authority", "membership"] as const) {
+    const raw = offer.credentials?.[k];
+    if (!raw) die(`the offer carries no ${k} credential to store`);
+    const body = { credential: JSON.parse(raw), contextId: context };
+    try {
+      await writer.call(T, body);
+    } catch (e) {
+      const text = e instanceof TrustTaskError ? refusal(e.body) : "";
+      if (/already|exists|conflict/i.test(text)) continue;
+      if (e instanceof TrustTaskError && /VaultWrite/.test(text) && writer === vta) {
+        if (!existsSync(ADMIN_FILE)) die(`your VTA needs the offer's credentials in its vault, and the app identity may not write there (no VaultWrite). ${ADMIN_FILE} (the admin key) is missing, so this cannot be done from here.`);
+        console.log("note: the app role cannot write to the vault, using the admin key for this one step (your own VTA).");
+        writer = await VtaClient.connect(env("VTA_URL")!, loadAdmin(), undefined, mode() === "farm" ? env("VTA_DID") : undefined);
+        await writer.authenticate();
+        await writer.call(T, body);
+        continue;
+      }
+      if (e instanceof TrustTaskError) die(`store the ${k} credential in the VTA vault: refused (HTTP ${e.status}): ${text}`);
+      throw e;
+    }
+  }
+}
+
 if (cmd === "accept") {
   const id = need();
   const offer = await lookup(id);
@@ -75,6 +134,11 @@ if (cmd === "accept") {
   if (offer.visibility !== "open" && !persona) {
     die(`${id} is ${offer.visibility}, a sealed room. Joining one needs the member's VTA to mint an MLS KeyPackage, and it refuses when the member is the app did:key (not a persona it holds). Make a persona and have the room offered to it: docs/ROOMS.md, "Attributed and private rooms". Not attempted.`);
   }
+  if (offer.visibility !== "open" && (await heldRooms()).has(id)) {
+    console.log(`already joined: your VTA holds this room as ${me.did}.\nnext: npm run rooms:post -- ${id} "hello"`);
+    process.exit(0);
+  }
+  if (offer.visibility !== "open") await storeRoomCredentials(offer as RoomOfferLike);
   const r = await call("join", () => joinFromOffer(vtc, offer.visibility === "open" ? undefined : keys, offer));
   console.log(`joined (${r.steps.join(" > ")}), epoch ${r.epoch}\nnext: npm run rooms:post -- ${id} "hello"`);
   process.exit(0);
@@ -94,7 +158,7 @@ const cardName = async () => {
   try { return ((await vtc.myCard()) as any)?.card?.values?.displayName as string | undefined; } catch { return undefined; }
 };
 const name = option(rest, "name") ?? (cmd === "post" ? await cardName() : undefined);
-const room = await call("open the room", () => RoomSession.open({ roomId: id, host, keys, self: me.did, ...(name ? { profile: { displayName: name } } : {}), start: cmd === "read" && flag(rest, "follow") }));
+const room = await call("open the room", () => RoomSession.open({ roomId: id, host, keys, self: appMe.did, ...(name ? { profile: { displayName: name } } : {}), start: cmd === "read" && flag(rest, "follow") }));
 const label = (did?: string) => (did ? room.profiles.resolveSync(did).label : "?");
 const line = (i: any) => `[${i.version}] ${label(i.author)}: ${i.envelope?.text ?? i.envelope?.title ?? i.envelope?.name ?? "(" + i.kind + ")"}`;
 
