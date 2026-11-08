@@ -2,7 +2,7 @@
 
 Part of the [docs index](README.md). Evidence labels as in [VTC-SURFACE.md](VTC-SURFACE.md): **live** = observed against a real host, **source** = read in code or a schema, **unverified** = built but not tried. Everything here is a playground ([SECURITY.md](SECURITY.md)).
 
-A data room is a shared space on a community's host: chat, notes and files, with a record history. This kit reaches one with [`@buildathon/rooms-client`](../packages/rooms-client/README.md) (library), [`templates/collab-room`](../templates/collab-room/README.md) (a UI), and the `rooms:*` commands below (command line).
+A data room is a shared space on a community's host: chat, notes and files, with a record history. This kit reaches one with [`@starter/rooms-client`](../packages/rooms-client/README.md) (library), [`templates/collab-room`](../templates/collab-room/README.md) (a UI), and the `rooms:*` commands below (command line).
 
 ## The short answer
 
@@ -40,7 +40,7 @@ npm run rooms:post -- <room DID> "hello room"     # --markdown for markdown, --n
 npm run rooms:read -- <room DID> [--follow]       # the history; --follow keeps watching
 ```
 
-`ROOM_ID=<room DID>` in `.env` drops the argument. The room profile name defaults to your directory card's `displayName`. Or use the UI: `COLLAB_MODE=live COLLAB_ROOM=<room DID> npm run dev -w @buildathon/collab-room` ([its README](../templates/collab-room/README.md)).
+`ROOM_ID=<room DID>` in `.env` drops the argument. The room profile name defaults to your directory card's `displayName`. Or use the UI: `COLLAB_MODE=live COLLAB_ROOM=<room DID> npm run dev -w @starter/collab-room` ([its README](../templates/collab-room/README.md)).
 
 How it works: every room call carries a *presentation* `{ membership, authority: [leaf..root] }`. The member's VTA normally builds it (`rooms/keys/present`). An offer already contains the same credentials, so for an **open** room the client presents those when the VTA refuses (`offerFallbackPresenter`, [source](../packages/rooms-client/src/offers.ts)); the host still verifies them. The accepted offer stays in `rooms:list`, and `rooms:post`/`rooms:read` read the credentials from it.
 

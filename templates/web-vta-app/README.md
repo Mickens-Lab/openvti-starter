@@ -1,8 +1,8 @@
 # Web VTA app
 
-Vite + TypeScript. The page authenticates to your VTA with `@buildathon/vta-client`
+Vite + TypeScript. The page authenticates to your VTA with `@starter/vta-client`
 over plain `fetch` (the VTA allows CORS for `http://localhost:5173`) and renders a live
-**connection-status view** (`@buildathon/status-panel`) by default: whether the VTA is
+**connection-status view** (`@starter/status-panel`) by default: whether the VTA is
 reachable (and round-trip time), its DID and DID-document services, the `vta-service`
 version against the pin in `pins.json`, your session (role, scopes, context, expiry),
 the Trust Task capabilities grouped by family (with acl/grant and discovery compatibility
@@ -17,15 +17,15 @@ wallet-signed Trust Task. Without the wallet, the rest still works.
 
 In tunnel mode only, a banner above the panel says the public hosts and DIDs (VTA, VTC, mediator, and the applicant `did:peer:2` that
 names the mediator) die at `npm run down` and are new after the next `npm run up -- --tunnel`; do not bookmark or share them beyond the
-run. The wording is `tunnelBanner` from `@buildathon/status-panel` (unit-tested; the panel's Mode row says the same in short); verified live 2026-10-30 (one machine, one run).
+run. The wording is `tunnelBanner` from `@starter/status-panel` (unit-tested; the panel's Mode row says the same in short); verified live 2026-10-30 (one machine, one run).
 
 With nothing reachable the page still renders and says what to fix (VTA down, CORS
 blocked, credential missing, wrong version image in farm mode).
 
 ```sh
 npm run up                              # repo root, once
-npm run dev -w @buildathon/web-vta-app      # http://localhost:5173
-npm run build -w @buildathon/web-vta-app
+npm run dev -w @starter/web-vta-app      # http://localhost:5173
+npm run build -w @starter/web-vta-app
 ```
 
 The dev server prefers 5173 but runs on any port (Vite moves to 5174 when 5173 is busy; `-- --port 3050` works too). The page calls

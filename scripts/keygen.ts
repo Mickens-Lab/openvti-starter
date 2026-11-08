@@ -2,7 +2,7 @@
 // super-admin during `vta setup --from`.
 import "./lib/cli.js";
 import { existsSync, writeFileSync } from "node:fs";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import { devBanner } from "./banner.js";
 import { ADMIN_FILE, loadAdmin, saveAdmin } from "./env.js";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/tsp-ping",
+  "name": "@starter/tsp-ping",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -11,8 +11,8 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@buildathon/tsp-client": "*",
-    "@buildathon/vta-client": "*"
+    "@starter/tsp-client": "*",
+    "@starter/vta-client": "*"
   },
   "devDependencies": {
     "vite": "5.4.21"

@@ -1,8 +1,8 @@
 import { useRef, useState, type KeyboardEvent } from "react";
-import type { MemberVmcReceipt, PortalMe } from "@buildathon/vtc-client";
+import type { MemberVmcReceipt, PortalMe } from "@starter/vtc-client";
 import { describeError } from "../client.ts";
 import { builtApplicant, deliveryNote, runMode } from "../delivery.ts";
-import { didPeerFits } from "@buildathon/tsp-client";
+import { didPeerFits } from "@starter/tsp-client";
 import { formatDate, formatDateTime, stripDids } from "../format.ts";
 import { useLoad, useStore } from "../hooks.ts";
 import { membershipGrant, noGrantReason, sendBackConfirm } from "../grant.ts";

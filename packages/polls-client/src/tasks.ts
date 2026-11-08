@@ -1,7 +1,7 @@
 // The Trust Task types a poll uses. A "poll" in VTI is an election (`vtc/elections/*`); there is no separate poll family.
 // Versions are the newest the upstream bundles define (vti-specs-vtc, vti-specs-vta, vti-voting-service dispatch).
 // The kit's pinned VTC does not serve any of them (built without the `voting` feature): see the package README.
-import { TT } from "@buildathon/vta-client";
+import { TT } from "@starter/vta-client";
 
 export const POLL_TASK = {
   // The community (registrar). create/close/cancel/ballot-boxes need `vtc.elections.manage`; list/show take any signer.

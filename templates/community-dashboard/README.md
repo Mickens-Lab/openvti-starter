@@ -8,9 +8,9 @@ There is **no session**: a plain member cannot `auth/authenticate`, so every fac
 
 ```sh
 npm run up                                       # repo root; WITH_VTC=1 for a local VTC (or MODE=farm)
-npm run dev -w @buildathon/community-dashboard    # http://localhost:5173, or the port Vite reports (any port works: /__vta and /__vtc are proxied)
+npm run dev -w @starter/community-dashboard    # http://localhost:5173, or the port Vite reports (any port works: /__vta and /__vtc are proxied)
 npm run vtc:approve                              # local: approve the pending request; the page notices within 10 s
-npm test -w @buildathon/community-dashboard      # pure modules, polling helper, and component tests (jsdom, fake community)
+npm test -w @starter/community-dashboard      # pure modules, polling helper, and component tests (jsdom, fake community)
 npm run e2e                                      # repo root, optional: real headless Chromium against the local stack
 ```
 
@@ -23,7 +23,7 @@ and the screen for your state. The collapsible **Under the hood** panel lists th
 Every action ends in a toast; a refusal is explained in plain words with its code.
 In tunnel mode only, a banner under the top bar says the public hosts and DIDs (VTA, VTC, mediator, and the applicant `did:peer:2` that
 names the mediator) die at `npm run down` and are new after the next `npm run up -- --tunnel`, so nothing should be bookmarked or shared
-beyond the run (wording shared with web-vta-app and the status panel: `tunnelBanner` in `@buildathon/status-panel`; unit- and
+beyond the run (wording shared with web-vta-app and the status panel: `tunnelBanner` in `@starter/status-panel`; unit- and
 component-tested, verified live 2026-10-30 (one machine, one run)).
 
 Markers: **verified** = seen working against the local stack (VTC 0.15.0, VTA 0.65.0, headless Chromium);
@@ -131,7 +131,7 @@ run unless marked):
 
 ## Tests
 
-- `npm test -w @buildathon/community-dashboard`: node:test for the pure modules (`test/*.test.ts`), then Vitest + Testing
+- `npm test -w @starter/community-dashboard`: node:test for the pure modules (`test/*.test.ts`), then Vitest + Testing
   Library (`test/ui/`, jsdom) against a fake community (`test/ui/fake.ts`) behind the real `VtcClient` interface. They cover each
   state screen, refusals and toasts, the journey strip, Refresh and the as-of lines, cooldown, focus refresh, local hints,
   StrictMode (no repeated state-changing call; shared mount reads) and poller/listener cleanup on unmount. No Docker, no network.
@@ -147,10 +147,10 @@ Pure, framework-free modules (unit-tested, no DOM, no network): `src/state.ts` (
 `src/criteria.ts` (which join criteria are usable and why not), `src/format.ts` (DID, date and duration formatting,
 refusal wording, DID stripping, TypeScript snippets), `src/poll.ts` (a non-overlapping poller and an in-flight de-duplicator),
 `src/store.ts`, `src/refresh.ts` (cooldown, debounce, epoch, as-of text), `src/delivery.ts` (mode and applicant), `src/frames.ts` (credential-frames
-gating, wording, connect-failure hint; the tally is `@buildathon/tsp-client` `src/frames.ts`, shared with `tsp:listen`). Thin glue: `src/listener.ts` (the mediator listener), `src/client.ts` (the single `VtcClient`, call log, error wording), `src/probe.ts`,
+gating, wording, connect-failure hint; the tally is `@starter/tsp-client` `src/frames.ts`, shared with `tsp:listen`). Thin glue: `src/listener.ts` (the mediator listener), `src/client.ts` (the single `VtcClient`, call log, error wording), `src/probe.ts`,
 `src/hooks.ts` (`useDashboard`, `useLoad`, `useCallLog`). React components live in `src/components/` and `src/App.tsx`.
 The call log uses the optional `onCall` hook on `VtcClient` (`packages/vtc-client`); the status panel is the
-framework-free `@buildathon/status-panel`, mounted by a small wrapper component (`useEffect` that mounts and destroys it).
+framework-free `@starter/status-panel`, mounted by a small wrapper component (`useEffect` that mounts and destroys it).
 
 **Why React here.** The dashboard has many screens that change with state, tabs, a live log and toasts; React keeps that
 readable. `web-vta-app` and `status-panel` stay framework-free, and so do the clients and the logic in `packages/*`: to

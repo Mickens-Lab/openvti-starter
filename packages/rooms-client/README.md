@@ -1,4 +1,4 @@
-# @buildathon/rooms-client
+# @starter/rooms-client
 
 A client for VTI **data rooms**, plus the app layer a collaboration UI (chat, notes, files, live updates, search, author names) sits on.
 It works on both the plaintext tier (`open`) and the MLS-sealed tiers (`attributed`, `private`). Node and browser, no framework. DEV ONLY.
@@ -15,9 +15,9 @@ The design, with citations, is [docs/plans/2026-11-07-dataroom-collab-plan.md](.
 ## Quick start (mock host, no stack)
 
 ```ts
-import { newIdentity } from "@buildathon/vta-client";
-import { HostClient, RoomSession, roomHostTransport, type Presenter } from "@buildathon/rooms-client";
-import { MockRoomHost, mockPresentation } from "@buildathon/rooms-client/mock";
+import { newIdentity } from "@starter/vta-client";
+import { HostClient, RoomSession, roomHostTransport, type Presenter } from "@starter/rooms-client";
+import { MockRoomHost, mockPresentation } from "@starter/rooms-client/mock";
 
 const host = new MockRoomHost();
 host.createRoom("did:example:room-1", "open");
@@ -110,7 +110,7 @@ How the session writes:
 
 ## Everything exported
 
-From `@buildathon/rooms-client`:
+From `@starter/rooms-client`:
 
 | Module | Exports |
 |---|---|
@@ -127,7 +127,7 @@ From `@buildathon/rooms-client`:
 | `profiles` | `ProfileResolver({self?, selfCard?})`, `ResolvedProfile`, `SelfCard`, `shortDid`, `identicon` (5x5 cells and a hue) |
 | `wire`, `tasks` | Wire types and parsers (`RoomRecord`, `RecordMeta`, `SealedContent`, `Presentation`, `Visibility`, ...), `b64u`, `unb64u`, `utf8`, `fromUtf8`, `isSealedTier`; `ROOMS_TASK`, `KEYS_TASK`, `LIST_PAGE_CAP`, `MLS_SUITE`, `STORAGE_EXPORTER_LABEL`, `CHUNK_MIN`, `CHUNK_MAX` |
 
-From `@buildathon/rooms-client/mock` (tests and a no-stack demo; the UI can run it in the browser):
+From `@starter/rooms-client/mock` (tests and a no-stack demo; the UI can run it in the browser):
 
 | Export | |
 |---|---|
@@ -150,8 +150,8 @@ await bob.join(roomId, welcome);
 ## Tests
 
 ```sh
-npm test -w @buildathon/rooms-client        # node:test via tsx, no Docker, no stack
-npm run typecheck -w @buildathon/rooms-client
+npm test -w @starter/rooms-client        # node:test via tsx, no Docker, no stack
+npm run typecheck -w @starter/rooms-client
 ```
 
 The suites: wire parsers, `HostClient` against `MockRoomHost` (paging over 500 records, conflicts, blob round trip), `LocalMlsKeys`

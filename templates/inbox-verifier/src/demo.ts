@@ -1,7 +1,7 @@
 // Self-contained end-to-end run: start the inbox, send a good note, replay it,
 // tamper with one, misaddress one, send a malformed one and one of another type. Exits non-zero if any verdict is wrong.
 import assert from "node:assert/strict";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import { NOTE_TYPE } from "./inbox.js";
 import { startServer } from "./server.js";
 import { makeNote, post } from "./send.js";

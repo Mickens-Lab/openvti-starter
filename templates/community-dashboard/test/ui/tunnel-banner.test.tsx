@@ -1,4 +1,4 @@
-// The tunnel-mode banner: shown only in tunnel mode, with the shared wording (@buildathon/status-panel tunnelBanner), and absent
+// The tunnel-mode banner: shown only in tunnel mode, with the shared wording (@starter/status-panel tunnelBanner), and absent
 // from the real page in local mode.
 import { beforeEach, describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";

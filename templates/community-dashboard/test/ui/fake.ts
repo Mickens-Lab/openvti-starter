@@ -1,8 +1,8 @@
 // A fake community behind the real VtcClient interface. It holds "the database" in `db`; tests change `db` the way a
 // second terminal would (the CLI approving a request) and assert that the page follows only when it re-reads.
 import { vi } from "vitest";
-import { TrustTaskError } from "@buildathon/vta-client";
-import type { CallEvent } from "@buildathon/vtc-client";
+import { TrustTaskError } from "@starter/vta-client";
+import type { CallEvent } from "@starter/vtc-client";
 
 export interface Db {
   request?: { id: string; status: string };

@@ -2,14 +2,14 @@
 
 A React + TypeScript (Vite) collaboration space on VTI **data rooms**: chat history, notes, files, live updates, two search
 modes and contributor attribution, for both the plaintext tier (`open`) and the MLS-sealed tiers (`attributed`). It is built on
-[`@buildathon/rooms-client`](../../packages/rooms-client/README.md); the design, with citations, is
+[`@starter/rooms-client`](../../packages/rooms-client/README.md); the design, with citations, is
 [docs/plans/2026-11-07-dataroom-collab-plan.md](../../docs/plans/2026-11-07-dataroom-collab-plan.md). DEV ONLY.
 
 ```sh
-npm run dev -w @buildathon/collab-room       # mock mode: no stack, no Docker; http://localhost:5173 (or the port Vite reports)
-npm test -w @buildathon/collab-room          # node:test for the plain modules, then Vitest + jsdom component tests
-npm run typecheck -w @buildathon/collab-room
-COLLAB_MODE=live npm run dev -w @buildathon/collab-room   # live mode: VTC + VTA from the repo-root .env (open rooms verified live by the rooms:* commands; docs/ROOMS.md)
+npm run dev -w @starter/collab-room       # mock mode: no stack, no Docker; http://localhost:5173 (or the port Vite reports)
+npm test -w @starter/collab-room          # node:test for the plain modules, then Vitest + jsdom component tests
+npm run typecheck -w @starter/collab-room
+COLLAB_MODE=live npm run dev -w @starter/collab-room   # live mode: VTC + VTA from the repo-root .env (open rooms verified live by the rooms:* commands; docs/ROOMS.md)
 ```
 
 ## Modes
@@ -76,7 +76,7 @@ Record bodies are untrusted. Nothing is passed to `innerHTML` or `dangerouslySet
 
 ## Tests
 
-`npm test -w @buildathon/collab-room` runs both suites:
+`npm test -w @starter/collab-room` runs both suites:
 
 - `test/*.test.ts` (node:test): `render.test.ts` (tree structure, React output, `<script>`/raw HTML/`javascript:` inert, images as
   links, hostile nesting), `state.test.ts`, `mock.test.ts` (both seeded rooms, no plaintext stored for the sealed one, Bob's post

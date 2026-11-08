@@ -3,7 +3,7 @@
 // the seed is applied once, on a volume's first boot.
 import "./lib/cli.js";
 import { existsSync } from "node:fs";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import { devBanner } from "./banner.js";
 import { die, mode, updateEnv } from "./env.js";
 import { APPROVER_FILE, saveApprover } from "./lib/approver.js";

@@ -7,8 +7,8 @@
 //   npm run rooms:persona -- status
 // The persona is saved as ROOM_PERSONA in .env; npm run rooms:* then act as it. Walkthrough: docs/ROOMS.md.
 import "./lib/cli.js";
-import { TrustTaskError, VtaClient } from "@buildathon/vta-client";
-import { VtcClient, pickCriterion } from "@buildathon/vtc-client";
+import { TrustTaskError, VtaClient } from "@starter/vta-client";
+import { VtcClient, pickCriterion } from "@starter/vtc-client";
 import { die, env, loadAdmin, mode, reachable, refusal, updateEnv, vtcUrl } from "./env.js";
 import { flag, option, positionals } from "./lib/rooms-args.js";
 

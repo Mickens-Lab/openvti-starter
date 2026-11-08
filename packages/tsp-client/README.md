@@ -1,12 +1,12 @@
-# @buildathon/tsp-client
+# @starter/tsp-client
 
 Talk to the VTA over TSP through the mediator (`MODE=tunnel`, [docs/MESSAGING.md](../../docs/MESSAGING.md)): log in to the mediator as a `did:key` or a `did:peer:2`, open the raw-TSP socket, send a signed
 `messaging/ping/0.2` and read the pong, or receive frames (the credential pushes from the VTC). TSP 1.0, built on `@openvtc/pnm-core`'s login and socket helpers.
 Node 22+ and browsers (a browser needs the mediator's CORS opened for its origin, [docs/MODES.md](../../docs/MODES.md)). DEV ONLY.
 
 ```ts
-import { describePong, tspPing } from "@buildathon/tsp-client";
-import { decodeCredential, seedFromMultibase } from "@buildathon/vta-client";
+import { describePong, tspPing } from "@starter/tsp-client";
+import { decodeCredential, seedFromMultibase } from "@starter/vta-client";
 
 // vtaDid: VTA_DID in .env; mediatorDid: .vta/tunnel.json after `npm run up -- --tunnel`.
 const seed = seedFromMultibase(decodeCredential(process.env.VTA_CREDENTIAL!).privateKeyMultibase);   // the VTA only answers DIDs on its ACL

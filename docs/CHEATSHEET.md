@@ -138,18 +138,18 @@ anything that changes state. See `templates/inbox-verifier`.
 | `@openvtc/trust-tasks-gen` | Generate typed modules for the tasks you pin |
 | `@openvtc/pnm-core` | Avoid for REST auth against this VTA: 0.9.1 appears to use the removed `/auth/challenge` routes (unverified), so use `vta-client` for that. It is the base of `tsp-client`, which uses only its mediator login, DID resolution and socket helpers. |
 
-## Status panel (`@buildathon/status-panel`)
+## Status panel (`@starter/status-panel`)
 
 `mountStatusPanel(container, opts)` renders nine cards (connection with the mode, VTA identity with a Messaging row, version vs `pins.json`, session,
 capabilities, wallet, optional VTC, key custody, and applicant and messaging: which DID applies to the community, DID sizes vs the 1000-byte
 resolver limit, and whether the mediator's did:webvh resolves at its tunnel host) with a Refresh button and optional 15/30 s auto-refresh. Pure helpers
 (`parseDidDocServices`, `compareVersions`, `groupTasks`, `compatHints`) are exported and unit-tested:
-`npm test -w @buildathon/status-panel`. Web template: `npm run dev -w @buildathon/web-vta-app -- --port 3000` for
+`npm test -w @starter/status-panel`. Web template: `npm run dev -w @starter/web-vta-app -- --port 3000` for
 another allowed origin.
 
 ## Packages (VTC)
 
-`@buildathon/vtc-client`: `VtcClient.connect(url, identity, fetch?, knownDid?)`, `manifest()`, `submitJoin()`, `joinStatus()`, `pickCriterion(manifest)`, admin `listMembers()`, `listJoinRequests()`, `decideJoin()`, and `call()` for any other task. `authenticate()`/`whoami()` are **admin-only** (a plain did:key member is refused by design). A member is **sessionless**: use typed signed requests (`myCard()`, `updateMyCard()`, `directoryEntries()`, `communityProfile()`, `withdrawJoin()`, `renewMembership()`, `leaveCommunity({confirm:true})`, `sendMembershipCredential({ grant? })` (your own credential back; bound to the grant from the issue frame when given (`membershipGrantOf()`), unbound otherwise; turns `credentialsDelivered` true; unbound send verified live 2026-10-30 (one machine, one run) from the dashboard), `groups()` ...) and `memberProof()` (member portal `/v1/member/me`) for "am I a member right now". Matrix and limits: [VTC-SURFACE.md](VTC-SURFACE.md), [VTC.md](VTC.md#the-sessionless-member). Local VTC: submit/status/list/decide are verified live (see [VTC.md](VTC.md)).
+`@starter/vtc-client`: `VtcClient.connect(url, identity, fetch?, knownDid?)`, `manifest()`, `submitJoin()`, `joinStatus()`, `pickCriterion(manifest)`, admin `listMembers()`, `listJoinRequests()`, `decideJoin()`, and `call()` for any other task. `authenticate()`/`whoami()` are **admin-only** (a plain did:key member is refused by design). A member is **sessionless**: use typed signed requests (`myCard()`, `updateMyCard()`, `directoryEntries()`, `communityProfile()`, `withdrawJoin()`, `renewMembership()`, `leaveCommunity({confirm:true})`, `sendMembershipCredential({ grant? })` (your own credential back; bound to the grant from the issue frame when given (`membershipGrantOf()`), unbound otherwise; turns `credentialsDelivered` true; unbound send verified live 2026-10-30 (one machine, one run) from the dashboard), `groups()` ...) and `memberProof()` (member portal `/v1/member/me`) for "am I a member right now". Matrix and limits: [VTC-SURFACE.md](VTC-SURFACE.md), [VTC.md](VTC.md#the-sessionless-member). Local VTC: submit/status/list/decide are verified live (see [VTC.md](VTC.md)).
 
 **Observing calls.** `client.onCall = (e) => ...` (optional) is told after every call settles: `type`, `issuer`, `startedAt`,
 `durationMs`, `status`, `ok`, `code` (refusal code, or `network`), the signed `payload` and the full signed `request`
@@ -183,5 +183,5 @@ More causes and fixes: [trust-tasks/06-troubleshooting-and-glossary.md](trust-ta
 `TRACE=1` before any `npm run` script (or the REPL) appends one JSON line per client call to `.vta/trace.jsonl`; `npm run trace` prints them
 (`-- --follow` to watch, `--json`, `-n <count>`, `--clear`). It covers `vta-client` (every Trust Task, including the sign-in), `vtc-client` and the `tsp-client` ping,
 all with the same fields (`ts, source, transport, type, id, from, to, status, ok, code, ms`). In your own code, `vta.onCall = (e) => ...` (and `vtc.onCall`) gives you
-the full event including the signed request; `setTraceSink` from `@buildathon/vta-client` installs your own sink for all clients (browser pages included).
+the full event including the signed request; `setTraceSink` from `@starter/vta-client` installs your own sink for all clients (browser pages included).
 Not yet merged in: the VTA, VTC and mediator log lines for the same task id (`docker compose logs`).

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { TrustTaskError, newIdentity } from "@buildathon/vta-client";
+import { TrustTaskError, newIdentity } from "@starter/vta-client";
 import { HostClient, isVersionConflict, roomHostTransport, type Presenter } from "../src/index.js";
 import { MockRoomHost, mockPresentation } from "../src/mock/index.js";
 

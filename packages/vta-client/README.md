@@ -1,9 +1,9 @@
-# @buildathon/vta-client
+# @starter/vta-client
 
 A small Trust Task client for a VTA: it reads the VTA's DID, signs in with a `did:key`, and signs and POSTs any Trust Task. Node and browser (plain `fetch`). DEV ONLY: see [docs/SECURITY.md](../../docs/SECURITY.md).
 
 ```ts
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 
 // VTA_CREDENTIAL is the base64 bundle `npm run up` writes to .env (it holds the app's private key).
 const vta = await VtaClient.fromCredential(process.env.VTA_CREDENTIAL!, process.env.VTA_URL);

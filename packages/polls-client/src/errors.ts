@@ -1,6 +1,6 @@
 // Refusals from the three parties, decoded. Election codes carry the task slug (`vtc/elections/create:invalidManifest`);
 // framework codes do not (`permissionDenied`). `pollRefusal` splits them and `explainPollRefusal` says what to do.
-import { TrustTaskError, refusalDetails } from "@buildathon/vta-client";
+import { TrustTaskError, refusalDetails } from "@starter/vta-client";
 
 export interface PollRefusal {
   /** The bare code, e.g. `alreadyVoted`, `notTallied`, `permissionDenied`; `network` when nothing answered. */

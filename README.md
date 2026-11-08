@@ -1,4 +1,4 @@
-# OpenVTI buildathon starter
+# OpenVTI starter
 
 > **WARNING: a playground for demos and testing ONLY.** Keys are held in plaintext files
 > (`.vta/`, `.env`, the VTA's seed on its volume) and, for the web templates, embedded in the
@@ -101,12 +101,12 @@ public, ephemeral quick-tunnel URLs, for messaging and TSP; heavy first build) o
 | Template | Run it | Good for |
 |---|---|---|
 | [`templates/hello-node`](templates/hello-node), [`templates/hello-web`](templates/hello-web) | `npm run new -- my-app --from hello-node` (or `hello-web`) | The smallest apps: sign in, `whoami`, memory put/list; a one-button page. Start here. |
-| [`templates/inbox-verifier`](templates/inbox-verifier) | `npm run demo -w @buildathon/inbox-verifier` | Servers that accept signed Trust Tasks. Works offline, no VTA needed. |
-| [`templates/web-vta-app`](templates/web-vta-app) | `npm run dev -w @buildathon/web-vta-app` | Browser apps that talk to the VTA. Optional wallet. |
+| [`templates/inbox-verifier`](templates/inbox-verifier) | `npm run demo -w @starter/inbox-verifier` | Servers that accept signed Trust Tasks. Works offline, no VTA needed. |
+| [`templates/web-vta-app`](templates/web-vta-app) | `npm run dev -w @starter/web-vta-app` | Browser apps that talk to the VTA. Optional wallet. |
 | [`templates/mcp-agent`](templates/mcp-agent) | see its README | AI agents with a scoped VTA identity. Partial: a stub. |
-| [`templates/polls`](templates/polls) | `npm run demo -w @buildathon/polls` | Community polls (VTI elections): create, list, vote, results, close. Offline against a mock; the pinned VTC does not serve elections, so not verified live. |
-| [`templates/community-dashboard`](templates/community-dashboard) | `npm run dev -w @buildathon/community-dashboard` | A React + TypeScript dashboard for the whole member journey with a VTC, no session: visit, apply (with a signed-request preview), pending (polls every 10 s, withdraw), member (card, directory, my card, renew, leave), re-apply, plus an "Under the hood" log of every Trust Task call. Its membership card has a per-mode "Credential delivery" note. Needs a VTC. Driven end to end in headless Chromium against the local stack; states are marked verified/inferred in its README. |
-| [`templates/collab-room`](templates/collab-room) | `npm run dev -w @buildathon/collab-room` | A React collaboration space on VTI data rooms: chat history (load older, plain/markdown), notes with versions, files, two search modes (file names, full text), live updates by polling and author names/avatars, on an open and an MLS-sealed room. Mock mode (the default) runs an in-browser room host with a simulated member, no stack; `COLLAB_MODE=live` wires the VTC and VTA: verified live for an open room (chat), sealed rooms unverified ([docs/ROOMS.md](docs/ROOMS.md)). Markdown and files render inert. Tested in Node and jsdom only. |
+| [`templates/polls`](templates/polls) | `npm run demo -w @starter/polls` | Community polls (VTI elections): create, list, vote, results, close. Offline against a mock; the pinned VTC does not serve elections, so not verified live. |
+| [`templates/community-dashboard`](templates/community-dashboard) | `npm run dev -w @starter/community-dashboard` | A React + TypeScript dashboard for the whole member journey with a VTC, no session: visit, apply (with a signed-request preview), pending (polls every 10 s, withdraw), member (card, directory, my card, renew, leave), re-apply, plus an "Under the hood" log of every Trust Task call. Its membership card has a per-mode "Credential delivery" note. Needs a VTC. Driven end to end in headless Chromium against the local stack; states are marked verified/inferred in its README. |
+| [`templates/collab-room`](templates/collab-room) | `npm run dev -w @starter/collab-room` | A React collaboration space on VTI data rooms: chat history (load older, plain/markdown), notes with versions, files, two search modes (file names, full text), live updates by polling and author names/avatars, on an open and an MLS-sealed room. Mock mode (the default) runs an in-browser room host with a simulated member, no stack; `COLLAB_MODE=live` wires the VTC and VTA: verified live for an open room (chat), sealed rooms unverified ([docs/ROOMS.md](docs/ROOMS.md)). Markdown and files render inert. Tested in Node and jsdom only. |
 
 Six track ideas are in [`docs/TRACKS.md`](docs/TRACKS.md); endpoints, task names
 and env vars are in [`docs/CHEATSHEET.md`](docs/CHEATSHEET.md).

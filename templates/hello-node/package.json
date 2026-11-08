@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/hello-node",
+  "name": "@starter/hello-node",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -10,6 +10,6 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@buildathon/vta-client": "*"
+    "@starter/vta-client": "*"
   }
 }

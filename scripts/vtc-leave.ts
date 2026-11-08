@@ -2,7 +2,7 @@
 //   npm run vtc:leave -- --yes
 import "./lib/cli.js";
 import { memberIdentity } from "./lib/member.js";
-import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
+import { TrustTaskError, VtcClient } from "@starter/vtc-client";
 import { die, env, reachable, refusal, vtcUrl } from "./env.js";
 
 if (!process.argv.includes("--yes")) die("this removes the app identity from the community immediately. Re-run with --yes.");

@@ -14,9 +14,9 @@ import { signTrustTask } from "@openvtc/trust-tasks-proof";
 import {
   TASK as VTA_TASK, TT, TrustTaskError, classifyReply, emitTrace, fetchVtaDid, isUnsupportedVersion, purposeFor, refusalCode, replyCode, rfc3339, servedVersions,
   siopIdToken, unwrapReply, checkReplyProof, fetchDidDocument, digestMultibase, type Identity, type Reply, type ReplyKind, type ReplyProof,
-} from "@buildathon/vta-client";
+} from "@starter/vta-client";
 
-export { TrustTaskError, TrustTaskPending, refusalCode } from "@buildathon/vta-client";
+export { TrustTaskError, TrustTaskPending, refusalCode } from "@starter/vta-client";
 
 export const VTC_TASK = {
   challenge: VTA_TASK.challenge,

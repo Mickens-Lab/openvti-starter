@@ -101,6 +101,6 @@ None of them needs a running VTA. `npm run typecheck` runs `tsc` in the root and
 
 - **Call a task you have not used**: `npm run vta:call -- <slug> '<json>'`, then wrap it in a typed helper if you reuse it. Find schemas at `https://trusttasks.org/spec/<slug>`; see [trust-tasks/](trust-tasks/README.md).
 - **Your own task**: change `NOTE_TYPE`, the schema and handler in `templates/inbox-verifier/src/inbox.ts` ([trust-tasks/04-developing-tasks.md](trust-tasks/04-developing-tasks.md)).
-- **A new template**: add a folder under `templates/` with a `package.json` named `@buildathon/<name>` (workspaces pick it up), depend on `@buildathon/vta-client`, and read the credential as `web-vta-app` does. Add its scripts to the docs; `npm run check:docs` will catch a mistyped one.
+- **A new template**: add a folder under `templates/` with a `package.json` named `@starter/<name>` (workspaces pick it up), depend on `@starter/vta-client`, and read the credential as `web-vta-app` does. Add its scripts to the docs; `npm run check:docs` will catch a mistyped one.
 - **A new command**: add `scripts/<name>.ts`, an entry in the root `package.json`, call `devBanner()` from `scripts/banner.ts` if it creates keys.
 - **A new pin**: edit `pins.json`, run `npm run pins:check`, note it in `PINS_LOG.md`.

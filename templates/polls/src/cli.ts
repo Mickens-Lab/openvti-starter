@@ -1,14 +1,14 @@
 // Polls from the command line: create a poll at the community, list and show polls, vote through your VTA, read the result.
-//   npm start -w @buildathon/polls -- help
+//   npm start -w @starter/polls -- help
 // Reads .env (VTC_URL, VTA_URL, VTA_CREDENTIAL, VTA_CONTEXT, APP_DID) like hello-node. Poll settings: POLL_MEMBER_DID,
 // BALLOT_BOX_URL, POLL_BALLOT_BOX (the ballot box DID for create). `--admin` (or POLL_ADMIN=1) signs community calls with
 // the kit's admin key (.vta/admin.json), which holds vtc.elections.manage.
-// The kit's pinned VTC does not serve elections; try it offline first: `npm run mock -w @buildathon/polls` (see README).
+// The kit's pinned VTC does not serve elections; try it offline first: `npm run mock -w @starter/polls` (see README).
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { PollsClient, describePollError, formatSummary, pollManifest, pollPhase, pollRefusal, summarize, timeLeft } from "@buildathon/polls-client";
-import { VtaClient, identityFromSeed, newIdentity, seedFromMultibase, type Identity } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { PollsClient, describePollError, formatSummary, pollManifest, pollPhase, pollRefusal, summarize, timeLeft } from "@starter/polls-client";
+import { VtaClient, identityFromSeed, newIdentity, seedFromMultibase, type Identity } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import { parseArgs, pollInputFrom } from "./args.js";
 import { loadEnv } from "./env.js";
 

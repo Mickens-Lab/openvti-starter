@@ -1,11 +1,11 @@
-# @buildathon/vtc-client
+# @starter/vtc-client
 
 The same idea as [vta-client](../vta-client/README.md) for a community (VTC): signed Trust Tasks to the VTC, plus the join flow and the member helpers. A member is sessionless:
 every request is signed, there is no console session. Node and browser. DEV ONLY.
 
 ```ts
-import { decodeCredential, identityFromCredential } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { decodeCredential, identityFromCredential } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 
 const me = identityFromCredential(decodeCredential(process.env.VTA_CREDENTIAL!));   // the app did:key your VTA granted access
 const vtc = await VtcClient.connect("http://localhost:8200", me);

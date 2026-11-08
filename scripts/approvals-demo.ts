@@ -4,7 +4,7 @@
 // --self-approve to let this script play the approver too (one laptop, no human comparison: for tests and demos only).
 import "./lib/cli.js";
 import { existsSync, writeFileSync } from "node:fs";
-import { TASK_CONTEXT_UPDATE, VtaClient, buildDecision, extractRequests, fetchVtaDocument, submitDecision, verifyConsentRequest, withConsent } from "@buildathon/vta-client";
+import { TASK_CONTEXT_UPDATE, VtaClient, buildDecision, extractRequests, fetchVtaDocument, submitDecision, verifyConsentRequest, withConsent } from "@starter/vta-client";
 import { devBanner } from "./banner.js";
 import { die, env, loadAdmin, mode, reachable } from "./env.js";
 import { APPROVER_FILE, loadApprover } from "./lib/approver.js";

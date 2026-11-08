@@ -195,7 +195,7 @@ export function mountStatusPanel(container: HTMLElement, o: PanelOptions): Panel
   const bar = h("div", { class: "sp-bar" }, h("h2", { class: "sp-title" }, o.title ?? "Connection status"), overall, stamp, auto, btn);
   const banner = o.keyEmbedded
     ? h("div", { class: "sp-banner", role: "note" }, h("b", null, "Dev-only: the app key is embedded in this page. "),
-        "Anyone who can load it can act as this app. Use it for local demos and the buildathon; for anything real keep the key on a backend or sign with the wallet. ",
+        "Anyone who can load it can act as this app. Use it for local demos; for anything real keep the key on a backend or sign with the wallet. ",
         o.keyNoteUrl ? h("a", { href: o.keyNoteUrl, target: "_blank", rel: "noopener" }, "Read the note") : null)
     : null;
   const grid = h("div", { class: "sp-grid" });

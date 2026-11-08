@@ -5,7 +5,7 @@
 //   npm run vta:call -- vta/contexts/list/1.0         # a slug under https://trusttasks.org/spec/ (or a full URI)
 //   npm run vta:call -- vta/memory/put/0.1 '{"key":"k","value":"v"}'
 import "./lib/cli.js";
-import { TrustTaskError, VtaClient } from "@buildathon/vta-client";
+import { TrustTaskError, VtaClient } from "@starter/vta-client";
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { die, env, mode, reachable } from "./env.js";

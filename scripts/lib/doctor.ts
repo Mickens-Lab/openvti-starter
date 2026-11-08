@@ -9,9 +9,9 @@ export interface Check { level: Level; name: string; detail: string; fix?: strin
 /** Ports the kit uses. `stack` ports must be free (or held by this stack) for `up`; `dev` ports only matter for the templates. */
 export const STACK_PORTS = [{ port: 8100, what: "VTA", env: "VTA_PORT" }, { port: 8200, what: "VTC", env: "VTC_PORT" }] as const;
 export const DEV_PORTS = [
-  { port: 5173, what: "web-vta-app and community-dashboard (Vite)", use: (p: number) => `npm run dev -w @buildathon/web-vta-app -- --port ${p}` },
-  { port: 3000, what: "tsp-ping page and npm run e2e", use: (p: number) => `npm run dev -w @buildathon/tsp-ping -- --port ${p}` },
-  { port: 4000, what: "inbox-verifier", server: true, use: (p: number) => `INBOX_PORT=${p} npm start -w @buildathon/inbox-verifier` },
+  { port: 5173, what: "web-vta-app and community-dashboard (Vite)", use: (p: number) => `npm run dev -w @starter/web-vta-app -- --port ${p}` },
+  { port: 3000, what: "tsp-ping page and npm run e2e", use: (p: number) => `npm run dev -w @starter/tsp-ping -- --port ${p}` },
+  { port: 4000, what: "inbox-verifier", server: true, use: (p: number) => `INBOX_PORT=${p} npm start -w @starter/inbox-verifier` },
 ] as const;
 export const MEDIATOR_PORT = 7037;
 /** Preferred origins to suggest when a template port is busy. The full default list is in packages/vta-client/src/cors.ts. */

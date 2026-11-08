@@ -27,7 +27,7 @@ Its auth modes:
 ENV_FILE=.env.mcp-agent npm run vta:provision -- mcp-agent
 
 # 2. A bearer token from the VTA, and an MCP config that carries it
-npm run mint -w @buildathon/mcp-agent     # writes templates/mcp-agent/.mcp.json (gitignored)
+npm run mint -w @starter/mcp-agent     # writes templates/mcp-agent/.mcp.json (gitignored)
 ```
 
 Step 2 was run against a live VTA: the agent authenticates and `whoami` shows

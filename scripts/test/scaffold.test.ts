@@ -19,7 +19,7 @@ test("arguments", () => {
 });
 
 test("renamePackage keeps dependencies and scripts", () => {
-  const out = JSON.parse(renamePackage('{"name":"@buildathon/hello-web","version":"0.1.0","scripts":{"dev":"vite"},"dependencies":{"a":"*"}}', "my-app"));
+  const out = JSON.parse(renamePackage('{"name":"@starter/hello-web","version":"0.1.0","scripts":{"dev":"vite"},"dependencies":{"a":"*"}}', "my-app"));
   assert.equal(out.name, "@apps/my-app");
   assert.equal(out.scripts.dev, "vite");
   assert.deepEqual(out.dependencies, { a: "*" });
@@ -36,7 +36,7 @@ test("scaffold copies without node_modules, renames, and refuses an existing fol
   const root = mkdtempSync(join(tmpdir(), "scaffold-"));
   mkdirSync(join(root, "templates/t/src"), { recursive: true });
   mkdirSync(join(root, "templates/t/node_modules/x"), { recursive: true });
-  writeFileSync(join(root, "templates/t/package.json"), '{"name":"@buildathon/t","version":"1.0.0"}');
+  writeFileSync(join(root, "templates/t/package.json"), '{"name":"@starter/t","version":"1.0.0"}');
   writeFileSync(join(root, "templates/t/src/a.ts"), "export {};");
   mkdirSync(join(root, "apps"));
   assert.equal(scaffold(root, "t", "demo"), "@apps/demo");

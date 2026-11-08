@@ -1,5 +1,5 @@
 // Pure view state and decisions for the UI: no React, no DOM, no network. Tested under node:test (test/state.test.ts).
-import { sniffImage, type FeedStatus, type FileEnvelope, type Range, type SessionItem } from "@buildathon/rooms-client";
+import { sniffImage, type FeedStatus, type FileEnvelope, type Range, type SessionItem } from "@starter/rooms-client";
 
 export type Tab = "chat" | "notes" | "files";
 export const TABS: { id: Tab; label: string }[] = [

@@ -23,7 +23,7 @@ If it fails: `could not reach the VTA` means the stack is down (`npm run up`, `n
 *Mode: any mode. The Messaging row reads "off (REST only)" in `local` and "transport connected (...), not a peer ping" in `tunnel` (needs a credential to ask the VTA).*
 
 ```sh
-npm run dev -w @buildathon/web-vta-app      # then open http://localhost:5173
+npm run dev -w @starter/web-vta-app      # then open http://localhost:5173
 ```
 
 You should see "VTA connection status", an amber banner saying the app key is embedded in the page, and numbered cards (Connection, VTA identity,
@@ -35,7 +35,7 @@ If it fails: a "NetworkError" or fetch failure means the stack is down (`npm run
 *Mode: any mode. The membership card's "Credential delivery" row explains, per mode, why no credential arrives ([MESSAGING.md](MESSAGING.md)): there is no inbox for it in `local`, and in `tunnel` the page applies as a `did:peer:2` naming the mediator, so the VTC pushes the credential frames to it (with `VTC_APPLICANT=did:key` it applies as the app `did:key`, which names no mediator). `credentialsDelivered` stays false until you send your own credential back: it reports that, not frame arrival.*
 
 ```sh
-npm run dev -w @buildathon/community-dashboard      # open http://localhost:5173
+npm run dev -w @starter/community-dashboard      # open http://localhost:5173
 ```
 
 You start as **Visitor** (or "Left" with a Re-apply button if this identity has been a member before). Choose a way to join that is not greyed out
@@ -81,7 +81,7 @@ Why: the VTC re-reads your records on every call; the page does the same, and ne
 *Mode: any mode (it needs no stack).*
 
 ```sh
-npm run demo -w @buildathon/inbox-verifier
+npm run demo -w @starter/inbox-verifier
 ```
 
 ```
@@ -93,8 +93,8 @@ bad payload-> 400 malformedRequest
 OK: accepted once, replay not re-executed, tamper/misaddress/malformed rejected
 ```
 
-Now by hand: `npm start -w @buildathon/inbox-verifier` in one terminal, then in another
-`npm run send -w @buildathon/inbox-verifier -- --replay` (the second line is the identical reply) and `... -- --tamper` (`400 ... "code":"proofInvalid"`).
+Now by hand: `npm start -w @starter/inbox-verifier` in one terminal, then in another
+`npm run send -w @starter/inbox-verifier -- --replay` (the second line is the identical reply) and `... -- --tamper` (`400 ... "code":"proofInvalid"`).
 `curl localhost:4000/notes` lists each accepted note once. No VTA is needed: a `did:key` carries its own public key.
 
 ## 5. Reading refusals: who can call what
@@ -182,7 +182,7 @@ You should see the demo print `approved and executed` with the context renamed. 
 
 ```sh
 npm run tsp:ping                   # login, relationship invite, signed messaging/ping/0.2 over TSP
-npm run dev -w @buildathon/tsp-ping   # the same in a browser: http://localhost:3000, press "Send ping"
+npm run dev -w @starter/tsp-ping   # the same in a browser: http://localhost:3000, press "Send ping"
 docker compose logs vta | grep -E "tsp|trust-task"     # what the VTA did with it
 ```
 
@@ -197,7 +197,7 @@ With no ping first (the tunnel default): `npm run tsp:peer-push` listens and app
 The join status still says `credentialsDelivered: false` afterwards; that flag reports the member's own credential sent back, not frame arrival.
 
 In the browser instead of `tsp:listen` (**verified live 2026-10-30 (one machine, one run)**; unit- and component-tested): start the dashboard
-(`npm run dev -w @buildathon/community-dashboard`, note the origin Vite prints, usually `http://localhost:5173`), and make sure the mediator
+(`npm run dev -w @starter/community-dashboard`, note the origin Vite prints, usually `http://localhost:5173`), and make sure the mediator
 allows exactly that origin: start the tunnel stack with `MEDIATOR_CORS_ALLOW_ORIGIN=http://localhost:5173 npm run up -- --tunnel`, or recreate
 only the mediator ([MODES.md](MODES.md#browser-access-cors)). Apply in the page, open **Credential frames** under the in-review screen and press
 *Listen for credential frames*; the status turns to `listening`. Then `npm run vtc:approve` in a terminal. The panel lists a
@@ -212,7 +212,7 @@ the same time: a frame may go to either listener.
 VTC or Docker. `COLLAB_MODE=live` uses the VTC and VTA instead and is unverified live (no room exists in the local stack).*
 
 ```sh
-npm run dev -w @buildathon/collab-room       # open http://localhost:5173 (or the port Vite prints)
+npm run dev -w @starter/collab-room       # open http://localhost:5173 (or the port Vite prints)
 ```
 
 After a moment of setup (a real two-member MLS group for the sealed room) you see two rooms: **Project room (open)**, plaintext, and
@@ -229,7 +229,7 @@ After a moment of setup (a real two-member MLS group for the sealed room) you se
   is HTML) are download-only with the reason; the text and `.md` files are shown inline. In the sealed room, upload a file over 32 KiB to see the limit.
 - **Search**: "File names" for `celebration`, then switch to "Full text" for `riverside` or `"contingency reserve"`; press a result to jump to it.
 
-Everything lives in page memory and is gone on reload. The tests behind each point: `npm test -w @buildathon/collab-room`. How it is built:
+Everything lives in page memory and is gone on reload. The tests behind each point: `npm test -w @starter/collab-room`. How it is built:
 [templates/collab-room/README.md](../templates/collab-room/README.md) and [packages/rooms-client/README.md](../packages/rooms-client/README.md).
 If it fails: a blank page with an error usually means the workspace is not installed (`npm ci` at the repo root).
 

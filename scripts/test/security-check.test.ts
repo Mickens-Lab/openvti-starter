@@ -4,7 +4,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync 
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { test } from "node:test";
-import { encodeCredential, newIdentity, seedToMultibase } from "@buildathon/vta-client";
+import { encodeCredential, newIdentity, seedToMultibase } from "@starter/vta-client";
 import { securityCheck } from "../lib/security.js";
 
 // Every key below is generated here, per run; nothing in this file is a real or committed secret.

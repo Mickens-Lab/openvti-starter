@@ -1,5 +1,5 @@
 // Argument parsing for the polls CLI. Pure, so it is tested without a server.
-import type { PollInput } from "@buildathon/polls-client";
+import type { PollInput } from "@starter/polls-client";
 
 export interface Parsed { cmd: string; rest: string[]; flags: Record<string, string | true>; options: string[] }
 

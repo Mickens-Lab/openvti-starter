@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { emitTrace, setTraceSink, type TraceEvent } from "@buildathon/vta-client";
+import { emitTrace, setTraceSink, type TraceEvent } from "@starter/vta-client";
 import { formatTrace, installTrace, lastN, parseTrace } from "../lib/trace.js";
 
 const ev = (over: Partial<TraceEvent> = {}): TraceEvent => ({

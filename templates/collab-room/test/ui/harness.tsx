@@ -1,6 +1,6 @@
 // Renders the App on a fresh mock backend whose polls and simulated member run on a ManualClock.
 import { act, render, screen, within } from "@testing-library/react";
-import { ManualClock } from "@buildathon/rooms-client/mock";
+import { ManualClock } from "@starter/rooms-client/mock";
 import { App } from "../../src/App.tsx";
 import { createMockBackend, type MockOpts } from "../../src/mock.ts";
 

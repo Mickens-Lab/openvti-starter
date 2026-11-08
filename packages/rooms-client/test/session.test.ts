@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import {
   HostClient, INLINE_FILE_CAP, LocalMlsKeys, RoomSession, ROOMS_TASK, cleartextFor, makeChat, utf8, type Presenter, type SessionChange,
 } from "../src/index.js";

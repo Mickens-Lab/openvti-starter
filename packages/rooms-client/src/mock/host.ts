@@ -4,7 +4,7 @@
 // It checks that a presentation is present, names the room, is for the signer and confers the action. Verifying the
 // room's credentials is the real host's job and is not mocked: any mockPresentation() is accepted.
 import { DataIntegrityProofVerifier } from "@openvtc/trust-tasks-proof";
-import { TT, TrustTaskError, type Identity } from "@buildathon/vta-client";
+import { TT, TrustTaskError, type Identity } from "@starter/vta-client";
 import { LIST_PAGE_CAP, ROOMS_TASK } from "../tasks.js";
 import { blobRefOf, chunkWire, digestBytes, utf8, type BlobManifest, type Presentation, type RoomAction, type SealedContent, type Cleartext, type RecordStatus, type Visibility } from "../wire.js";
 import type { HostTransport } from "../host.js";

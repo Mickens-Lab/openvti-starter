@@ -1,7 +1,7 @@
 // Attribution: the room profile's name and avatar, "You" for self, the short DID (full DID in the tooltip) otherwise.
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { shortDid } from "@buildathon/rooms-client";
+import { shortDid } from "@starter/rooms-client";
 import { describe, expect, it } from "vitest";
 import { BOB_NAME } from "../../src/mock.ts";
 import { chatList, renderApp, SLOW } from "./harness.tsx";

@@ -13,7 +13,7 @@ import {
   type TrustTaskDocument,
 } from "@openvtc/trust-tasks/runtime";
 import { DataIntegrityProofVerifier } from "@openvtc/trust-tasks-proof";
-import { isRequestOf, isSigningPurpose, rfc3339 } from "@buildathon/vta-client";
+import { isRequestOf, isSigningPurpose, rfc3339 } from "@starter/vta-client";
 
 /** A made-up Trust Task for the buildathon. Replace with your own, or pin a
  *  registry task with `trust-tasks generate` (see the README). */

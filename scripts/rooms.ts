@@ -12,9 +12,9 @@
 // Add --app to any command to act as the app did:key although ROOM_PERSONA is set (open rooms offered to it).
 // <room DID> may be left out when ROOM_ID=<room DID> is in .env. Walkthrough and what is verified: docs/ROOMS.md.
 import "./lib/cli.js";
-import { TrustTaskError, VtaClient } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
-import { HostClient, RoomSession, VtaKeyOracle, joinFromOffer, offerFallbackPresenter, vtcTransport, type RoomOfferLike } from "@buildathon/rooms-client";
+import { TrustTaskError, VtaClient } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
+import { HostClient, RoomSession, VtaKeyOracle, joinFromOffer, offerFallbackPresenter, vtcTransport, type RoomOfferLike } from "@starter/rooms-client";
 import { ADMIN_FILE, die, env, loadAdmin, mode, reachable, refusal, vtcUrl } from "./env.js";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, extname } from "node:path";

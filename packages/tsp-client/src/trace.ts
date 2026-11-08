@@ -1,4 +1,4 @@
-// Report a TSP call to the shared trace (same sink and event shape as @buildathon/vta-client's trace.ts; the sink lives on globalThis
+// Report a TSP call to the shared trace (same sink and event shape as @starter/vta-client's trace.ts; the sink lives on globalThis
 // under a registered symbol, so this package needs no dependency on it).
 export interface TspTraceEvent {
   ts: string;

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { remoteIdentity } from "@buildathon/vta-client";
+import { remoteIdentity } from "@starter/vta-client";
 import { VtcClient } from "../src/index.js";
 
 test("a remote identity's documents are signed by signRemote, with the type's proof purpose", async () => {

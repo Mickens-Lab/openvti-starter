@@ -15,7 +15,7 @@ import {
   identityFromCredential,
   newIdentity,
   seedToMultibase,
-} from "@buildathon/vta-client";
+} from "@starter/vta-client";
 import { devBanner } from "./banner.js";
 import { resolveFarmAgent } from "./farm-config.js";
 import { ADMIN_FILE, ENV_FILE, LOCAL_VTA_URL, die, env, loadAdmin, mode, reachable, updateEnv } from "./env.js";

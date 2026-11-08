@@ -1,7 +1,7 @@
 // Pure view state: ordering, the chat window, auto-scroll, file classification by bytes, highlights, labels.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { utf8, type SessionItem } from "@buildathon/rooms-client";
+import { utf8, type SessionItem } from "@starter/rooms-client";
 import { demoGif, demoPng } from "../src/demo-media.ts";
 import {
   admitted, atBottom, canSave, canSend, chatWindow, classifyFile, draftOf, formatSize, highlight, isDirty, liveLabel, loadOlder,

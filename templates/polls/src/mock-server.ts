@@ -1,6 +1,6 @@
 // Run the in-process poll mock (community + VTA + ballot box, rules only, no crypto) and print the settings for the CLI.
-//   npm run mock -w @buildathon/polls            # then, in another terminal, paste the printed lines
-import { startPollsMock } from "@buildathon/polls-client/mock";
+//   npm run mock -w @starter/polls            # then, in another terminal, paste the printed lines
+import { startPollsMock } from "@starter/polls-client/mock";
 
 const mock = await startPollsMock({ port: Number(process.env.POLLS_MOCK_PORT ?? 8399) });
 console.log(`poll mock on ${mock.url} (every signer may manage; nothing is verified cryptographically)

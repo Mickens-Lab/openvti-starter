@@ -2,8 +2,8 @@
 // room credentials; the page only ever sees presentations and plaintext it asked for. rooms/keys/{present,seal,open}
 // are tried at 0.2 and stepped down to 0.1 only on an unsupportedVersion/unsupportedType refusal that allows it.
 // [unverified] against a live VTA: no room exists in the local stack.
-import { TrustTaskError } from "@buildathon/vta-client";
-import { versionStepAllowed } from "@buildathon/vtc-client";
+import { TrustTaskError } from "@starter/vta-client";
+import { versionStepAllowed } from "@starter/vtc-client";
 import { KEYS_TASK } from "./tasks.js";
 import type { KeyService } from "./keys.js";
 import { b64u, parseSealed, unb64u, type Presentation, type RoomAction, type SealedContent } from "./wire.js";

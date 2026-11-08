@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/mcp-agent",
+  "name": "@starter/mcp-agent",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -8,6 +8,6 @@
     "mint": "ENV_FILE=../../.env.mcp-agent tsx mint-token.ts"
   },
   "dependencies": {
-    "@buildathon/vta-client": "*"
+    "@starter/vta-client": "*"
   }
 }

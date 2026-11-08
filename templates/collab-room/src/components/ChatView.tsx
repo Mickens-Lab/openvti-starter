@@ -1,7 +1,7 @@
 // Chat history ascending by host version, "Load older" for history beyond the window, auto-scroll only when the reader is
 // at the bottom (or the newest message is their own), and a composer with a plain/markdown toggle.
 import { useLayoutEffect, useRef, useState, type FormEvent } from "react";
-import type { SessionItem } from "@buildathon/rooms-client";
+import type { SessionItem } from "@starter/rooms-client";
 import { byDataId, errorText, useRoomContext } from "../hooks.ts";
 import { CHAT_PAGE, atBottom, canSend, chatWindow, formatTime, loadOlder, shouldAutoScroll, toggleFormat, type ChatFormat } from "../state.ts";
 import { Author } from "./Author.tsx";

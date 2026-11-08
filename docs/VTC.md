@@ -2,8 +2,8 @@
 
 Part of the [docs index](README.md). Walkthrough: exercises 3 and 5 in [TRY-THIS.md](TRY-THIS.md).
 
-**Can this starter talk to both a VTA and a VTC?** Yes. `@buildathon/vta-client`
-talks to the VTA, `@buildathon/vtc-client` talks to the VTC, and one app identity
+**Can this starter talk to both a VTA and a VTC?** Yes. `@starter/vta-client`
+talks to the VTA, `@starter/vtc-client` talks to the VTC, and one app identity
 (the `did:key` your VTA granted an ACL entry to) can be the applicant and member at
 a community. The **local Docker VTC path was run end to end** against a VTA
 (vta-service 0.65.0, tag `vta-service-v0.65.0`) and a VTC (vtc-service 0.15.0, tag `vtc-service-v0.15.0`; the two come
@@ -117,7 +117,7 @@ npm run vtc:status    # join status + member proof (portal /v1/member/me), no se
 npm run vtc:profile   # member reads: community profile, my directory card, fields, entries, groups
 npm run vtc:withdraw  # applicant: withdraw the open join request (-- --reason "text")
 npm run vtc:leave -- --yes   # LEAVE the community now (members/self-remove); needs --yes
-npm run dev -w @buildathon/community-dashboard   # the same flow in a browser
+npm run dev -w @starter/community-dashboard   # the same flow in a browser
 ```
 
 All of them read `VTC_URL` (and `VTC_DID` if the VTC's DID is not at

@@ -2,7 +2,7 @@
 //   npm run vtc:withdraw [-- --reason "text"]
 import "./lib/cli.js";
 import { memberIdentity } from "./lib/member.js";
-import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
+import { TrustTaskError, VtcClient } from "@starter/vtc-client";
 import { die, env, reachable, refusal, vtcUrl } from "./env.js";
 
 const i = process.argv.indexOf("--reason");

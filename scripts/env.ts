@@ -1,7 +1,7 @@
 // Tiny .env reader and the admin key file; Node only.
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { type Mode, type ModeSource, resolveMode, resolveVtc, validMode } from "./lib/modes.js";
-import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@buildathon/vta-client";
+import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@starter/vta-client";
 
 export const ADMIN_FILE = ".vta/admin.json";
 /** `ENV_FILE=.env.other` lets one repo hold several app identities. */

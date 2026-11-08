@@ -2,7 +2,7 @@
 // (docs/VTC-SURFACE.md for the VTC, the VTA source at the pin for rooms/keys/*).
 //  - rooms/{info,records,blobs,create}/* go to the room's host (a VTC or a standalone room-host).
 //  - rooms/keys/* go to the member's own VTA, which holds the MLS group and the room credentials.
-import { TT } from "@buildathon/vta-client";
+import { TT } from "@starter/vta-client";
 
 export const ROOMS_TASK = {
   create: `${TT}/rooms/create/0.2`,

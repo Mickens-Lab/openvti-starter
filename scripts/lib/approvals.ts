@@ -1,5 +1,5 @@
 // Plain-text rendering for the software approver. Pure, so it is unit-tested.
-import type { VerifiedConsentRequest } from "@buildathon/vta-client";
+import type { VerifiedConsentRequest } from "@starter/vta-client";
 
 /** What the approver sees. Never blank about effects: when the VTA gave none, say so (the spec forbids presenting that as "no effects"). */
 export function describeRequest(v: VerifiedConsentRequest): string {

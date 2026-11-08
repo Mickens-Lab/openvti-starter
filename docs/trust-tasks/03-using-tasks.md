@@ -11,8 +11,8 @@ a live VTA or VTC. The clients' own tests (mocked `fetch`) pass in the starter.
 ### The short way: the clients
 
 ```ts
-import { TASK, VtaClient, decodeCredential, identityFromCredential } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { TASK, VtaClient, decodeCredential, identityFromCredential } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import { refusalOf } from "./refusal.js";
 
 const vta = await VtaClient.fromCredential(process.env.VTA_CREDENTIAL!);   // base64url bundle from `npm run vta:provision`
@@ -48,7 +48,7 @@ console.log((await vtc.manifest()).communityDid);
 
 ```ts
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 
 const me = newIdentity();                       // a did:key; see identityFromCredential for a provisioned app
 const recipient = "<recipient-did>";            // the consumer's DID
@@ -87,7 +87,7 @@ An error document looks like this (from SPEC 8.2, shape verified against the VTA
 ```
 
 ```ts
-import { TrustTaskError, unwrapReply, type VtaClient } from "@buildathon/vta-client";
+import { TrustTaskError, unwrapReply, type VtaClient } from "@starter/vta-client";
 
 /** What a refusal looks like once the client has thrown it. */
 export interface Refusal {
@@ -193,7 +193,7 @@ If you *receive* documents, you are the consumer and SPEC 7.2 applies to you. `@
 the checks; `templates/inbox-verifier` is the worked example (`src/inbox.ts`, offline).
 
 ```sh
-npm run demo -w @buildathon/inbox-verifier
+npm run demo -w @starter/inbox-verifier
 ```
 
 `demo` starts the server and checks six cases: accepted once, replay not re-run, tampered payload `proofInvalid`,

@@ -4,9 +4,9 @@
 //  - rooms come from vtc/rooms/memberships/list (admitted ones), or COLLAB_ROOM names one directly;
 //  - rooms/* go to the VTC over /__vtc (HostClient over vtcTransport);
 //  - presentations, seals and opens come from the member's VTA over /__vta (VtaKeyOracle over VtaClient: rooms/keys/*).
-import { HostClient, RoomSession, VtaKeyOracle, offerFallbackPresenter, vtcTransport, type RoomOfferLike, type Visibility } from "@buildathon/rooms-client";
-import { VtaClient, decodeCredential, identityFromCredential } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { HostClient, RoomSession, VtaKeyOracle, offerFallbackPresenter, vtcTransport, type RoomOfferLike, type Visibility } from "@starter/rooms-client";
+import { VtaClient, decodeCredential, identityFromCredential } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import type { Backend, RoomRef } from "./backend.ts";
 import { admitted } from "./state.ts";
 

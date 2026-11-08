@@ -2,7 +2,7 @@
 // Anything that CHANGES state at the community (apply, withdraw, renew, leave, edit card) is NOT here:
 // those run from event handlers in App.tsx only, never from an effect.
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import type { JoinManifest } from "@buildathon/vtc-client";
+import type { JoinManifest } from "@starter/vtc-client";
 import { callLog, describeError, getClient, identity, vtcBrowserUrl } from "./client.ts";
 import { splitTaskType } from "./format.ts";
 import { createPoller, inflight } from "./poll.ts";

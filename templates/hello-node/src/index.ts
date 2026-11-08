@@ -1,7 +1,7 @@
 // Hello, VTA: sign in with your app identity, ask who you are, store one value and list what is stored.
 //   npm run up                         # once, at the repo root
 //   npm start -w <this package>        # or: npx tsx src/index.ts
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 import { loadEnv } from "./env.js";
 
 const env = loadEnv();

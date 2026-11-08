@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { TrustTaskError } from "@buildathon/vta-client";
+import { TrustTaskError } from "@starter/vta-client";
 import { handle, type Opts } from "../recipes/backend-signer.js";
 import { generateNonExtractableDid } from "../recipes/webcrypto-key.js";
 

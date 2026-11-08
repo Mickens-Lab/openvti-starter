@@ -115,7 +115,7 @@ test("formatting and the summary", () => {
 });
 
 test("a server port (inbox-verifier) gets its own command and no CORS note", () => {
-  const c = devPortCheck({ port: 4000, what: "inbox-verifier", busy: true, ownStack: false, server: true, use: (p) => `INBOX_PORT=${p} npm start -w @buildathon/inbox-verifier` }, 4001);
+  const c = devPortCheck({ port: 4000, what: "inbox-verifier", busy: true, ownStack: false, server: true, use: (p) => `INBOX_PORT=${p} npm start -w @starter/inbox-verifier` }, 4001);
   assert.match(c.fix!, /INBOX_PORT=4001/);
   assert.doesNotMatch(c.fix!, /CORS/);
 });

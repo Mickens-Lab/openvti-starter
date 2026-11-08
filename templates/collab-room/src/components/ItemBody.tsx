@@ -3,7 +3,7 @@
 //  - images and GIFs only from room files, typed by their bytes (sniffImage), shown through a blob: URL that is revoked
 //    on unmount; SVG and anything unknown are download-only;
 //  - UTF-8 text files up to 1 MiB are shown as text, `.md` through the markdown renderer.
-import type { FileEnvelope, SessionItem } from "@buildathon/rooms-client";
+import type { FileEnvelope, SessionItem } from "@starter/rooms-client";
 import { useState } from "react";
 import { downloadBytes, errorText, useFileBytes, useObjectUrl, useRoomContext } from "../hooks.ts";
 import { renderMarkdown, renderPlain } from "../render.ts";

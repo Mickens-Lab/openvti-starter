@@ -2,8 +2,8 @@
 // and the ballot box resolved from its did:webvh. The mock applies the rules, not the crypto.
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
-import { VtaClient, newIdentity } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { VtaClient, newIdentity } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import { PollsClient, pollManifest, pollRefusal, summarize, type Manifest } from "../src/index.js";
 import { startPollsMock, type PollsMock } from "../src/mock.js";
 

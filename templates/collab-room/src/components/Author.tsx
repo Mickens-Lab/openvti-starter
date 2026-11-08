@@ -1,6 +1,6 @@
 // Who wrote an item: avatar (from the room profile, sniffed as an image) or an identicon, the display name or "You" or the
 // short DID, and the full DID in a tooltip. Display names are untrusted text and render as text.
-import type { ResolvedProfile } from "@buildathon/rooms-client";
+import type { ResolvedProfile } from "@starter/rooms-client";
 import { useRoomContext } from "../hooks.ts";
 
 export function Identicon({ p, size = 28 }: { p: ResolvedProfile; size?: number }) {

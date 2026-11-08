@@ -1,7 +1,7 @@
 // The throwaway software approver's key file; Node only. Guidance: this is a second key on the SAME machine, so it models the
 // protocol, not the security of a second device (docs/APPROVALS.md).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@buildathon/vta-client";
+import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@starter/vta-client";
 
 export const APPROVER_FILE = ".vta/approver.json";
 

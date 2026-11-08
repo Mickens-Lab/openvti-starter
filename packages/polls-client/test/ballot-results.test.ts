@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { TrustTaskError } from "@buildathon/vta-client";
+import { TrustTaskError } from "@starter/vta-client";
 import {
   BallotError, buildBallot, describePollError, explainPollRefusal, formatSummary, pollManifest, pollPhase, pollRefusal, resolveOptions, splitCode, summarize, timeLeft,
 } from "../src/index.js";

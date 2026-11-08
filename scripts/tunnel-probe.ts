@@ -3,8 +3,8 @@
 // a VTA whose mediator connection failed keeps serving REST and only logs a warning.
 // "messaging ok" means the transport is connected. It does NOT prove an app-level DIDComm/TSP round trip.
 import "./lib/cli.js";
-import { VtaClient, TT, decodeCredential, seedFromMultibase } from "@buildathon/vta-client";
-import { describePong, tspPing } from "@buildathon/tsp-client";
+import { VtaClient, TT, decodeCredential, seedFromMultibase } from "@starter/vta-client";
+import { describePong, tspPing } from "@starter/tsp-client";
 import { env, loadAdmin } from "./env.js";
 import { readTunnel } from "./lib/compose.js";
 import { messagingVerdict, protocolsOf, tunnelUrls, vtcMessagingVerdict, webvhAtHost } from "./lib/tunnel.js";

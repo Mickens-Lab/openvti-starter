@@ -51,7 +51,7 @@
     "platforms": ["linux/amd64", "linux/arm64"],
     "note": "Prebuilt images published by .github/workflows/images.yml to <registry>/<image>:<short ref> (the image names and refs are the vti/messaging pins above). `digest` is the multi-arch index digest (sha256:...) that the workflow reports after a run; null means not published yet (or not recorded), and then the tag is used and `pins:check` says so. Paste the digests in, commit, and `images:pull` / `up` pull by digest. Procedure: docs/IMAGES.md.",
     "verify": {
-      "repo": "Mickens-Lab/openvti-buildathon-starter",
+      "repo": "Mickens-Lab/openvti-starter",
       "workflow": ".github/workflows/images.yml",
       "issuer": "https://token.actions.githubusercontent.com",
       "note": "Who must have built and signed the published images: this repository's images workflow, via GitHub OIDC. `npm run images:verify` checks exactly this (GitHub attestation and cosign signature). A fork that publishes its own images sets IMAGE_REGISTRY and VERIFY_REPO. UNVERIFIED until the workflow has run: docs/VERIFY.md."

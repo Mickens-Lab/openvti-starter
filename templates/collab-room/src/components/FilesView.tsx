@@ -1,7 +1,7 @@
 // Files: upload, list (newest first) with an inert preview each, download. Sealed rooms carry files inline up to 32 KiB;
 // a larger upload is refused by the session with a readable message, shown here.
 import { useLayoutEffect, useRef, useState } from "react";
-import type { SessionItem } from "@buildathon/rooms-client";
+import type { SessionItem } from "@starter/rooms-client";
 import { byDataId, errorText, useRoomContext } from "../hooks.ts";
 import { formatTime } from "../state.ts";
 import { Author } from "./Author.tsx";

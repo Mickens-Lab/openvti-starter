@@ -1,6 +1,6 @@
 // MockKeyOracle: answers rooms/keys/{present,seal,open} the way a member's VTA would, with a LocalMlsKeys behind it,
 // so VtaKeyOracle's wire (including the 0.2 -> 0.1 step down) runs end to end without a VTA.
-import { TT, TrustTaskError } from "@buildathon/vta-client";
+import { TT, TrustTaskError } from "@starter/vta-client";
 import { KEYS_TASK } from "../tasks.js";
 import type { LocalMlsKeys } from "../local-mls.js";
 import { b64u, parseSealed, unb64u, type RoomAction } from "../wire.js";

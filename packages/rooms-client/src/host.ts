@@ -6,8 +6,8 @@
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
 import {
   TrustTaskError, classifyReply, newIdentity, purposeFor, refusalCode, refusalDetails, rfc3339, unwrapReply, type Identity,
-} from "@buildathon/vta-client";
-import type { VtcClient } from "@buildathon/vtc-client";
+} from "@starter/vta-client";
+import type { VtcClient } from "@starter/vtc-client";
 import { LIST_PAGE_CAP, ROOMS_TASK } from "./tasks.js";
 import {
   blobManifest, blobRefOf, chunkWire, digestBytes, parseGetReply, parseInfo, parseListPage, parsePutReply,
