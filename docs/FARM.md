@@ -76,6 +76,8 @@ MODE=farm npm run up         # = npm run farm:setup the first time
 
 `farm:setup` mints `.vta/admin.json` and prints the **Admin DID**. Then, in the portal:
 
+> **Out of step with the kit since 2026-11-04.** The kit now targets VTA 0.72.0 / VTC 0.20.0 and sends `acl/grant/0.2`, `trust-task-discovery/0.3`, `task-consent/decision/0.2` and `messaging/ping/0.2`. A VTA created from the `0.65.0-fc157f76` image below serves the older versions, so `provision` and the approvals demo will answer `unsupportedVersion` against it. A `0.72.0-*` image is what matches, but **whether the portal offers one is not verified** (the image list needs a logged-in account). Look at the dropdown, and if there is none, use local mode. The 0.65.0 results below are history.
+
 1. Open https://vtafarm.ic3.dev (`FARM=ic3`, preferred; `farm:setup` prints the URL for the selected Farm), sign up with a passkey (invite link if asked).
 2. Create an agent (name, image). **In the image selector pick `0.65.0-fc157f76`** (the pinned release `vta-service-v0.65.0`). **Do not keep the portal's default image** (`VTI-Eucalyptus-49f5f1be [latest]`, vta-service 0.56.0): it predates the Trust Task versions this kit sends. `npm run farm:check` and `farm:canary` read the deployed agent's version and print a loud warning if it is not the pin. For a VTC, a community is "on request".
 3. On the agent's **Connections** tab choose "Connect to PNM" and paste the DID `farm:setup` printed into **Admin DID**.
@@ -113,6 +115,15 @@ step in vtafarm-api). That is the same `did:key` role the local VTA seeds, so
 before and on the day of the event** ([EVENT.md](EVENT.md)); it is read-only (GET/HEAD/OPTIONS, about 2 s apart)
 and prints a stamped table. Hosts live in `scripts/farm-hosts.json`; `FARM_AGENT` / `VTA_URL` / `VTC_URL` (yours) add your own agent and community to the probe; without them only the hosts are checked and it prints "no agent configured, version not checked".
 When the result differs from this table, add a new dated block here and update the `farm` block of `pins.json`.
+
+### Snapshot: 2026-11-07 (read-only `farm:probe`, no account)
+
+| Component | Seen | Change since 2026-10-29 |
+|---|---|---|
+| ic3 and firstperson API `/health` | 200 `{"status":"ok"}` | none |
+| DID hosts `dids.ic3.dev`, `dids.firstperson.dev` | did-hosting-control **0.12.0** | **0.11.0 to 0.12.0** on both. The firstperson `acl/grant/0.2` bug was on 0.11.0; **whether 0.12.0 fixes it is untested** (needs a portal login and an agent creation by hand), so the issue stays listed |
+| Portals | 200, last-modified 2026-11-06 07:57 UTC (both) | redeployed |
+| Agent and VTC versions, image list | not readable without an account or an agent | unknown; the kit's 0.72 / 0.20 are **not** confirmed against any Farm agent |
 
 ### Snapshot: 2026-10-29 18:38 to 18:45 UTC
 

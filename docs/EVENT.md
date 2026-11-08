@@ -72,6 +72,8 @@ single demo or a phone experiment, and take it down afterwards.
 Farm-side, 2026-10-29). Send participants to the ic3 portal unless the gate says otherwise.
 Portal screens on ic3: to be confirmed ([FARM.md](FARM.md)).
 
+**Farm image: out of step with the kit.** `0.65.0-fc157f76` (below) no longer matches: the kit now targets VTA 0.72.0 and sends task versions a 0.65 agent does not serve. Check the portal for a `0.72.0-*` image before the event (unverified that one exists; [FARM.md](FARM.md)); if there is none, Farm mode is not usable with this kit and local mode is the plan.
+
 **Tell every Farm participant which image to pick.** In the portal's image selector choose **`0.65.0-fc157f76`**
 (the pinned VTA release). **Do not keep the portal's default** (`VTI-Eucalyptus ... [latest]`, vta-service 0.56.0): it is
 not compatible with this kit. `npm run farm:check` / `farm:canary` read the deployed agent's version and print a loud
