@@ -132,6 +132,7 @@ The ones you need in the first hour (all of them, grouped: [docs/COMMANDS.md](do
 | `npm run repl` | A REPL with `vta` and `vtc` already signed in and top-level await: `await vta.whoami()` |
 | `npm run vtc:hello` / `vtc:join` / `vtc:approve` / `vtc:status` | Community: read the join manifest / apply / admin approves / where do I stand |
 | `npm run rooms:list` / `rooms:accept` / `rooms:post` / `rooms:read` | Data rooms: rooms offered to you / accept an offer / post / read ([docs/ROOMS.md](docs/ROOMS.md)) |
+| `npm run rooms:persona` | A persona DID the VTA holds, for sealed (attributed/private) rooms ([docs/ROOMS.md](docs/ROOMS.md)) |
 | `npm run tsp:ping` / `tsp:listen` | `MODE=tunnel`: send a signed TSP ping and print the pong / receive the credential frames the VTC pushes ([docs/MESSAGING.md](docs/MESSAGING.md)) |
 | `npm run roles:matrix` / `approvals:demo` / `security:check` | Who can call what / approve a gated task from a second key / key-hygiene scan ([ROLES](docs/ROLES.md), [APPROVALS](docs/APPROVALS.md), [SECURITY](docs/SECURITY.md)) |
 | `npm run images:verify` / `images:compare` | Check what you run: is the image the pinned one, built and signed by this repository's workflow, with the pinned labels (`-- --local` for your own build; [docs/VERIFY.md](docs/VERIFY.md)) |

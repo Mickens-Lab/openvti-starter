@@ -339,18 +339,28 @@ export class VtcClient {
   /** Build and sign one Trust Task document addressed to this VTC, without sending it. Keep it to resend the same bytes. */
   build(type: string, payload: Record<string, unknown> = {}, opts: { threadId?: string } = {}): Record<string, unknown> {
     return signTrustTask(
-      {
-        id: globalThis.crypto.randomUUID(),
-        ...(opts.threadId ? { threadId: opts.threadId } : {}),
-        type,
-        issuer: this.me.did,
-        recipient: this.vtcDid,
-        issuedAt: rfc3339(),
-        payload,
-      } as any,
+      this.unsigned(type, payload, opts) as any,
       this.me.signer,
       { proofPurpose: purposeFor(type) }, // authentication, except attestation tasks (SPEC 4.7.3)
     ) as unknown as Record<string, unknown>;
+  }
+
+  private unsigned(type: string, payload: Record<string, unknown>, opts: { threadId?: string } = {}): Record<string, unknown> {
+    return {
+      id: globalThis.crypto.randomUUID(),
+      ...(opts.threadId ? { threadId: opts.threadId } : {}),
+      type,
+      issuer: this.me.did,
+      recipient: this.vtcDid,
+      issuedAt: rfc3339(),
+      payload,
+    };
+  }
+
+  /** `build`, for an identity that signs remotely (`me.signRemote`, a persona the VTA holds); same as `build` otherwise. */
+  async buildAsync(type: string, payload: Record<string, unknown> = {}, opts: { threadId?: string } = {}): Promise<Record<string, unknown>> {
+    if (!this.me.signRemote) return this.build(type, payload, opts);
+    return this.me.signRemote(this.unsigned(type, payload, opts), purposeFor(type));
   }
 
   /** POST one already-signed document and classify the reply; throws only when nothing answered. Resending the same document is a SPEC 8.4 retry. */
@@ -390,7 +400,7 @@ export class VtcClient {
    * for a `trust-task-next-step` continuation or a 202.
    */
   async call<R = any>(type: string, payload: Record<string, unknown> = {}): Promise<R> {
-    return unwrapReply<R>(await this.send(this.build(type, payload)));
+    return unwrapReply<R>(await this.send(await this.buildAsync(type, payload)));
   }
 
   // --- applicant side (works before you are a member) ----------------------

@@ -56,7 +56,7 @@ export function mode(): Mode {
 }
 
 /** Keys the kit itself writes to `.env`. `reset` removes exactly these and leaves any line you added. */
-export const GENERATED_ENV_KEYS = ["MODE", "FARM", "VTA_URL", "VTA_DID", "VTA_CONTEXT", "APP_DID", "VTA_CREDENTIAL", "VTC_URL", "VTC_DID", "VTC_REQUEST_ID", "VTC_PEER_REQUEST_ID", "APPROVER_DID"];
+export const GENERATED_ENV_KEYS = ["MODE", "FARM", "VTA_URL", "VTA_DID", "VTA_CONTEXT", "APP_DID", "VTA_CREDENTIAL", "VTC_URL", "VTC_DID", "VTC_REQUEST_ID", "VTC_PEER_REQUEST_ID", "APPROVER_DID", "ROOM_PERSONA", "ROOM_PERSONA_REQUEST_ID"];
 
 /** Remove the kit's own keys from the env file; delete the file if nothing else is left. Returns the keys that stay. */
 export function clearGeneratedEnv(): string[] {

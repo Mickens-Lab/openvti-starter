@@ -7,7 +7,7 @@ A data room is a shared space on a community's host: chat, notes and files, with
 ## The short answer
 
 - **Open rooms work end to end, live.** Verified 2026-11-08: a VTC 0.26.0 (hosted outside the Farm), the app identity of a VTA 0.72.0 on the Farm. We joined the community, accepted an offer, read `rooms/info`, posted, and read the post back.
-- **Attributed and private (sealed) rooms do not work yet with the app identity.** The room's keys live in the member's VTA, and the VTA only acts for a *persona* DID it holds, not for the app `did:key`. [Details and what we tried](#attributed-and-private-rooms).
+- **Attributed and private (sealed) rooms need a persona DID, not the app `did:key`.** The room's keys live in the member's VTA, which only acts for a persona it holds. `npm run rooms:persona` makes one; the community side of that is verified, the sealed handshake is [not yet](#attributed-and-private-rooms).
 - You do not need the Farm for the host. The host is the community's VTC (or a standalone room host). Your VTA only matters for sealed rooms.
 
 ## Who does what
@@ -63,20 +63,30 @@ The accepted offer stays in `rooms:list` (state `accepted`), and `rooms:read`/`r
 
 ## Attributed and private rooms
 
-What is true (live, 2026-11-08, same host as above):
+A sealed room's keys live in your VTA, which only acts for a **persona**: a DID it holds. Your app `did:key` is not one, so a room that admitted the app `did:key` cannot be joined (live, 2026-11-08: the VTA refused `rooms/keys/key-package` with *"the invitation names `did:key:...`, which is not a persona you may act as here; an invitation is not transferable"*). So the member of the community, and the invitee of the room, must be a persona. The kit does the plumbing:
 
-- The host side works for a sealed room: our identity joined the community, was offered an `attributed` room (`rooms/offers/list` shows its `authority`, `invitation` and `membership` credentials), and `rooms/memberships/list` shows it as `offered`.
-- Joining needs three steps, and the first fails: (1) the member's VTA mints an MLS KeyPackage, `rooms/keys/key-package/0.2` with the offer's `invitation`; (2) `rooms/offers/accept` with that KeyPackage returns a Welcome; (3) the VTA joins the group, `rooms/keys/welcome/0.1`.
-- Step 1 is refused: *"the invitation names `did:key:...`, which is not a persona you may act as here; an invitation is not transferable, and the member it names is the DID this agent holds for them, never the client asking"*. The community admitted our app `did:key`, which the VTA does not hold as a persona.
-- The kit's `rooms:accept` therefore explains this and stops for a sealed room, rather than half-joining.
+```sh
+npm run rooms:persona -- create                 # mint a did:webvh persona in your app's context (admin key; needs a DID host, ic3 has one)
+npm run rooms:persona -- join --name "Your Name"  # apply to the community; the VTA signs the request for the persona
+npm run rooms:persona -- status
+```
 
-What would likely fix it (**unverified**, partly blocked):
+`create` saves `ROOM_PERSONA` in `.env`. From then on every `rooms:*` command acts as the persona: the VTA signs each document (`keys/sign-document`, one round trip per call) and the community and rooms see the persona's `did:webvh`. Then, as for an open room, the admin approves the join and the room owner adds the **persona's DID** (not the app `did:key`) to the sealed room. Then:
 
-1. The VTA mints a *persona* DID: `vta/webvh/dids/create/1.2` in the app's context, published through the Farm's DID host (`vta/webvh/servers/list` shows it). The app role lacks the `KeyMint` capability, so this needs the admin key; whether the VTA then counts that DID as a persona the app may act as, or needs `persona/binding/set` or the `persona-holder` capability, is not known.
-2. That persona DID joins the community (a second applicant, approved by the admin), is offered the room, and the three steps above run as it.
-3. The client work: a `rooms:accept` for sealed tiers (key-package, accept, welcome), `VtaKeyOracle` wrappers for `key-package` and `welcome`, and a join script that applies as the persona. Not written.
+```sh
+npm run rooms:list                       # the offer, addressed to the persona
+npm run rooms:accept -- <room DID>       # key-package (VTA) > offers/accept (host) > welcome (VTA)
+npm run rooms:post -- <room DID> "hello" # sealed by the VTA, then opened again on read
+npm run rooms:read -- <room DID>
+```
 
-Until that is done, use `open` rooms for events, and `LocalMlsKeys` plus the mock host for sealed-room practice ([rooms-client README](../packages/rooms-client/README.md)).
+`ROOM_PERSONA` unset gives the app `did:key` back (open rooms still work with it).
+
+Status (live, 2026-11-08, one run):
+
+- **Verified:** the VTA mints a `did:webvh` persona on the Farm's DID host; the VTA signs a community join request for it; the community (VTC 0.26.0) accepts the proof and queues it for approval.
+- **Not yet verified:** the admin approval of the persona, the room offer to it, and the three-step handshake and sealed post/read. The commands are written; this section is updated when they have run.
+- **Not verified in any case:** ts-mls <-> openmls interop, the host's record size cap. Practise sealed rooms with `LocalMlsKeys` and the mock host ([rooms-client README](../packages/rooms-client/README.md)) until then.
 
 ## Verified, and not
 
@@ -86,6 +96,7 @@ Until that is done, use `open` rooms for events, and `LocalMlsKeys` plus the moc
 | Directory card `displayName` update on the same community | **live** |
 | The Farm VTA serves `rooms/keys/{present,seal,open,key-package,welcome}` and the app identity has `room-present` and `room-open` | **live** (`hello`, discovery) |
 | Notes, files, search, the live feed, profiles against a real host | **unverified** (only chat was posted) |
-| Sealed rooms (any step) against a real host and VTA | **unverified**; step 1 refused as above |
+| Persona DID minted by the VTA; the VTA signing a join request for it; the VTC accepting that proof | **live**, 2026-11-08 |
+| Sealed rooms: approval of the persona, the offer to it, key-package > accept > welcome, sealed post and read | **unverified** (written, awaiting a run); with the app `did:key` the VTA refused step 1 |
 | ts-mls <-> openmls interop, host record size cap | **unverified** |
 | This kit's pinned VTC (0.20.0) as a room host | **unverified**: the live run used a 0.26.0 host. The local stack has no rooms |

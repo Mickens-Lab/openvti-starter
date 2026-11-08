@@ -5,6 +5,7 @@ import {
   decodeCredential,
   identityFromCredential,
   type CredentialBundle,
+  remoteIdentity,
   type Identity,
 } from "./identity.js";
 import { emitTrace } from "./trace.js";
@@ -192,6 +193,19 @@ export class VtaClient {
     opts: { bearer?: boolean } = {},
   ): Promise<R> {
     return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+  }
+
+  /**
+   * An identity for a DID this VTA holds keys for (a persona): every document is signed by the VTA's `keys/sign-document`
+   * (needs the `sign-document` capability, which the application role has) under `keyId`, default `<did>#key-0`. Use it with
+   * VtcClient to apply to a community or act in rooms as that DID. Each call costs one VTA round trip.
+   */
+  personaIdentity(did: string, keyId = `${did}#key-0`): Identity {
+    return remoteIdentity(did, async (document, proofPurpose) => {
+      const r = await this.call<{ document: Record<string, unknown> }>(`${TT}/keys/sign-document/0.1`, { keyId, document, proofPurpose });
+      if (!r?.document || typeof r.document !== "object") throw new Error("keys/sign-document returned no document");
+      return r.document;
+    });
   }
 
   /** auth/challenge then auth/authenticate; stores the bearer in `token`. */

@@ -20,6 +20,7 @@ await vta.call("https://trusttasks.org/spec/vta/memory/put/0.1", { contextId: "m
 | | |
 |---|---|
 | `VtaClient.fromCredential(credential, url?)` / `connect(url, identity)` | Build a client. Does not authenticate. `resolveDid: false` trusts the DID in the credential (farm mode). |
+| `vta.personaIdentity(did, keyId?)` / `remoteIdentity(did, signRemote)` | An `Identity` for a DID the VTA holds (a persona): documents are signed by the VTA's `keys/sign-document` instead of a local key. `VtcClient` supports it; the community and rooms then see that DID. Verified live: the VTC accepted a join request signed this way ([docs/ROOMS.md](../../docs/ROOMS.md)). |
 | `authenticate()`, `call(type, payload)` | Sign in; sign and POST any task. A refusal throws `TrustTaskError` with `status` and the error `body` (`body.payload.code`). `call<R>()` takes a result type. |
 | `whoami()`, `discover()`, `createContext`, `grantAcl` | Typed helpers; the last two need an admin identity. |
 | `newIdentity()`, `identityFromSeed`, `identityFromCredential`, `encodeCredential` / `decodeCredential` | did:key identities and the credential bundle. |

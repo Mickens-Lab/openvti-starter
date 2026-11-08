@@ -43,6 +43,7 @@
     "rooms:info": "tsx scripts/rooms.ts info",
     "rooms:post": "tsx scripts/rooms.ts post",
     "rooms:read": "tsx scripts/rooms.ts read",
+    "rooms:persona": "tsx scripts/rooms-persona.ts",
     "hello": "tsx scripts/hello.ts",
     "vta:call": "tsx scripts/call.ts",
     "repl": "tsx scripts/repl.ts",

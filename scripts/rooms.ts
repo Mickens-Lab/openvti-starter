@@ -8,7 +8,7 @@
 import "./lib/cli.js";
 import { TrustTaskError, VtaClient } from "@buildathon/vta-client";
 import { VtcClient } from "@buildathon/vtc-client";
-import { HostClient, RoomSession, VtaKeyOracle, offerFallbackPresenter, vtcTransport, type RoomOfferLike } from "@buildathon/rooms-client";
+import { HostClient, RoomSession, VtaKeyOracle, joinFromOffer, offerFallbackPresenter, vtcTransport, type RoomOfferLike } from "@buildathon/rooms-client";
 import { die, env, mode, reachable, refusal, vtcUrl } from "./env.js";
 import { memberIdentity } from "./lib/member.js";
 import { flag, option, positionals } from "./lib/rooms-args.js";
@@ -20,7 +20,12 @@ if (!cmd || !["list", "info", "accept", "post", "read"].includes(cmd)) die(USAGE
 const cred = env("VTA_CREDENTIAL");
 if (!cred) die("VTA_CREDENTIAL not set. Run `npm run up` (local) or `npm run farm:setup` + `npm run vta:provision` (farm) first.");
 const url = vtcUrl();
-const me = memberIdentity(cred);
+// The member is the app did:key, or, with ROOM_PERSONA=<did> in .env (npm run rooms:persona), a persona DID the VTA holds and signs for.
+const vta = await VtaClient.fromCredential(cred, env("VTA_URL") ?? die("VTA_URL not set"), undefined, { resolveDid: mode() !== "farm" });
+try { await vta.authenticate(); } catch { /* rooms/keys/* are signed documents; a session is not required for them */ }
+const persona = env("ROOM_PERSONA");
+const me = persona ? vta.personaIdentity(persona) : memberIdentity(cred);
+const keys = new VtaKeyOracle(vta);
 const vtc = await reachable("VTC", url, () => VtcClient.connect(url, me, undefined, env("VTC_DID")));
 const pos = positionals(rest);
 const roomId = pos[0] ?? env("ROOM_ID");
@@ -51,17 +56,12 @@ let cache: Promise<RoomOfferLike[]> | undefined;
 const lookup = async (id: string) => (await (cache ??= offersOf())).find((o) => o.roomId === id);
 
 /** HostClient whose presenter asks the member's VTA, and for an open room falls back to the offer's own credentials. */
-async function hostClient(): Promise<{ host: HostClient; keys: VtaKeyOracle }> {
-  const vta = await VtaClient.fromCredential(cred!, env("VTA_URL") ?? die("VTA_URL not set"), undefined, { resolveDid: mode() !== "farm" });
-  try { await vta.authenticate(); } catch { /* rooms/keys/* are signed documents; a session is not required for them */ }
-  const keys = new VtaKeyOracle(vta);
-  return { host: new HostClient(vtcTransport(vtc), offerFallbackPresenter((r, a) => keys.present(r, a), lookup)), keys };
-}
+const hostClient = (): HostClient => new HostClient(vtcTransport(vtc), offerFallbackPresenter((r, a) => keys.present(r, a), lookup));
 
 if (cmd === "list") {
   const offers = await offersOf();
   const held = (((await call("rooms/memberships/list", () => vtc.roomMemberships())) as { items?: any[] }).items) ?? [];
-  console.log(`community ${vtc.vtcDid}\nidentity  ${me.did}\n`);
+  console.log(`community ${vtc.vtcDid}\nidentity  ${me.did}${persona ? "  (a persona the VTA holds)" : "  (the app did:key)"}\n`);
   if (!offers.length) console.log("no rooms offered to this identity. Ask a room owner to add its DID (docs/ROOMS.md, step 2).");
   for (const o of offers as any[]) console.log(`offer   ${String(o.state).padEnd(9)} ${String(o.visibility).padEnd(10)} ${o.label ?? ""}\n        ${o.roomId}  actions=${(o.actions ?? []).join(",")}${o.validUntil ? `  until ${o.validUntil}` : ""}`);
   for (const m of held) console.log(`holding ${String(m.state).padEnd(9)} ${String(m.visibility).padEnd(10)} ${m.label ?? ""}\n        ${m.roomId}`);
@@ -70,16 +70,17 @@ if (cmd === "list") {
 
 if (cmd === "accept") {
   const id = need();
-  const offer = (await lookup(id)) as (RoomOfferLike & { label?: string }) | undefined;
-  if (offer && offer.visibility !== "open") {
-    die(`${offer.label ?? id} is ${offer.visibility}, a sealed room. Joining one needs the member's VTA to mint an MLS KeyPackage for the offer's invitation, and it refuses when the member DID is the app did:key (not a persona it holds). Not attempted. See docs/ROOMS.md, "Attributed and private rooms".`);
+  const offer = await lookup(id);
+  if (!offer) die(`no offer to ${id} is addressed to ${me.did}.${hint("no open or recently accepted offer")}`);
+  if (offer.visibility !== "open" && !persona) {
+    die(`${id} is ${offer.visibility}, a sealed room. Joining one needs the member's VTA to mint an MLS KeyPackage, and it refuses when the member is the app did:key (not a persona it holds). Make a persona and have the room offered to it: docs/ROOMS.md, "Attributed and private rooms". Not attempted.`);
   }
-  const r = (await call("rooms/offers/accept", () => vtc.acceptRoomOffer(id))) as { state?: string; epoch?: number };
-  console.log(`accepted: ${r.state}, epoch ${r.epoch}\nnext: npm run rooms:post -- ${id} "hello"`);
+  const r = await call("join", () => joinFromOffer(vtc, offer.visibility === "open" ? undefined : keys, offer));
+  console.log(`joined (${r.steps.join(" > ")}), epoch ${r.epoch}\nnext: npm run rooms:post -- ${id} "hello"`);
   process.exit(0);
 }
 
-const { host, keys } = await hostClient();
+const host = hostClient();
 
 if (cmd === "info") {
   const info = await call("rooms/info", () => host.info(need()));

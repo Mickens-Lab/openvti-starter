@@ -22,6 +22,7 @@ muscle memory keep working; a test fails if a script is missing from this page.
 | `npm run vtc:hello` / `vtc:join` / `vtc:approve` / `vtc:status` | Community: read the join manifest / apply / admin approves / where do I stand |
 | `npm run rooms:list` / `rooms:accept -- <room DID>` | Data rooms: the rooms offered to you and held / accept an offer (open rooms; a sealed room is explained, not attempted) ([ROOMS.md](ROOMS.md)) |
 | `npm run rooms:info -- <room DID>` / `rooms:post -- <room DID> "text"` / `rooms:read -- <room DID>` | Data rooms: tier, epoch and limits / post a chat message (`--markdown`, `--name`) and read it back / print the history (`--follow` keeps watching). `ROOM_ID` in `.env` replaces the argument |
+| `npm run rooms:persona -- create\|use <did>\|join\|status` | Sealed rooms need a persona DID the VTA holds: mint one (admin key), adopt one, apply to the community as it, check. Saves `ROOM_PERSONA`, which every `rooms:*` command then acts as ([ROOMS.md](ROOMS.md)) |
 | `npm run tsp:ping` / `tsp:listen` | `MODE=tunnel`: TSP ping and pong / receive the credential frames the VTC pushes |
 | `npm run tsp:peer-push` | `MODE=tunnel`, live check: the default `did:peer:2` applicant receives its credential over TSP with no ping first (listener, join, approve, status; ignores `VTC_APPLICANT=did:key` in `.env`; docs/MESSAGING.md) |
 

@@ -39,6 +39,20 @@ export class VtaKeyOracle implements KeyService {
     return { presentation: p, ...(typeof r.expiresAt === "string" ? { expiresAt: r.expiresAt } : {}) };
   }
 
+  /** Join step 1 on a sealed room: the VTA mints an MLS KeyPackage for the offer's invitation (`rooms/keys/key-package/0.2`). */
+  async keyPackage(roomId: string, invitation: string): Promise<{ keyPackage: string; expiresAt?: string; alreadyMinted?: boolean }> {
+    const r = await this.vta.call(KEYS_TASK.keyPackage, { roomId, invitation });
+    if (typeof r?.keyPackage !== "string") throw new Error("rooms/keys/key-package returned no keyPackage");
+    return r;
+  }
+
+  /** Join step 3: hand the VTA the Welcome the host returned from `offers/accept` (`rooms/keys/welcome/0.1`); returns the epoch joined. */
+  async welcome(roomId: string, welcome: string, invitation: string, ratchetTree?: string): Promise<{ epoch: number }> {
+    const r = await this.vta.call(KEYS_TASK.welcome, { roomId, welcome, invitation, ...(ratchetTree ? { ratchetTree } : {}) });
+    if (typeof r?.epoch !== "number") throw new Error("rooms/keys/welcome returned no epoch");
+    return r;
+  }
+
   async seal(roomId: string, key: string, version: number, plaintext: Uint8Array): Promise<SealedContent> {
     const r = await this.call(KEYS_TASK.seal, KEYS_TASK.sealV01, { roomId, key, version, plaintext: b64u(plaintext) });
     return parseSealed(r?.sealed);
