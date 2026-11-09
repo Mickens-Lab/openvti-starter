@@ -3,7 +3,17 @@
 // real MLS group in the page for the mock demo and tests.
 import type { Presentation, RoomAction, SealedContent } from "./wire.js";
 
+/** Where a key service gets the MLS commits it missed: the host's `rooms/epoch/commits` (HostClient implements it). */
+export interface CommitSource {
+  commits(roomId: string, sinceEpoch: number): Promise<{ commits: { epoch: number; commit: string }[]; roomEpoch?: number }>;
+}
+
 export interface KeyService {
+  /**
+   * Apply the commits this member's group state has not seen (members added or removed since), so records sealed at a later epoch
+   * open. Optional: a key service that does not track epochs omits it. Returns how many commits were applied and the epoch reached.
+   */
+  catchUp?(roomId: string, source: CommitSource): Promise<{ applied: number; epoch?: number }>;
   /** A presentation for one action at one room. */
   present(roomId: string, action: RoomAction): Promise<{ presentation: Presentation; expiresAt?: string }>;
   /** Seal `plaintext` for record `key` at `version`, under the room's current epoch. */

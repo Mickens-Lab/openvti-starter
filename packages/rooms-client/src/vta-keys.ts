@@ -5,7 +5,7 @@
 import { TrustTaskError } from "@starter/vta-client";
 import { versionStepAllowed } from "@starter/vtc-client";
 import { KEYS_TASK } from "./tasks.js";
-import type { KeyService } from "./keys.js";
+import type { CommitSource, KeyService } from "./keys.js";
 import { b64u, parseSealed, unb64u, type Presentation, type RoomAction, type SealedContent } from "./wire.js";
 
 /** Anything with VtaClient's `call` (a VtaClient, or a fake in tests). */
@@ -43,6 +43,45 @@ export class VtaKeyOracle implements KeyService {
   async held(): Promise<{ roomId: string; member: string; epoch: number }[]> {
     const r = await this.vta.call(KEYS_TASK.list, {});
     return Array.isArray(r?.rooms) ? r.rooms.filter((x: any) => typeof x?.roomId === "string" && typeof x?.member === "string").map((x: any) => ({ roomId: x.roomId, member: x.member, epoch: Number(x.epoch) })) : [];
+  }
+
+  /** Apply one MLS commit the host served (`rooms/keys/commit/0.1`); a replay is not an error, the epoch just stays. */
+  async applyCommit(roomId: string, commit: string, epoch: number): Promise<{ epoch: number }> {
+    const r = await this.vta.call(KEYS_TASK.commit, { roomId, commit, epoch });
+    if (typeof r?.epoch !== "number") throw new Error("rooms/keys/commit returned no epoch");
+    return r;
+  }
+
+  /**
+   * Catch this member's group up to the room: ask the host for the commits above the epoch the VTA holds, apply them in order, repeat
+   * until the host has no more. Without it, a member added after you joined makes records sealed at the new epoch unreadable.
+   */
+  async catchUp(roomId: string, source: CommitSource): Promise<{ applied: number; epoch?: number }> {
+    let applied = 0;
+    let epoch: number | undefined;
+    for (let round = 0; round < 20; round++) {
+      const mine = (await this.held()).filter((h) => h.roomId === roomId);
+      if (!mine.length) break;
+      const since = Math.min(...mine.map((h) => h.epoch));
+      epoch = since;
+      const page = await source.commits(roomId, since);
+      if (!page.commits.length) break;
+      for (const c of page.commits) {
+        const before = epoch ?? since;
+        let r: { epoch: number };
+        try {
+          r = await this.applyCommit(roomId, c.commit, c.epoch);
+        } catch (e) {
+          // The group is already past this commit (MLS WrongEpoch): it was applied by the Welcome that admitted us. Skip it.
+          if (c.epoch <= before && /WrongEpoch/.test(JSON.stringify((e as { body?: unknown }).body ?? ""))) continue;
+          throw e;
+        }
+        epoch = r.epoch;
+        if (r.epoch > before) applied++; // a replay leaves the epoch where it was
+      }
+      if (page.roomEpoch !== undefined && epoch !== undefined && epoch >= page.roomEpoch) break;
+    }
+    return { applied, ...(epoch !== undefined ? { epoch } : {}) };
   }
 
   /** Join step 1 on a sealed room: the VTA mints an MLS KeyPackage for the offer's invitation (`rooms/keys/key-package/0.2`). */

@@ -112,6 +112,8 @@ export class RoomSession {
   /** Open a session: rooms/info, the history, profile publish, then the feed (unless `start: false`). */
   static async open(o: RoomSessionOpts): Promise<RoomSession> {
     const s = new RoomSession(o, await o.host.info(o.roomId));
+    // A member added since this one joined moved the group on; apply the commits first so those records open.
+    if (s.sealed && o.keys?.catchUp) { try { await o.keys.catchUp(o.roomId, o.host); } catch { /* a host without rooms/epoch/commits: read what opens */ } }
     await s.feed.sync();
     await s.publishProfile();
     if (o.start !== false) s.feed.start();

@@ -88,6 +88,26 @@ Limits, measured on the live host (2026-11-08):
 
 Search runs in the client over decrypted content; the host has no search. The live feed polls (3 s); it survives another command logging in as the same identity (a VTA session is one token per identity, and the client logs in again once when it is superseded).
 
+## Two members in one sealed room, profiles and avatars
+
+A second member needs its **own app identity**, not a second persona on the same one: the app `did:key` signs every room call, so two personas under one app would look like a single author. Give the second member its own env file, context and persona:
+
+```sh
+cp .env .env.member2   # then delete ROOM_PERSONA and ROOM_PERSONA_REQUEST_ID from it
+ENV_FILE=.env.member2 npm run vta:provision -- member-two        # a new context and app identity on the same VTA
+ENV_FILE=.env.member2 npm run rooms:persona -- setup --name "Second Member"
+ENV_FILE=.env.member2 npm run rooms:status                       # once approved and offered a room
+ENV_FILE=.env.member2 npm run rooms:accept -- <room DID>
+```
+
+`.env.*` is git-ignored. Profiles: `rooms:post <room DID> "hi" --name "Display Name" --avatar ./me.png` publishes a profile (a PNG, JPEG, GIF or WebP of at most 64 KiB), and `rooms:read` prints each author's resolved name and avatar.
+
+What was seen (live, 2026-11-08):
+
+- Profiles and avatars round-trip on an open room and on an attributed room (the avatar is sealed there); a 69-byte PNG came back intact.
+- The second member joined the attributed room (handshake as for the first), posted, and read its own post. It cannot read records from before it joined, which is how MLS works.
+- **The first member could not read the second member's post.** Adding a member moves the group to a new epoch, and the first member's VTA has to apply that commit. The kit now asks the host for the missed commits (`rooms/epoch/commits`) and hands them to the VTA (`rooms/keys/commit`), but the VTA (0.72.0) refused them: the epoch-2 commit with MLS `WrongEpoch` (its group is already at epoch 2, as `rooms/keys/list` also says), and the epoch-3 commit with *"commit produces epoch 3 but room is at 1; resume from 2"*. The VTA's own bookkeeping disagrees with its group state for a member that joined by Welcome, so the member cannot move forward. Treat a sealed room with more than one member as **not working** until that is resolved on the VTA side. One member per sealed room, or an open room, works.
+
 ## Refusals and what they mean
 
 | You see | Meaning | Fix |
@@ -114,7 +134,9 @@ Search runs in the client over decrypted content; the host has no search. The li
 | Notes (two versions, newest wins), file upload and download (SHA-256 checked), full-text and file-name search, on an open room and on an attributed room | **live**, 2026-11-08 |
 | Open-room file of 1 MiB (chunked blobs); live feed following a second process's post | **live** |
 | Sealed files over about 34 KB | **refused by the host** (64 KiB document cap); the client limit is 32 KiB |
-| Profiles/avatars; a second member; the feed across an epoch change | **unverified** |
-| `private` rooms; a second member in the same sealed room; epoch changes (commits) | **unverified** |
+| Profiles and avatars (open and attributed rooms) | **live**, 2026-11-08 |
+| A second member joins an attributed room and posts; it reads its own post | **live** |
+| The first member reading the second member's post (epoch change) | **fails live**: the VTA refuses the missed commits (see above); the client-side catch-up is written and unit-tested only |
+| `private` rooms | **unsupported by the host** at the time of testing |
 | ts-mls <-> openmls interop | **unverified** (the sealed run exercised the VTA's own MLS, not ts-mls) |
 | This kit's pinned VTC (0.20.0) as a room host | **unverified**: the live runs used a 0.26.0 host. The local stack has no rooms |

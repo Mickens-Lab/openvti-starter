@@ -120,6 +120,13 @@ export class HostClient {
     return presentation;
   }
 
+  /** The MLS commits above `sinceEpoch`, ascending and gap-free, and the epoch the room is at (`rooms/epoch/commits/0.1`). */
+  async commits(roomId: string, sinceEpoch: number, limit = 100): Promise<{ commits: { epoch: number; commit: string }[]; roomEpoch?: number }> {
+    const r = await this.transport.send(ROOMS_TASK.epochCommits, { roomId, sinceEpoch, limit, presentation: await this.presentation(roomId, "read") });
+    const commits = Array.isArray(r?.commits) ? r.commits.filter((c: any) => typeof c?.commit === "string" && Number.isInteger(c?.epoch)).map((c: any) => ({ epoch: c.epoch as number, commit: c.commit as string })) : [];
+    return { commits, ...(Number.isInteger(r?.roomEpoch) ? { roomEpoch: r.roomEpoch as number } : {}) };
+  }
+
   async info(roomId: string): Promise<RoomInfo> {
     return parseInfo(await this.transport.send(ROOMS_TASK.info, { roomId, presentation: await this.presentation(roomId, "read") }));
   }

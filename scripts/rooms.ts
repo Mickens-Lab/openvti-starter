@@ -3,7 +3,7 @@
 //   npm run rooms:list                         # rooms offered to you, and rooms you hold
 //   npm run rooms:accept -- <room DID>         # accept an offer (open: the accept; sealed: key-package, accept, welcome, as the persona)
 //   npm run rooms:info   -- <room DID>         # tier, epoch, limits (read-only)
-//   npm run rooms:post   -- <room DID> "text"  [--markdown] [--name "Display Name"]
+//   npm run rooms:post   -- <room DID> "text"  [--markdown] [--name "Display Name"] [--avatar <png|jpg|gif|webp, at most 64 KiB>]
 //   npm run rooms:read   -- <room DID> [--follow]
 //   npm run rooms:note   -- <room DID> "Title" "body" [--id <note id>]    # save a note (--id saves a new version of that note)
 //   npm run rooms:upload -- <room DID> <file path> [--type text/plain]    # add a file
@@ -165,14 +165,18 @@ const cardName = async () => {
   try { return ((await vtc.myCard()) as any)?.card?.values?.displayName as string | undefined; } catch { return undefined; }
 };
 const name = option(rest, "name") ?? (cmd === "post" || cmd === "note" || cmd === "upload" ? await cardName() : undefined);
-const room = await call("open the room", () => RoomSession.open({ roomId: id, host, keys, self: appMe.did, ...(name ? { profile: { displayName: name } } : {}), start: cmd === "read" && flag(rest, "follow") }));
+const MEDIA: Record<string, string> = { ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json", ".csv": "text/csv", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".pdf": "application/pdf" };
+const avatarPath = option(rest, "avatar");
+if (avatarPath && !existsSync(avatarPath)) die(`${avatarPath}: no such file`);
+if (avatarPath && !name) die("--avatar needs a display name: pass --name \"...\" (or set your directory card's displayName)");
+const avatar = avatarPath ? { mediaType: MEDIA[extname(avatarPath).toLowerCase()] ?? "application/octet-stream", bytes: new Uint8Array(readFileSync(avatarPath)) } : undefined;
+const room = await call("open the room", () => RoomSession.open({ roomId: id, host, keys, self: appMe.did, ...(name ? { profile: { displayName: name, ...(avatar ? { avatar } : {}) } } : {}), start: cmd === "read" && flag(rest, "follow") }));
 const label = (did?: string) => (did ? room.profiles.resolveSync(did).label : "?");
 const line = (i: any) => {
   const e = i.envelope;
   const what = e?.kind === "note" ? `note "${e.title}" (${String(e.body).length} chars)` : e?.kind === "file" ? `file ${e.name} (${e.mediaType}, ${e.size} bytes)` : e?.text ?? `(${i.kind})`;
   return `[${i.version}] ${i.id}  ${label(i.author)}: ${what}`;
 };
-const MEDIA: Record<string, string> = { ".txt": "text/plain", ".md": "text/markdown", ".json": "application/json", ".csv": "text/csv", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".pdf": "application/pdf" };
 
 if (cmd === "post") {
   const text = pos.slice(1).join(" ");
@@ -230,6 +234,13 @@ if (cmd === "download") {
 }
 
 for (const i of room.items()) console.log(line(i));
+{
+  const who = [...new Set(room.items().map((i) => i.author).filter((a): a is string => !!a))];
+  for (const did of who) {
+    const p = await room.profiles.resolve(did);
+    console.log(`author ${p.label}${p.isSelf ? " (you)" : ""}: ${p.source}${p.displayName ? `, name "${p.displayName}"` : ""}${p.avatarUrl ? `, avatar ${p.avatarUrl.slice(5, p.avatarUrl.indexOf(";"))} ${Math.round((p.avatarUrl.length - p.avatarUrl.indexOf(",") - 1) * 0.75)} bytes` : ", no avatar"}  ${did}`);
+  }
+}
 if (!flag(rest, "follow")) { room.close(); process.exit(0); }
 console.log("-- following (Ctrl-C to stop) --");
 const src = room.feed.source as any;
