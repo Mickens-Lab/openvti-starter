@@ -35,7 +35,7 @@ muscle memory keep working; a test fails if a script is missing from this page.
 ## Plumbing (called by `up`, rarely by hand)
 
 `vta:keygen` (mint the admin key), `vta:provision -- <context>` (a new context and app identity; `ENV_FILE=.env.x` keeps several), `vtc:up` (VTC hand-off),
-`vta:logs` (follow the VTA log), `tunnel:probe` (re-run the tunnel checks).
+`vta:logs` and `vtc:logs` (follow the VTA or VTC log), `tunnel:probe` (re-run the tunnel checks).
 
 ## Organiser
 

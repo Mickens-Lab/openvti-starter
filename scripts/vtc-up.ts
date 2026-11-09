@@ -6,12 +6,22 @@
 import "./lib/cli.js";
 import { spawnSync } from "node:child_process";
 import { VtaClient } from "@buildathon/vta-client";
-import { LOCAL_VTA_URL, die, env, loadAdmin, mode, reachable } from "./env.js";
+import { LOCAL_VTA_URL, die, env, loadAdmin, mode, reachable, runtime } from "./env.js";
+import { runtimeModeError } from "./lib/binary.js";
+import { requireBinaries, startVtc } from "./lib/binary-run.js";
 import { composeEnvNow } from "./lib/compose.js";
 import { profileArgs } from "./lib/tunnel.js";
 
 const m = mode();
 if (m === "farm") die("vtc:up is for MODE=local or MODE=tunnel. In farm mode the portal provisions the VTC.");
+if (runtime() === "binary") {
+  // Host binary: the same steps as vtc-entrypoint.sh, run here (setup, grant at the VTA, setup phase 2, CORS, ACL, serve).
+  const err = runtimeModeError("binary", m);
+  if (err) die(err);
+  await startVtc(requireBinaries(true).vtc!);
+  console.log("the VTC is serving. Check: npm run vtc:hello");
+  process.exit(0);
+}
 const dc = (args: string[]) => spawnSync("docker", ["compose", ...profileArgs(m, true), ...args], { encoding: "utf8", env: composeEnvNow() });
 
 const up = dc(["up", "-d", "vtc"]);

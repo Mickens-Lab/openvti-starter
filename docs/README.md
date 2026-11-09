@@ -18,6 +18,7 @@ Back to the [repo README](../README.md). Everything here is for a local playgrou
 
 - [STATUS.md](STATUS.md): what works in which mode, and what was and was not verified.
 - [MODES.md](MODES.md): local, tunnel (messaging on public quick tunnels) and farm: what each gives, caveats, switching, troubleshooting.
+- [BINARIES.md](BINARIES.md): `RUNTIME=binary`: run the VTA and VTC as host binaries instead of Docker (env vars, limits).
 - [FARM.md](FARM.md): the hosted VTA Farm mode, canary and troubleshooting.
 - [PINS.md](PINS.md): pinned versions, building the images, drift checks (and [PINS_LOG.md](../PINS_LOG.md)).
 - [VERIFY.md](VERIFY.md): how to check what you run (digest, signature, SBOM, labels, building yourself and comparing), and what that does and does not prove.

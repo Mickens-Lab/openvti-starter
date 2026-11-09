@@ -8,7 +8,9 @@ import { existsSync, readFileSync } from "node:fs";
 import net from "node:net";
 import { resolve } from "node:path";
 import { devBanner } from "./banner.js";
-import { env, type Mode, modeInfo, vtcChoice } from "./env.js";
+import { env, type Mode, modeInfo, runtime, vtcChoice } from "./env.js";
+import { runtimeModeError } from "./lib/binary.js";
+import { anyRunning, binaryChecks } from "./lib/binary-run.js";
 import { modeLine, parseModeFlags } from "./lib/modes.js";
 import {
   blocking, cloudflaredCheck, type Check, dockerCheck, DEV_PORTS, devPortCheck, formatChecks, imageChecks, imagesNeeded, CORS_PORTS, DEV_SCAN_RANGES, MEDIATOR_PORT, mediatorPortCheck, viteOriginCheck,
@@ -67,30 +69,39 @@ export async function runChecks(o: DoctorOptions): Promise<Check[]> {
   if (o.mode === "farm") {
     return out;
   }
-  const cli = have("docker");
-  const daemon = cli && spawnSync("docker", ["info"], { stdio: "ignore", timeout: 20_000 }).status === 0;
-  const compose = cli && spawnSync("docker", ["compose", "version"], { stdio: "ignore", timeout: 20_000 }).status === 0;
-  const docker = dockerCheck({ cli, daemon, compose });
-  out.push(docker);
-  const needs = imagesNeeded(o.mode, o.withVtc);
-  out.push(memoryCheck(availKb(), o.mode === "tunnel" ? 8 : 4, o.mode === "tunnel" ? "building the mediator" : "building an image"));
-  if (docker.level === "ok") {
-    let images: Check[];
-    try {
-      const specs = imageSpecs(pins(), env("IMAGE_REGISTRY"));
-      const over = { vta: env("VTA_IMAGE"), vtc: env("VTC_IMAGE"), mediator: env("MEDIATOR_IMAGE") };
-      images = imageChecks(imageStatus(specs, realDocker, currentMode(env), needs, over, imagesAvailable(pins())), specs, o.vtcOptional, { available: imagesAvailable(pins()), mode: o.mode });
-    } catch (e) {
-      images = [{ level: "fail", name: "Images", detail: (e as Error).message, fix: "see docs/IMAGES.md" }];
-    }
-    out.push(...images);
-    const buildsVti = images.some((c) => c.level !== "ok" && /vta|vtc/.test(c.name));
-    if (buildsVti) {
-      const dir = resolve(process.env.VTI_PATH ?? "../verifiable-trust-infrastructure");
-      out.push(vtiCheckout({ exists: existsSync(dir), dir: process.env.VTI_PATH ? dir : "../verifiable-trust-infrastructure", repoUrl: pins().vti.repo }));
+  const binary = runtime() === "binary";
+  const rtErr = runtimeModeError(runtime(), o.mode);
+  if (rtErr) out.push({ level: "fail", name: "Runtime", detail: rtErr, fix: "RUNTIME=docker, or MODE=local (docs/BINARIES.md)" });
+  let daemon = false;
+  if (binary) {
+    out.push({ level: "ok", name: "Runtime", detail: "RUNTIME=binary: the VTA" + (o.withVtc ? " and VTC run" : " runs") + " as host binaries, no Docker or images needed" });
+    out.push(...binaryChecks(o.withVtc));
+  } else {
+    const cli = have("docker");
+    daemon = cli && spawnSync("docker", ["info"], { stdio: "ignore", timeout: 20_000 }).status === 0;
+    const compose = cli && spawnSync("docker", ["compose", "version"], { stdio: "ignore", timeout: 20_000 }).status === 0;
+    const docker = dockerCheck({ cli, daemon, compose });
+    out.push(docker);
+    const needs = imagesNeeded(o.mode, o.withVtc);
+    out.push(memoryCheck(availKb(), o.mode === "tunnel" ? 8 : 4, o.mode === "tunnel" ? "building the mediator" : "building an image"));
+    if (docker.level === "ok") {
+      let images: Check[];
+      try {
+        const specs = imageSpecs(pins(), env("IMAGE_REGISTRY"));
+        const over = { vta: env("VTA_IMAGE"), vtc: env("VTC_IMAGE"), mediator: env("MEDIATOR_IMAGE") };
+        images = imageChecks(imageStatus(specs, realDocker, currentMode(env), needs, over, imagesAvailable(pins())), specs, o.vtcOptional, { available: imagesAvailable(pins()), mode: o.mode });
+      } catch (e) {
+        images = [{ level: "fail", name: "Images", detail: (e as Error).message, fix: "see docs/IMAGES.md" }];
+      }
+      out.push(...images);
+      const buildsVti = images.some((c) => c.level !== "ok" && /vta|vtc/.test(c.name));
+      if (buildsVti) {
+        const dir = resolve(process.env.VTI_PATH ?? "../verifiable-trust-infrastructure");
+        out.push(vtiCheckout({ exists: existsSync(dir), dir: process.env.VTI_PATH ? dir : "../verifiable-trust-infrastructure", repoUrl: pins().vti.repo }));
+      }
     }
   }
-  const own = daemon ? ownStackRunning() : false;
+  const own = binary ? anyRunning() : daemon ? ownStackRunning() : false;
   const busyCache = new Map<number, boolean>();
   const busy = async (p: number) => { if (!busyCache.has(p)) busyCache.set(p, await portBusy(p)); return busyCache.get(p)!; };
   for (const p of STACK_PORTS) {

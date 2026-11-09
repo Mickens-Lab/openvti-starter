@@ -1,5 +1,6 @@
 // Tiny .env reader and the admin key file; Node only.
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { parseRuntime, type Runtime } from "./lib/binary.js";
 import { type Mode, type ModeSource, resolveMode, resolveVtc, validMode } from "./lib/modes.js";
 import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@buildathon/vta-client";
 
@@ -138,4 +139,9 @@ export function vtcUrl(): string {
 export function refusal(body: unknown): string {
   const p = (body as any)?.payload;
   return p?.code ? `${p.code}${p.message ? ` - ${p.message}` : ""}` : JSON.stringify(body);
+}
+
+/** `RUNTIME=docker|binary` (default docker): how the VTA and VTC run. Docs: docs/BINARIES.md. */
+export function runtime(): Runtime {
+  try { return parseRuntime(env("RUNTIME"), ENV_FILE); } catch (e) { return die((e as Error).message); }
 }

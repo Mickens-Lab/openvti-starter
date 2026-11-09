@@ -11,7 +11,9 @@ import "./lib/cli.js";
 import { spawnSync } from "node:child_process";
 import { existsSync, rmSync } from "node:fs";
 import { devBanner, tunnelBanner } from "./banner.js";
-import { clearGeneratedEnv, die, ENV_FILE, LOCAL_VTC_URL, env, modeInfo, removeEnv, updateEnv, vtcChoice, withVtc } from "./env.js";
+import { clearGeneratedEnv, die, ENV_FILE, LOCAL_VTC_URL, env, modeInfo, removeEnv, runtime, updateEnv, vtcChoice, withVtc } from "./env.js";
+import { runtimeModeError } from "./lib/binary.js";
+import { anyRunFiles, requireBinaries, resetBinaries, resolveNow, startVta, stopBinaries } from "./lib/binary-run.js";
 import { confirm } from "./lib/prompt.js";
 import { modeLine, parseModeFlags } from "./lib/modes.js";
 import {
@@ -48,7 +50,7 @@ const guard = async (want: "local" | "tunnel") => {
   const g = volumeGuard({ want, marker: readStackMode(), volumes: existingStackVolumes() });
   if (g.ok) return;
   if (await confirm(`\n${g.message}\n\nReset it now? This deletes that stack's volumes, .vta/ and the kit's keys in ${ENV_FILE}.`)) {
-    resetAll();
+    await resetAll();
     return;
   }
   die(g.message);
@@ -129,15 +131,23 @@ function tunnelDown(): void {
 }
 
 /** Stop the stack and keep its data (local). A tunnel stack is never resumable, so there `down` also deletes the volumes. */
-function stop(): void {
+async function stop(): Promise<void> {
+  if (runtime() === "binary") {
+    const n = await stopBinaries();
+    console.log(`stopped ${n.length ? n.join(" and ") : "nothing (no binary was running)"}.`);
+    return;
+  }
+  if (anyRunFiles()) await stopBinaries(); // a stack started with RUNTIME=binary and now taken down without it
   const r = dc("tunnel", true, ["down", "--remove-orphans"], { inherit: true });
   if (r.status !== 0) console.error("docker compose down did not finish cleanly (is Docker running?).");
 }
 
 /** Everything: stop the stack and any tunnels, delete the volumes, the generated keys (`.vta/`) and the kit's own `.env` keys. Works in every mode. */
-function resetAll(): void {
+async function resetAll(): Promise<void> {
   const t = readTunnel();
-  const hadDocker = have("docker");
+  const binary = runtime() === "binary";
+  if (binary || anyRunFiles()) await resetBinaries();
+  const hadDocker = !binary && have("docker");
   if (hadDocker) {
     const r = dc("tunnel", true, ["down", "-v", "--remove-orphans"], { inherit: true });
     if (r.status !== 0) console.error("docker compose down -v did not finish cleanly (is Docker running?). Volumes may remain: docker volume ls.");
@@ -146,7 +156,7 @@ function resetAll(): void {
   clearStackFiles();
   rmSync(".vta", { recursive: true, force: true });
   const kept = clearGeneratedEnv();
-  console.log(`reset: containers and volumes removed${n ? `, ${n} tunnel(s) stopped` : ""}, .vta/ deleted, the kit's keys removed from ${ENV_FILE}${kept.length ? ` (kept your own: ${kept.join(", ")})` : ""}.`);
+  console.log(`reset: ${binary ? "binaries stopped, .vta/run deleted" : "containers and volumes removed"}${n ? `, ${n} tunnel(s) stopped` : ""}, .vta/ deleted, the kit's keys removed from ${ENV_FILE}${kept.length ? ` (kept your own: ${kept.join(", ")})` : ""}.`);
 }
 
 const flags = parseModeFlags(process.argv.slice(2));
@@ -159,7 +169,20 @@ const info = flags.mode ? { mode: flags.mode, source: "flag" as const } : modeIn
 if (flags.mode) process.env.MODE = flags.mode;
 if (flags.vtc !== undefined) process.env.WITH_VTC = flags.vtc ? "1" : "0";
 const m = info.mode;
-if (m !== "farm" && sub === "up") {
+const binary = runtime() === "binary";
+const rtErr = runtimeModeError(runtime(), m);
+if (rtErr && sub === "up") die(rtErr);
+if (m !== "farm" && sub === "up" && binary) {
+  // No images in this runtime. An unrequested VTC with no `vtc` binary is dropped; a requested one is an error (requireBinaries).
+  const choice = vtcChoice();
+  vtcRequested = choice.explicit;
+  let vtc = choice.on;
+  if (vtc && !choice.explicit && !resolveNow(true).ok && resolveNow(false).ok) {
+    vtc = false;
+    console.log("note: no `vtc` binary was found (VTI_BIN_DIR / VTC_BIN), so this run starts without the community (VTC). Set WITH_VTC=0 to stop seeing this.");
+  }
+  process.env.WITH_VTC = vtc ? "1" : "0";
+} else if (m !== "farm" && sub === "up") {
   // The VTC is on by default in every mode. If its image can be neither found nor pulled and nobody asked for it, start without it and say so.
   const choice = vtcChoice();
   vtcRequested = choice.explicit;
@@ -176,14 +199,28 @@ if (m !== "farm" && sub === "up") {
 }
 console.log(modeLine(m, info.source, withVtc()));
 if (sub === "reset") {
-  resetAll();
+  await resetAll();
 } else if (down && (m === "tunnel" || existsSync(TUNNEL_FILE))) {
   tunnelDown();
 } else if (down && m !== "farm") {
-  stop();
-  console.log("stopped; the volumes are kept (npm run up resumes it, npm run reset wipes everything).");
+  await stop();
+  console.log(runtime() === "binary" ? "stopped; the state in .vta/run is kept (npm run up resumes it, npm run reset wipes everything)." : "stopped; the volumes are kept (npm run up resumes it, npm run reset wipes everything).");
 } else if (m === "tunnel") {
   await tunnelUp();
+} else if (m === "local" && binary) {
+  await runPreflight({ mode: "local", withVtc: withVtc() });
+  const bins = requireBinaries(withVtc());
+  npm("vta:keygen");
+  await startVta(bins.vta);
+  writeStackMode("local");
+  npm("vta:provision");
+  if (withVtc()) {
+    npm("vtc:up");
+    process.stdout.write("waiting for the VTC");
+    const t0 = Date.now();
+    const ready = await waitFor200(`${LOCAL_VTC_URL}/health`, 90_000);
+    console.log(ready ? ` ... ready (${Math.round((Date.now() - t0) / 1000)} s)` : "\nthe VTC is not answering yet; check npm run vtc:logs, then try npm run vtc:hello.");
+  }
 } else if (m === "local") {
   await runPreflight({ mode: "local", withVtc: withVtc() });
   await guard("local");
