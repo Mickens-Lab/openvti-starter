@@ -108,7 +108,8 @@ What was seen (live, 2026-11-08):
 - The second member joined the attributed room (handshake as for the first), posted, and read its own post. It cannot read records from before it joined, which is how MLS works.
 - **Adding a member moves the group to a new epoch, and every existing member's VTA has to apply that commit.** The kit asks the host for the missed commits (`rooms/epoch/commits`) and hands them to the VTA (`rooms/keys/commit`); `RoomSession.open` does this first for a sealed room.
 - **VTA 0.72.0 quirk, and the workaround.** For a member that joined by Welcome the VTA's commit tracker sits one epoch behind its group (the Welcome reply under-reports the epoch by one). Without the workaround the first member could not read the second member's post: the commit for the epoch it already held was refused with MLS `WrongEpoch`, and the next one with *"commit produces epoch 3 but room is at 1; resume from 2"*. `VtaKeyOracle.catchUp` skips a `WrongEpoch` for an epoch already held and answers a "resume from M" refusal by sending the same commit stated as epoch M (MLS still validates the bytes, so a real gap still fails). Worth reporting upstream.
-- **Result:** after that, member one read member two's post (with its name), posted, and member two read member one's post. Verified live by the same call sequence done by hand; the automatic `catchUp` is unit-tested against a model of the quirk and has not yet been re-run live on a fresh epoch change.
+- **One persona per context in a room.** If one app identity (one context) holds two personas that are both members of the same room, the VTA will not choose between them: `you may act as 2 personas holding a AuthorityCredential issued by room ...; which one is acting is not a question this can answer safely — act from the context of the one you mean`. Give every member of a room its own context and app identity (the `member-two` recipe above); do not put a second persona into the same context to test a third member.
+- **Result:** after that, member one read member two's post (with its name), posted, and member two read member one's post. Verified live by hand for member one; the automatic `catchUp` then ran live for member two when a third member joined (epoch 3 to 4, no manual step) and member two posted afterwards.
 
 ## Refusals and what they mean
 
@@ -138,7 +139,8 @@ What was seen (live, 2026-11-08):
 | Sealed files over about 34 KB | **refused by the host** (64 KiB document cap); the client limit is 32 KiB |
 | Profiles and avatars (open and attributed rooms) | **live**, 2026-11-08 |
 | A second member joins an attributed room and posts; it reads its own post | **live** |
-| Two members in one attributed room reading and posting to each other across an epoch change | **live** (by hand, with the workaround above); the automatic `catchUp` is unit-tested, not yet re-run live |
+| Two members in one attributed room reading and posting to each other across an epoch change | **live** (by hand, with the workaround above) |
+| Automatic `catchUp` on a fresh epoch change (a third member joined, epoch 3 to 4) | **live** for the second member; the first member could not be tested because I had put a second persona in its context (see above) |
 | `private` rooms | **unsupported by the host** at the time of testing |
 | ts-mls <-> openmls interop | **unverified** (the sealed run exercised the VTA's own MLS, not ts-mls) |
 | This kit's pinned VTC (0.20.0) as a room host | **unverified**: the live runs used a 0.26.0 host. The local stack has no rooms |
