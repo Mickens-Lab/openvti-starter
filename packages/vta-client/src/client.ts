@@ -225,6 +225,21 @@ export class VtaClient {
     });
   }
 
+  /**
+   * An identity that signs room and community requests as the persona `did` through `rooms/keys/act/0.8`: the VTA sets `issuer`, inserts the
+   * presentation for the request's action and signs with the persona's key, so the persona is the one author the host sees. A document that
+   * already carries `payload.presentation` is refused by the VTA, so it is dropped here (the room client attaches one by habit).
+   * Needed because the caller may act as several personas: `issuer` is what picks one.
+   */
+  actIdentity(did: string): Identity {
+    return remoteIdentity(did, async (document) => {
+      const { presentation: _drop, ...payload } = (document.payload ?? {}) as Record<string, unknown>;
+      const r = await this.call<{ document: Record<string, unknown> }>(`${TT}/rooms/keys/act/0.8`, { document: { ...document, issuer: did, payload } });
+      if (!r?.document || typeof r.document !== "object") throw new Error("rooms/keys/act returned no document");
+      return r.document;
+    });
+  }
+
   /** auth/challenge then auth/authenticate; stores the bearer in `token`. */
   async authenticate(): Promise<string> {
     const ch = await this.call<{ challenge: string; sessionId: string }>(

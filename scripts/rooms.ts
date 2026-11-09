@@ -36,9 +36,9 @@ const persona = flag(rest, "app") ? undefined : env("ROOM_PERSONA"); // --app: a
 const me = persona ? vta.personaIdentity(persona) : memberIdentity(cred);
 const keys = new VtaKeyOracle(vta);
 const vtc = await reachable("VTC", url, () => VtcClient.connect(url, me, undefined, env("VTC_DID")));
-// Room calls (rooms/info, records) are signed by whoever asked the VTA for the presentation: its authority chain grants to the CALLER
-// (rooms/keys/present), so the app did:key signs them, acting for the persona. Membership calls (offers, accept) are the persona's own.
-const appMe = memberIdentity(cred);
+// Room calls (rooms/info, records, blobs) go through rooms/keys/act: the VTA completes the request as the persona (issuer, presentation,
+// proof), so the persona is the one author the room sees. Membership calls (offers, accept) are the persona's own via keys/sign-document.
+const appMe = persona ? vta.actIdentity(persona) : memberIdentity(cred);
 const appVtc = persona ? await reachable("VTC", url, () => VtcClient.connect(url, appMe, undefined, env("VTC_DID"))) : vtc;
 const pos = positionals(rest);
 const roomId = pos[0] ?? env("ROOM_ID");
@@ -72,8 +72,11 @@ const offersOf = async (): Promise<RoomOfferLike[]> => ((await call("rooms/offer
 let cache: Promise<RoomOfferLike[]> | undefined;
 const lookup = async (id: string) => (await (cache ??= offersOf())).find((o) => o.roomId === id);
 
+/** With act the VTA inserts the presentation itself; HostClient still wants one to attach, and actIdentity drops it before signing. */
+const actPresenter = async () => ({ presentation: { membership: "", authority: [] as string[] } });
+
 /** HostClient whose presenter asks the member's VTA, and for an open room falls back to the offer's own credentials. */
-const hostClient = (): HostClient => new HostClient(vtcTransport(appVtc), offerFallbackPresenter((r, a) => keys.present(r, a), lookup));
+const hostClient = (): HostClient => new HostClient(vtcTransport(appVtc), persona ? actPresenter : offerFallbackPresenter((r, a) => keys.present(r, a), lookup));
 
 const heldRooms = async (): Promise<Set<string>> => {
   try { return new Set((await keys.held()).filter((h) => h.member === me.did).map((h) => h.roomId)); } catch { return new Set(); }
