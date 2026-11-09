@@ -5,8 +5,8 @@
 // Mutations: one throwaway applicant applies, the admin approves it, and it leaves at the end (the community keeps a
 // tombstoned entry for it). Your own app identity in .env is not touched. Calls are paced to the admission budgets.
 import "./lib/cli.js";
-import { TT, newIdentity, type Identity } from "@buildathon/vta-client";
-import { TrustTaskError, VtcClient, pickCriterion } from "@buildathon/vtc-client";
+import { TT, newIdentity, type Identity } from "@starter/vta-client";
+import { TrustTaskError, VtcClient, pickCriterion } from "@starter/vtc-client";
 import { env, loadAdmin, vtcUrl } from "./env.js";
 import { MATRIX, type Persona } from "./lib/live-matrix.js";
 import { anonymousPacer, knownPacer, skip, stackProblem } from "./lib/live.js";

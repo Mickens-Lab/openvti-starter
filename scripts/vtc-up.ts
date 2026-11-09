@@ -5,7 +5,7 @@
 // cannot be used here: the running daemon holds the store lock.)
 import "./lib/cli.js";
 import { spawnSync } from "node:child_process";
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 import { LOCAL_VTA_URL, die, env, loadAdmin, mode, reachable, runtime } from "./env.js";
 import { runtimeModeError } from "./lib/binary.js";
 import { requireBinaries, startVtc } from "./lib/binary-run.js";

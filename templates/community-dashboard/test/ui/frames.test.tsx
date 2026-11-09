@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ISSUE_TYPE, type Frame } from "@buildathon/tsp-client";
+import { ISSUE_TYPE, type Frame } from "@starter/tsp-client";
 import { FramesPanel } from "../../src/components/FramesPanel.tsx";
 import type { ListenHandlers, StartListener } from "../../src/listener.ts";
 import type { FramesGate } from "../../src/frames.ts";

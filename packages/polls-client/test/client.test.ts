@@ -1,8 +1,8 @@
 // PollsClient against a fake fetch: exact task types, recipients and byte-for-byte pass-through. No server.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { VtaClient, newIdentity } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { VtaClient, newIdentity } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import { POLL_TASK, PollsClient, didWebvhLogUrl, pollManifest, resolveTrustTaskHttps } from "../src/index.js";
 
 const VTC_DID = "did:webvh:Qmfakevtc:localhost%3A8200";

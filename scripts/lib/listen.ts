@@ -1,7 +1,7 @@
-// What tsp:listen saw, as counts and one closing line. Pure, so it is unit-tested. The tally itself lives in @buildathon/tsp-client
+// What tsp:listen saw, as counts and one closing line. Pure, so it is unit-tested. The tally itself lives in @starter/tsp-client
 // (src/frames.ts), shared with the community dashboard's "Credential frames" panel.
-import { ISSUE_TYPE, type Tally } from "@buildathon/tsp-client";
-export { emptyTally, ISSUE_TYPE, record, type Frame, type Tally } from "@buildathon/tsp-client";
+import { ISSUE_TYPE, type Tally } from "@starter/tsp-client";
+export { emptyTally, ISSUE_TYPE, record, type Frame, type Tally } from "@starter/tsp-client";
 
 /** The closing line: did the credential arrive, and what that does (and does not) say about the join status. */
 export function verdict(t: Tally, opts: { method: "did:key" | "did:peer"; related: boolean }): string {

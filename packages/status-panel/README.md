@@ -1,10 +1,10 @@
-# @buildathon/status-panel
+# @starter/status-panel
 
 A connection-status view for a VTA (and optional VTC). Vanilla TypeScript, no dependencies, no framework:
 render into any container. Theme-aware (light/dark) and responsive; CSS is injected once and scoped to `.sp-root`.
 
 ```ts
-import { mountStatusPanel } from "@buildathon/status-panel";
+import { mountStatusPanel } from "@starter/status-panel";
 
 const panel = mountStatusPanel(document.getElementById("status")!, {
   mode: "local",                       // or "farm"
@@ -46,4 +46,4 @@ advisory (it does not change the overall status pill; the Messaging row in card 
 `applicantCardRows()` in `src/applicant.ts`; the behaviour is unit-tested and verified live 2026-10-30 (one machine, one run).
 
 The panel never prints the credential. Pure helpers (DID-document services, version comparison, discovery grouping,
-compatibility hints) live in `src/parse.ts` and are exported; tests: `npm test -w @buildathon/status-panel`.
+compatibility hints) live in `src/parse.ts` and are exported; tests: `npm test -w @starter/status-panel`.

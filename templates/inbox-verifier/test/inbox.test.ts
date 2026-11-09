@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
-import { newIdentity, rfc3339 } from "@buildathon/vta-client";
+import { newIdentity, rfc3339 } from "@starter/vta-client";
 import { NOTE_RESPONSE, NOTE_TYPE, createInbox } from "../src/inbox.js";
 import { makeNote } from "../src/send.js";
 

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import type { VtcClient } from "@buildathon/vtc-client";
-import { didPeerFits } from "@buildathon/tsp-client";
+import type { VtcClient } from "@starter/vtc-client";
+import { didPeerFits } from "@starter/tsp-client";
 import { describeError, getClient, identity, refusalOf } from "./client.ts";
 import { builtApplicant, runMode } from "./delivery.ts";
 import { framesGate } from "./frames.ts";

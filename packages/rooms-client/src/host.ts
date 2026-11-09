@@ -6,8 +6,8 @@
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
 import {
   TrustTaskError, classifyReply, newIdentity, purposeFor, refusalCode, refusalDetails, rfc3339, unwrapReply, type Identity,
-} from "@buildathon/vta-client";
-import type { VtcClient } from "@buildathon/vtc-client";
+} from "@starter/vta-client";
+import type { VtcClient } from "@starter/vtc-client";
 import { LIST_PAGE_CAP, ROOMS_TASK } from "./tasks.js";
 import {
   blobManifest, blobRefOf, chunkWire, digestBytes, parseGetReply, parseInfo, parseListPage, parsePutReply,
@@ -118,6 +118,13 @@ export class HostClient {
     const exp = expiresAt ? Date.parse(expiresAt) : this.now() + 4 * 3600_000;
     this.cache.set(id, { p: presentation, until: exp - 5 * 60_000 });
     return presentation;
+  }
+
+  /** The MLS commits above `sinceEpoch`, ascending and gap-free, and the epoch the room is at (`rooms/epoch/commits/0.1`). */
+  async commits(roomId: string, sinceEpoch: number, limit = 100): Promise<{ commits: { epoch: number; commit: string }[]; roomEpoch?: number }> {
+    const r = await this.transport.send(ROOMS_TASK.epochCommits, { roomId, sinceEpoch, limit, presentation: await this.presentation(roomId, "read") });
+    const commits = Array.isArray(r?.commits) ? r.commits.filter((c: any) => typeof c?.commit === "string" && Number.isInteger(c?.epoch)).map((c: any) => ({ epoch: c.epoch as number, commit: c.commit as string })) : [];
+    return { commits, ...(Number.isInteger(r?.roomEpoch) ? { roomEpoch: r.roomEpoch as number } : {}) };
   }
 
   async info(roomId: string): Promise<RoomInfo> {

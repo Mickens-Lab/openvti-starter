@@ -1,7 +1,7 @@
 // The page: pick a room, then Chat / Notes / Files with a search bar and the live badge. The backend is the mock (default)
 // or live (COLLAB_MODE=live); tests pass their own.
 import { useEffect, useState } from "react";
-import type { SessionItem } from "@buildathon/rooms-client";
+import type { SessionItem } from "@starter/rooms-client";
 import type { Backend, RoomRef } from "./backend.ts";
 import { RoomContext, errorText, useRoom, useSession } from "./hooks.ts";
 import { TABS, split, tabFor, type Tab } from "./state.ts";

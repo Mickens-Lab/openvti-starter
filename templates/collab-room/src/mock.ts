@@ -5,12 +5,12 @@
 //  - an `attributed` room (MLS-sealed with real two-member MLS: LocalMlsKeys for you and Bob; files inline, sealed).
 // Bob is simulated: every `everyMs` he posts the next line of a script into one of the rooms, so the live feed is visible.
 // Nothing leaves the page; keys live in memory only and vanish on reload.
-import { newIdentity, type Identity } from "@buildathon/vta-client";
+import { newIdentity, type Identity } from "@starter/vta-client";
 import {
   HostClient, LocalMlsKeys, PollSource, RoomSession, roomHostTransport, systemClock, utf8, type Clock, type KeyService, type Presenter,
   type RoomSessionOpts, type Visibility,
-} from "@buildathon/rooms-client";
-import { MockRoomHost, mockPresentation } from "@buildathon/rooms-client/mock";
+} from "@starter/rooms-client";
+import { MockRoomHost, mockPresentation } from "@starter/rooms-client/mock";
 import type { Backend, RoomRef } from "./backend.ts";
 import { demoAvatar, demoGif, demoPng } from "./demo-media.ts";
 

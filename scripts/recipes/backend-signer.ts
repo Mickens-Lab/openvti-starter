@@ -6,7 +6,7 @@
 import "../lib/cli.js";
 import { createServer } from "node:http";
 import { pathToFileURL } from "node:url";
-import { TASK, TrustTaskError, VtaClient } from "@buildathon/vta-client";
+import { TASK, TrustTaskError, VtaClient } from "@starter/vta-client";
 
 export interface Caller { call(type: string, payload: Record<string, unknown>): Promise<unknown> }
 export interface Opts {

@@ -1,5 +1,5 @@
 // Turn calls into the `Probe` results that state.ts interprets, and run the signed state check.
-import type { VtcClient } from "@buildathon/vtc-client";
+import type { VtcClient } from "@starter/vtc-client";
 import { refusalOf } from "./client.ts";
 import { deriveState, isNotFound, needsMemberRead, type DashState, type Probe, type StatusValue } from "./state.ts";
 

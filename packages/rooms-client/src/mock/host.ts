@@ -4,7 +4,7 @@
 // It checks that a presentation is present, names the room, is for the signer and confers the action. Verifying the
 // room's credentials is the real host's job and is not mocked: any mockPresentation() is accepted.
 import { DataIntegrityProofVerifier } from "@openvtc/trust-tasks-proof";
-import { TT, TrustTaskError, type Identity } from "@buildathon/vta-client";
+import { TT, TrustTaskError, type Identity } from "@starter/vta-client";
 import { LIST_PAGE_CAP, ROOMS_TASK } from "../tasks.js";
 import { blobRefOf, chunkWire, digestBytes, utf8, type BlobManifest, type Presentation, type RoomAction, type SealedContent, type Cleartext, type RecordStatus, type Visibility } from "../wire.js";
 import type { HostTransport } from "../host.js";
@@ -50,6 +50,9 @@ function fail(status: number, code: string, message = code, extra: Record<string
   throw new TrustTaskError(status, { type: ERROR_TYPE, payload: { code, message, ...extra } });
 }
 
+/** The largest document the mock accepts, as the live host does. */
+export const MOCK_DOCUMENT_CAP = 65536;
+
 export class MockRoomHost {
   readonly rooms = new Map<string, Room>();
   /** Called before every task; return an error to refuse it (e.g. a 429 for the feed's backoff tests). */
@@ -93,11 +96,14 @@ export class MockRoomHost {
   fetchHandler(): typeof fetch {
     const verifier = new DataIntegrityProofVerifier();
     return (async (_input: any, init?: any) => {
-      const doc = JSON.parse(String(init?.body ?? "{}"));
+      const body = String(init?.body ?? "{}");
+      const doc = JSON.parse(body);
       const reply = (status: number, body: unknown, headers: Record<string, string> = {}) =>
         new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json", ...headers } });
       try {
         if (doc.recipient !== this.hostDid) fail(400, "wrongRecipient");
+        // A real host refuses documents over 65536 bytes (observed live on rooms/records/put/0.3).
+        if (new TextEncoder().encode(body).length > MOCK_DOCUMENT_CAP) fail(400, "malformedRequest");
         if (!(await verifier.verify(doc).catch(() => false))) fail(401, "invalidProof");
         const payload = await this.send(String(doc.type), doc.payload ?? {}, String(doc.issuer));
         return reply(200, { id: globalThis.crypto.randomUUID(), threadId: doc.id, type: `${doc.type}#response`, payload });

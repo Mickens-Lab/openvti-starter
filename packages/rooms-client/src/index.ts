@@ -5,6 +5,8 @@ export * from "./wire.js";
 export * from "./host.js";
 export * from "./keys.js";
 export * from "./vta-keys.js";
+export * from "./offers.js";
+export * from "./join.js";
 export * from "./local-mls.js";
 export * from "./envelope.js";
 export * from "./feed.js";

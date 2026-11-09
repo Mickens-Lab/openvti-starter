@@ -1,6 +1,6 @@
 // The thin React layer over RoomSession. Decisions live in state.ts; this file only subscribes and re-renders.
 import { createContext, useContext, useEffect, useState } from "react";
-import { PollSource, type FeedStatus, type FileEnvelope, type RoomSession, type SessionItem } from "@buildathon/rooms-client";
+import { PollSource, type FeedStatus, type FileEnvelope, type RoomSession, type SessionItem } from "@starter/rooms-client";
 import type { Backend, RoomRef } from "./backend.ts";
 
 export interface RoomView {

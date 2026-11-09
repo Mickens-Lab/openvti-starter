@@ -2,7 +2,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { parseRuntime, type Runtime } from "./lib/binary.js";
 import { type Mode, type ModeSource, resolveMode, resolveVtc, validMode } from "./lib/modes.js";
-import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@buildathon/vta-client";
+import { identityFromSeed, seedFromMultibase, seedToMultibase, type Identity } from "@starter/vta-client";
 
 export const ADMIN_FILE = ".vta/admin.json";
 /** `ENV_FILE=.env.other` lets one repo hold several app identities. */
@@ -57,7 +57,7 @@ export function mode(): Mode {
 }
 
 /** Keys the kit itself writes to `.env`. `reset` removes exactly these and leaves any line you added. */
-export const GENERATED_ENV_KEYS = ["MODE", "FARM", "VTA_URL", "VTA_DID", "VTA_CONTEXT", "APP_DID", "VTA_CREDENTIAL", "VTC_URL", "VTC_DID", "VTC_REQUEST_ID", "VTC_PEER_REQUEST_ID", "APPROVER_DID"];
+export const GENERATED_ENV_KEYS = ["MODE", "FARM", "VTA_URL", "VTA_DID", "VTA_CONTEXT", "APP_DID", "VTA_CREDENTIAL", "VTC_URL", "VTC_DID", "VTC_REQUEST_ID", "VTC_PEER_REQUEST_ID", "APPROVER_DID", "ROOM_PERSONA", "ROOM_PERSONA_REQUEST_ID"];
 
 /** Remove the kit's own keys from the env file; delete the file if nothing else is left. Returns the keys that stay. */
 export function clearGeneratedEnv(): string[] {

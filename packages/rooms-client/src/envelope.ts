@@ -7,7 +7,12 @@ import { b64u, isSealedTier, utf8, type Cleartext, type Visibility } from "./wir
 
 export const ENVELOPE_PROFILE = "openvti.collab/1";
 /** Sealed rooms carry files inline in the sealed record, up to this size (blob file keys are not implemented). */
-export const INLINE_FILE_CAP = 256 * 1024;
+/**
+ * The largest file a sealed room takes inline. The host refuses documents over 65536 bytes (`rooms/records/put/0.3`, observed live) and a
+ * sealed inline file inflates about 1.8x plus ~4.5 KB of overhead, so the limit is just over 34,300 bytes (34,300 passed, 36,000 did not).
+ * 32 KiB leaves headroom. Open rooms are not bound by it: their files are blobs.
+ */
+export const INLINE_FILE_CAP = 32 * 1024;
 export const AVATAR_CAP = 64 * 1024;
 
 export type EnvelopeKind = "chat" | "note" | "file" | "profile";

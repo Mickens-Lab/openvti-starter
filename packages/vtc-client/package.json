@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/vtc-client",
+  "name": "@starter/vtc-client",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -12,7 +12,7 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@buildathon/vta-client": "*",
+    "@starter/vta-client": "*",
     "@openvtc/trust-tasks-proof": "0.1.6"
   }
 }

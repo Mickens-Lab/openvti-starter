@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { mountStatusPanel } from "@buildathon/status-panel";
-import { VtcClient } from "@buildathon/vtc-client";
-import { VtaClient } from "@buildathon/vta-client";
-import { didPeerFits } from "@buildathon/tsp-client";
+import { mountStatusPanel } from "@starter/status-panel";
+import { VtcClient } from "@starter/vtc-client";
+import { VtaClient } from "@starter/vta-client";
+import { didPeerFits } from "@starter/tsp-client";
 import { abs, credential, identity, vtaBrowserUrl, vtcBrowserUrl } from "../client.ts";
 import { builtApplicant } from "../delivery.ts";
 

@@ -74,15 +74,15 @@ export function stripDids(v: unknown): unknown {
   return v;
 }
 
-/** A TypeScript snippet that repeats a call with `@buildathon/vtc-client`. `type` is a Trust Task URI. */
+/** A TypeScript snippet that repeats a call with `@starter/vtc-client`. `type` is a Trust Task URI. */
 export function toTypeScript(type: string, payload: Record<string, unknown>): string {
   if (type.startsWith("GET ") || type.startsWith("POST ")) {
     return `// ${type} is a member-portal REST call, not a Trust Task.\n// \`client.memberProof()\` does the whole sign-in and read.\nconst proof = await client.memberProof();`;
   }
   const body = Object.keys(payload).length ? JSON.stringify(payload, null, 2) : "{}";
   return [
-    `import { VtcClient } from "@buildathon/vtc-client";`,
-    `import { decodeCredential, identityFromCredential } from "@buildathon/vta-client";`,
+    `import { VtcClient } from "@starter/vtc-client";`,
+    `import { decodeCredential, identityFromCredential } from "@starter/vta-client";`,
     ``,
     `const me = identityFromCredential(decodeCredential(process.env.VTA_CREDENTIAL!));`,
     `const client = await VtcClient.connect(process.env.VTC_URL!, me, undefined, process.env.VTC_DID);`,

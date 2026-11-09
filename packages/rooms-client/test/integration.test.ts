@@ -3,7 +3,7 @@
 // keys go through VtaKeyOracle -> MockKeyOracle (the rooms/keys/* wire); Bob's are a LocalMlsKeys in the page.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { newIdentity, type Identity } from "@buildathon/vta-client";
+import { newIdentity, type Identity } from "@starter/vta-client";
 import {
   HostClient, KEYS_TASK, LocalMlsKeys, PollSource, RoomSession, VtaKeyOracle, b64u, fromUtf8, roomHostTransport, shortDid, sniffImage,
   utf8, type KeyService, type Presenter, type SessionChange, type Visibility,

@@ -2,8 +2,8 @@
 // reaches the member's session through the poll feed on a manual clock.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { sniffImage } from "@buildathon/rooms-client";
-import { ManualClock } from "@buildathon/rooms-client/mock";
+import { sniffImage } from "@starter/rooms-client";
+import { ManualClock } from "@starter/rooms-client/mock";
 import { BOB_NAME, BOB_SCRIPT, OPEN_ROOM, SEALED_ROOM, createMockBackend } from "../src/mock.ts";
 
 async function waitFor(what: string, cond: () => boolean, ms = 5000) {

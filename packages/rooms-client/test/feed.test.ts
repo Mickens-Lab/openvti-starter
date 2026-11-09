@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { TrustTaskError } from "@buildathon/vta-client";
+import { TrustTaskError } from "@starter/vta-client";
 import { Feed, PollSource, type FeedChange, type RecordMeta, type RoomRecord } from "../src/index.js";
 import { ManualClock } from "../src/mock/index.js";
 

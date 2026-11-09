@@ -160,6 +160,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const choice = vtcChoice();
   console.log(modeLine(info.mode, info.source, choice.on));
   const cs = await runChecks({ mode: info.mode, withVtc: choice.on, vtcOptional: !choice.explicit, scope: "full" });
-  console.log(`\nOpenVTI buildathon starter: machine check\n\n${formatChecks(cs)}\n\n${summary(cs)}`);
+  console.log(`\nOpenVTI starter: machine check\n\n${formatChecks(cs)}\n\n${summary(cs)}`);
   process.exit(blocking(cs).length ? 1 : 0);
 }

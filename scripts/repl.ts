@@ -7,8 +7,8 @@
 import "./lib/cli.js";
 import { mkdirSync } from "node:fs";
 import repl from "node:repl";
-import { decodeCredential, identityFromCredential, TT, VtaClient } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { decodeCredential, identityFromCredential, TT, VtaClient } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import { devBanner } from "./banner.js";
 import { die, env, mode, reachable, vtcUrl } from "./env.js";
 import { searchTasks, slugOf, taskType } from "./lib/tasks.js";

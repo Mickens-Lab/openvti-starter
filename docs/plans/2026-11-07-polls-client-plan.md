@@ -120,7 +120,7 @@ PCS tasks through a VTC. So the bundle schemas above are the reference, not the 
 
 ## Placement
 
-- **`packages/polls-client`** (`@buildathon/polls-client`) is the reusable client. It is framework-free and runs in
+- **`packages/polls-client`** (`@starter/polls-client`) is the reusable client. It is framework-free and runs in
   Node and browsers, like `vtc-client`, which it builds on (`VtcClient.send/call` for the VTC, `VtaClient.call` for
   the VTA, `classifyReply/unwrapReply` for the ballot box). It contains:
   - manifest builder and validation;
@@ -129,10 +129,10 @@ PCS tasks through a VTC. So the bundle schemas above are the reference, not the 
   - results summary;
   - `PollsClient` (create, list, show, vote, results, close, cancel);
   - refusal wording.
-- **`templates/polls`** (`@buildathon/polls`) is a Node CLI and starting point, in the style of `hello-node` and
+- **`templates/polls`** (`@starter/polls`) is a Node CLI and starting point, in the style of `hello-node` and
   `inbox-verifier`:
-  - `npm run demo -w @buildathon/polls` runs the whole flow against the in-process mock, offline;
-  - `npm start -w @buildathon/polls -- <create|list|show|vote|results|close|cancel>` runs against the URLs in `.env`.
+  - `npm run demo -w @starter/polls` runs the whole flow against the in-process mock, offline;
+  - `npm start -w @starter/polls -- <create|list|show|vote|results|close|cancel>` runs against the URLs in `.env`.
 - **Mock:** `packages/polls-client/src/mock.ts` is one `node:http` server playing the VTC registrar, the member VTA
   and the ballot box, with the rules above. It does no crypto. The integration test and the demo both use it.
 
@@ -195,8 +195,8 @@ PCS tasks through a VTC. So the bundle schemas above are the reference, not the 
 ## Status (end of 2026-11-07)
 
 - **Done:** steps 1 to 6.
-- **Tests:** `npm test -w @buildathon/polls-client` passes 25 of 25, including 4 integration tests against the HTTP mock.
-  `npm test -w @buildathon/polls` passes 3 of 3.
-- **Runs:** `npm run demo -w @buildathon/polls` runs end to end, and the CLI was driven against `npm run mock -w @buildathon/polls`.
+- **Tests:** `npm test -w @starter/polls-client` passes 25 of 25, including 4 integration tests against the HTTP mock.
+  `npm test -w @starter/polls` passes 3 of 3.
+- **Runs:** `npm run demo -w @starter/polls` runs end to end, and the CLI was driven against `npm run mock -w @starter/polls`.
 - **Checks:** `tsc --noEmit` (root, polls-client and polls), `check:generic` and `check:docs` are clean.
 - **Not done:** any live run. The pinned VTC serves no elections, and the stack has no ballot box.

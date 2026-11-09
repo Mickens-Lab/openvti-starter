@@ -1,7 +1,7 @@
 // Notes: a list (newest first) and an editor. Saving an existing note writes a new version (its own create-only record);
 // the newest version wins for everyone.
 import { useEffect, useState } from "react";
-import type { SessionItem } from "@buildathon/rooms-client";
+import type { SessionItem } from "@starter/rooms-client";
 import { errorText, useRoomContext } from "../hooks.ts";
 import { canSave, draftOf, emptyDraft, formatTime, isDirty, type NoteDraft } from "../state.ts";
 import { Author } from "./Author.tsx";

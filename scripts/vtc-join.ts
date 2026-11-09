@@ -4,9 +4,9 @@
 // Then poll the request. Re-running reuses the saved request id.
 //   npm run vtc:join [-- --criterion <requirementsDigest>] [--name "Display Name"]
 import "./lib/cli.js";
-import { decodeCredential, seedFromMultibase } from "@buildathon/vta-client";
-import { VtcClient, pickCriterion } from "@buildathon/vtc-client";
-import { TrustTaskError } from "@buildathon/vta-client";
+import { decodeCredential, seedFromMultibase } from "@starter/vta-client";
+import { VtcClient, pickCriterion } from "@starter/vtc-client";
+import { TrustTaskError } from "@starter/vta-client";
 import { existsSync, readFileSync } from "node:fs";
 import { ADMIN_FILE, die, env, mode, reachable, refusal, updateEnv, vtcUrl } from "./env.js";
 import { applicant, applicantOverride } from "./lib/applicant.js";

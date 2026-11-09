@@ -1,4 +1,4 @@
-# Disposable VTA for the buildathon. NOT for production: plaintext seed,
+# Disposable VTA for local development. NOT for production: plaintext seed,
 # loopback DID, http, no mediator.
 #
 #   npm run up      # keygen + compose up --wait + provision

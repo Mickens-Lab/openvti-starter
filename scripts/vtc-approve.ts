@@ -4,8 +4,8 @@
 // different DID claimed with a passkey in the browser, so approve in the VTC
 // admin console instead (see docs/FARM.md); this script will answer 403.
 import "./lib/cli.js";
-import { TrustTaskError } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+import { TrustTaskError } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 import { die, env, loadAdmin, reachable, refusal, vtcUrl } from "./env.js";
 
 const url = vtcUrl();

@@ -1,7 +1,7 @@
 // Every screen of the dashboard against a fake community: what each state shows, the journey strip, refusals, toasts.
 import { beforeEach, describe, expect, it } from "vitest";
 import { fireEvent, screen, within } from "@testing-library/react";
-import { TrustTaskError } from "@buildathon/vta-client";
+import { TrustTaskError } from "@starter/vta-client";
 import userEvent from "@testing-library/user-event";
 import { approve, fake, freshDb, notMember, refusal } from "./fake.ts";
 import { mountApp, resetWorld, settle } from "./harness.tsx";

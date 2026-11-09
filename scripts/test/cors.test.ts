@@ -5,7 +5,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { corsTomlBody, LOCAL_CORS_SUMMARY, localCorsOrigins, originInDefaultCors } from "@buildathon/vta-client";
+import { corsTomlBody, LOCAL_CORS_SUMMARY, localCorsOrigins, originInDefaultCors } from "@starter/vta-client";
 
 const read = (f: string) => readFileSync(new URL(`../../${f}`, import.meta.url), "utf8");
 

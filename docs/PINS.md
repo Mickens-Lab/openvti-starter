@@ -72,7 +72,7 @@ For `MODE=tunnel` ([MODES.md](MODES.md)) there are more pins, in `pins.json` und
 | `cloudflared` | validated 2024.6.1 (host binary, not pinned) | Quick tunnels. |
 | VTA build features | `setup,rest,didcomm,tsp,cli-synthesis,aws-secrets,webvh` | The VTI default has no `tsp`; the VTA then refuses `services.tsp = true`. |
 
-Farm participants must pick the image `0.65.0-fc157f76`, never the portal default (0.56.0).
+Farm participants must pick the image `0.72.0-26d0da81` (offered on ic3, verified 2026-11-08), never the portal default (0.56.0).
 `npm run farm:check` and `farm:canary` compare the deployed agent's `/openapi.json` `info.version` with this pin and warn loudly.
 
 ## To do: version negotiation in the clients

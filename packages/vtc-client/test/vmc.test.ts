@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { DataIntegrityProofVerifier } from "@openvtc/trust-tasks-proof";
-import { digestMultibase, newIdentity } from "@buildathon/vta-client";
+import { digestMultibase, newIdentity } from "@starter/vta-client";
 import { DTG_CONTEXTS, MemberVmcNotPossible, VTC_TASK, VtcClient, isBound, memberVmc, membershipGrantOf, signCredential } from "../src/index.js";
 
 const VTC_DID = "did:webvh:Qmfake:localhost%3A8200";

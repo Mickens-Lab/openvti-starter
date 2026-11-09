@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/polls",
+  "name": "@starter/polls",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -12,8 +12,8 @@
     "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
-    "@buildathon/polls-client": "*",
-    "@buildathon/vta-client": "*",
-    "@buildathon/vtc-client": "*"
+    "@starter/polls-client": "*",
+    "@starter/vta-client": "*",
+    "@starter/vtc-client": "*"
   }
 }

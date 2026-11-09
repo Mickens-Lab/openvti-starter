@@ -6,7 +6,7 @@
 import "./lib/cli.js";
 import { readFileSync } from "node:fs";
 import { createInterface } from "node:readline/promises";
-import { VtaClient, buildDecision, extractRequests, fetchVtaDocument, submitDecision, verifyConsentRequest } from "@buildathon/vta-client";
+import { VtaClient, buildDecision, extractRequests, fetchVtaDocument, submitDecision, verifyConsentRequest } from "@starter/vta-client";
 import { devBanner } from "./banner.js";
 import { die, env, mode, reachable } from "./env.js";
 import { loadApprover } from "./lib/approver.js";

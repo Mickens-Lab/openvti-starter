@@ -4,7 +4,7 @@
 // the root .env) can embed its key in a page.
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { encodeCredential, newIdentity, seedToMultibase } from "@buildathon/vta-client";
+import { encodeCredential, newIdentity, seedToMultibase } from "@starter/vta-client";
 
 export const ROLES = ["applicant", "member", "admin"] as const;
 export type PersonaRole = (typeof ROLES)[number];

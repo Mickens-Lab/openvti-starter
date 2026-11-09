@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/hello-web",
+  "name": "@starter/hello-web",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
-    "@buildathon/vta-client": "*"
+    "@starter/vta-client": "*"
   },
   "devDependencies": {
     "vite": "5.4.21"

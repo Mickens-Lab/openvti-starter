@@ -98,12 +98,12 @@ docker image inspect ghcr.io/mickens-lab/vta-buildathon:26d0da81 --format '{{jso
 # 2. The GitHub attestation: signed by this repository's images workflow
 DIGEST=$(jq -r '.images.vta.digest' pins.json)          # "null" until the digests are recorded
 gh attestation verify "oci://ghcr.io/mickens-lab/vta-buildathon@$DIGEST" \
-  --repo Mickens-Lab/openvti-buildathon-starter \
-  --signer-workflow Mickens-Lab/openvti-buildathon-starter/.github/workflows/images.yml
+  --repo Mickens-Lab/openvti-starter \
+  --signer-workflow Mickens-Lab/openvti-starter/.github/workflows/images.yml
 
 # 3. The cosign signature, with the exact identity and issuer (the workflow on main, or an images-* tag)
 cosign verify "ghcr.io/mickens-lab/vta-buildathon@$DIGEST" \
-  --certificate-identity-regexp '^https://github\.com/Mickens-Lab/openvti-buildathon-starter/\.github/workflows/images\.yml@refs/(heads/main|tags/images-.+)$' \
+  --certificate-identity-regexp '^https://github\.com/Mickens-Lab/openvti-starter/\.github/workflows/images\.yml@refs/(heads/main|tags/images-.+)$' \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 
 # 4. The labels: what the image says it was built from
@@ -113,7 +113,7 @@ jq '.vti.vta | {ref, features}' pins.json      # org.buildathon.vti-ref and org.
 # 5. The SBOM of your platform's image (the per-platform digest is inside the index)
 docker buildx imagetools inspect "ghcr.io/mickens-lab/vta-buildathon@$DIGEST"      # lists one digest per platform
 gh attestation verify "oci://ghcr.io/mickens-lab/vta-buildathon@<platform digest>" \
-  --repo Mickens-Lab/openvti-buildathon-starter --predicate-type https://spdx.dev/Document/v2.3 --format json \
+  --repo Mickens-Lab/openvti-starter --predicate-type https://spdx.dev/Document/v2.3 --format json \
   | jq '.[0].verificationResult.statement.predicate | {spdxVersion, packages: (.packages | length)}'
 ```
 

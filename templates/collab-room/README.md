@@ -2,14 +2,14 @@
 
 A React + TypeScript (Vite) collaboration space on VTI **data rooms**: chat history, notes, files, live updates, two search
 modes and contributor attribution, for both the plaintext tier (`open`) and the MLS-sealed tiers (`attributed`). It is built on
-[`@buildathon/rooms-client`](../../packages/rooms-client/README.md); the design, with citations, is
+[`@starter/rooms-client`](../../packages/rooms-client/README.md); the design, with citations, is
 [docs/plans/2026-11-07-dataroom-collab-plan.md](../../docs/plans/2026-11-07-dataroom-collab-plan.md). DEV ONLY.
 
 ```sh
-npm run dev -w @buildathon/collab-room       # mock mode: no stack, no Docker; http://localhost:5173 (or the port Vite reports)
-npm test -w @buildathon/collab-room          # node:test for the plain modules, then Vitest + jsdom component tests
-npm run typecheck -w @buildathon/collab-room
-COLLAB_MODE=live npm run dev -w @buildathon/collab-room   # live mode: VTC + VTA from the repo-root .env (unverified live)
+npm run dev -w @starter/collab-room       # mock mode: no stack, no Docker; http://localhost:5173 (or the port Vite reports)
+npm test -w @starter/collab-room          # node:test for the plain modules, then Vitest + jsdom component tests
+npm run typecheck -w @starter/collab-room
+COLLAB_MODE=live npm run dev -w @starter/collab-room   # live mode: VTC + VTA from the repo-root .env (open rooms verified live by the rooms:* commands; docs/ROOMS.md)
 ```
 
 ## Modes
@@ -23,14 +23,15 @@ COLLAB_MODE=live npm run dev -w @buildathon/collab-room   # live mode: VTC + VTA
     profile, so she shows as a short DID). Chat history, a markdown note full of hostile markup, a PNG, an animated GIF, an
     SVG with a script, a file that claims `image/png` but is HTML, a text file and a `.md` file;
   - **Deal room (attributed)**: real two-member MLS (`LocalMlsKeys`, ts-mls) between you and Bob. The host stores ciphertext
-    only; files are sealed inline (at most 256 KiB; a larger upload shows the session's message).
+    only; files are sealed inline (at most 32 KiB, the host's 64 KiB document cap; a larger upload shows the session's message).
   - Bob is simulated: every 12 s he posts the next line of a script, alternating between the rooms, so the live feed is visible.
   - Keys and content live in memory only and vanish on reload.
-- **live** (**unverified live**): the identity is the app credential (`VTA_CREDENTIAL`, as in `community-dashboard`), signing as
+- **live** (open and attributed rooms verified live through the same library by the `rooms:*` commands; this page in a browser, and sealed rooms from this page, are not): the identity is the app credential (`VTA_CREDENTIAL`, as in `community-dashboard`), signing as
   its `did:key`. Rooms come from `vtc/rooms/memberships/list` (admitted rooms), or `COLLAB_ROOM` names one. `rooms/*` go to the
   VTC over `/__vtc` (`HostClient` over `vtcTransport`); presentations, seals and opens go to the member's VTA over `/__vta`
-  (`VtaKeyOracle` over `VtaClient`, `rooms/keys/*`). The same dev proxy as the dashboard keeps the page same-origin. The local
-  stack has no room, and joining one needs community rooms, which local mode leaves off, so this path has never run.
+  (`VtaKeyOracle` over `VtaClient`, `rooms/keys/*`); on an open room, when the VTA refuses, the room offer's own credentials are
+  presented instead (`offerFallbackPresenter`). The same dev proxy as the dashboard keeps the page same-origin. The local stack has
+  no room, so use a community whose host has rooms, and accept the room's offer first (`npm run rooms:accept`, [docs/ROOMS.md](../../docs/ROOMS.md)).
 
 ## What you see
 
@@ -75,7 +76,7 @@ Record bodies are untrusted. Nothing is passed to `innerHTML` or `dangerouslySet
 
 ## Tests
 
-`npm test -w @buildathon/collab-room` runs both suites:
+`npm test -w @starter/collab-room` runs both suites:
 
 - `test/*.test.ts` (node:test): `render.test.ts` (tree structure, React output, `<script>`/raw HTML/`javascript:` inert, images as
   links, hostile nesting), `state.test.ts`, `mock.test.ts` (both seeded rooms, no plaintext stored for the sealed one, Bob's post
@@ -98,6 +99,7 @@ source, not seen; **unverified** = built but not tried.
 | The sealed room's host stores no plaintext (mock) | verified (tests) |
 | `vite build` of the page | verified (it builds) |
 | The page in a real browser | **unverified**: jsdom only, no headless browser run of this template |
-| Live mode: `vtc/rooms/memberships/list`, `rooms/*` at the VTC, `rooms/keys/*` at the VTA | **unverified live**: no room exists in the local stack |
+| Live mode on an **open** room: `rooms/offers/list`, `rooms/info`, a chat post and read back at a 0.26.0 VTC, presenting the offer's own credentials when the VTA refuses (the library and the `rooms:*` commands; this page's live wiring uses the same code) | verified live 2026-11-08 by the CLI; the page itself was not run in a browser |
+| Live mode on a **sealed** room | the library and the `rooms:*` commands are **verified live** with a persona (docs/ROOMS.md); this page signs as the app `did:key`, so it cannot join a sealed room yet (the persona and the vault step are CLI only) |
 | ts-mls ↔ openmls interop, the host's record size cap, `sealed.version` in the VTA's seal reply | **unverified** (see the rooms-client README) |
 | Live mode signing as the credential's `did:key` (not the dashboard's did:peer choice in tunnel mode) | inferred to be what a room host expects |

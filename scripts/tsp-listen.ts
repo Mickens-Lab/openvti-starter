@@ -6,8 +6,8 @@
 // A did:key first sends the VTC a relationship invite (the VTC learns it speaks TSP from that); a did:peer does not, unless --relate,
 // because its DID already names the mediator. Exit code 0 when an issue frame arrived, 2 when none did. Read-only.
 import "./lib/cli.js";
-import { connectTsp, type PeerIdentity } from "@buildathon/tsp-client";
-import { decodeCredential, seedFromMultibase } from "@buildathon/vta-client";
+import { connectTsp, type PeerIdentity } from "@starter/tsp-client";
+import { decodeCredential, seedFromMultibase } from "@starter/vta-client";
 import { readTunnel } from "./lib/compose.js";
 import { applicant, applicantOverride } from "./lib/applicant.js";
 import { emptyTally, record, verdict, ISSUE_TYPE } from "./lib/listen.js";

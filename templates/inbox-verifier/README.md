@@ -6,11 +6,11 @@ proof, payload schema, and duplicate-execution (replay) protection. **Runs offli
 a `did:key` carries its own public key, so no VTA, resolver or network is needed.
 
 ```sh
-npm run demo -w @buildathon/inbox-verifier     # self-contained end-to-end run
+npm run demo -w @starter/inbox-verifier     # self-contained end-to-end run
 
-npm start -w @buildathon/inbox-verifier        # server on :4000
-npm run send -w @buildathon/inbox-verifier -- --replay   # second terminal
-npm run send -w @buildathon/inbox-verifier -- --tamper
+npm start -w @starter/inbox-verifier        # server on :4000
+npm run send -w @starter/inbox-verifier -- --replay   # second terminal
+npm run send -w @starter/inbox-verifier -- --tamper
 ```
 
 `demo` starts the server and checks six cases: a good note is accepted, the

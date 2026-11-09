@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { didPeerFromSeed } from "@buildathon/tsp-client";
-import { identityFromSeed } from "@buildathon/vta-client";
+import { didPeerFromSeed } from "@starter/tsp-client";
+import { identityFromSeed } from "@starter/vta-client";
 import { applicantLine, decodeApplicantDid, mediatorGate, readMediatorDoc, summarizeDidLog } from "../src/identity.ts";
 
 const MED = "did:webvh:QmScid:med.example.test";

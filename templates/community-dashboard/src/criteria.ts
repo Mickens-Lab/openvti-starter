@@ -1,7 +1,7 @@
 // Which join criteria this dashboard can use, and what each means in plain words. Pure.
 // A criterion is usable when an app with an empty presentation can meet it: no invitation, no
 // required credentials, no vetting (the same rule as `pickCriterion` in vtc-client).
-import type { JoinCriterion } from "@buildathon/vtc-client";
+import type { JoinCriterion } from "@starter/vtc-client";
 
 export interface CriterionView {
   id: string;

@@ -1,11 +1,11 @@
 # TSP ping page
 
-Vite + TypeScript. Sends a signed `messaging/ping/0.2` to the VTA over TSP from the browser, with the same `tspPing()` as `npm run tsp:ping` (`@buildathon/tsp-client`).
+Vite + TypeScript. Sends a signed `messaging/ping/0.2` to the VTA over TSP from the browser, with the same `tspPing()` as `npm run tsp:ping` (`@starter/tsp-client`).
 `MODE=tunnel` only; the form is prefilled from `.vta/tunnel.json` and the root `.env`.
 
 ```sh
 MODE=tunnel MEDIATOR_CORS_ALLOW_ORIGIN=http://localhost:3000 npm run up   # repo root; opens the mediator to this page
-npm run dev -w @buildathon/tsp-ping                                        # http://localhost:3000
+npm run dev -w @starter/tsp-ping                                        # http://localhost:3000
 npm run tsp:ping:browser                                                   # the same, driven by headless Chromium
 ```
 

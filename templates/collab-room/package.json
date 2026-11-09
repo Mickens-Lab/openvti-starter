@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/collab-room",
+  "name": "@starter/collab-room",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -11,9 +11,9 @@
     "test": "tsx --test test/*.test.ts && vitest run"
   },
   "dependencies": {
-    "@buildathon/rooms-client": "*",
-    "@buildathon/vta-client": "*",
-    "@buildathon/vtc-client": "*",
+    "@starter/rooms-client": "*",
+    "@starter/vta-client": "*",
+    "@starter/vtc-client": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

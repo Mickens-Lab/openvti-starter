@@ -8,7 +8,7 @@ Status 2026-11-07. Branch `feature/dataroom-collab`. The plan is [2026-11-07-dat
 
 ### `packages/rooms-client` (steps 1–10)
 
-`@buildathon/rooms-client`, with the `./mock` subpath. The public API, a quick start and the verified/unverified table are in
+`@starter/rooms-client`, with the `./mock` subpath. The public API, a quick start and the verified/unverified table are in
 [packages/rooms-client/README.md](../../packages/rooms-client/README.md).
 
 | Module | What it has |
@@ -22,7 +22,7 @@ Status 2026-11-07. Branch `feature/dataroom-collab`. The plan is [2026-11-07-dat
 
 ### `templates/collab-room` (step 11)
 
-`@buildathon/collab-room`, React 18 + Vite, laid out like `templates/community-dashboard` (same pinned dependency versions, tsconfig,
+`@starter/collab-room`, React 18 + Vite, laid out like `templates/community-dashboard` (same pinned dependency versions, tsconfig,
 `vite.config.ts` env and `/__vta` `/__vtc` proxy via `scripts/lib/dev-proxy.ts`, Vitest + jsdom for `test/ui`). Its README has the
 modes, the rendering rules and the verified/unverified table: [templates/collab-room/README.md](../../templates/collab-room/README.md).
 
@@ -49,10 +49,10 @@ From the repo root, with `umask 002`, `TMPDIR=/var/tmp/dataroom-collab`, under `
 
 | Command | Result at the last commit |
 |---|---|
-| `npm test -w @buildathon/collab-room` | node:test 16/16 pass (`render` 8, `state` 7, `mock` 1); Vitest 9/9 pass in 7 files (`markdown` 3, `files`, `author`, `live`, `search`, `chat`, `rooms`) |
-| `npm run typecheck -w @buildathon/collab-room` | clean |
-| `npm test -w @buildathon/rooms-client` | 61/61 pass |
-| `npm run typecheck -w @buildathon/rooms-client` | clean |
+| `npm test -w @starter/collab-room` | node:test 16/16 pass (`render` 8, `state` 7, `mock` 1); Vitest 9/9 pass in 7 files (`markdown` 3, `files`, `author`, `live`, `search`, `chat`, `rooms`) |
+| `npm run typecheck -w @starter/collab-room` | clean |
+| `npm test -w @starter/rooms-client` | 61/61 pass |
+| `npm run typecheck -w @starter/rooms-client` | clean |
 | `npx tsc --noEmit` (root; covers `templates/*/src` and `packages/*`) | clean |
 | `npx tsx scripts/check-generic.ts`, `npx tsx scripts/check-docs.ts` | ok |
 | `npx vite build` in `templates/collab-room` (output to a scratch directory) | builds |
@@ -60,8 +60,8 @@ From the repo root, with `umask 002`, `TMPDIR=/var/tmp/dataroom-collab`, under `
 Run the UI:
 
 ```sh
-npm run dev -w @buildathon/collab-room                    # mock mode, no stack
-COLLAB_MODE=live npm run dev -w @buildathon/collab-room   # live mode, needs the stack's .env (unverified live)
+npm run dev -w @starter/collab-room                    # mock mode, no stack
+COLLAB_MODE=live npm run dev -w @starter/collab-room   # live mode, needs the stack's .env (unverified live)
 ```
 
 ## Deviations

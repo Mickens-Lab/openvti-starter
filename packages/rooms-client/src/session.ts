@@ -112,6 +112,8 @@ export class RoomSession {
   /** Open a session: rooms/info, the history, profile publish, then the feed (unless `start: false`). */
   static async open(o: RoomSessionOpts): Promise<RoomSession> {
     const s = new RoomSession(o, await o.host.info(o.roomId));
+    // A member added since this one joined moved the group on; apply the commits first so those records open.
+    if (s.sealed && o.keys?.catchUp) { try { await o.keys.catchUp(o.roomId, o.host); } catch { /* a host without rooms/epoch/commits: read what opens */ } }
     await s.feed.sync();
     await s.publishProfile();
     if (o.start !== false) s.feed.start();
@@ -163,7 +165,7 @@ export class RoomSession {
     let env: FileEnvelope;
     if (this.sealed) {
       if (bytes.length > INLINE_FILE_CAP) {
-        throw new Error(`"${name}" is ${bytes.length} bytes; files in a ${this.visibility} room are sealed inline and limited to ${INLINE_FILE_CAP} bytes (256 KiB). Sealed blob files are not implemented.`);
+        throw new Error(`"${name}" is ${bytes.length} bytes; files in a ${this.visibility} room are sealed inline and limited to ${INLINE_FILE_CAP} bytes (32 KiB; the host takes documents of at most 65536 bytes). Sealed blob files are not implemented.`);
       }
       env = makeFile(name, mediaType, bytes, { inline: true });
     } else {

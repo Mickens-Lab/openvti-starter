@@ -28,6 +28,7 @@ Back to the [repo README](../README.md). Everything here is for a local playgrou
 
 - [CHEATSHEET.md](CHEATSHEET.md): endpoints, task names, env vars, common errors.
 - [VTC-SURFACE.md](VTC-SURFACE.md): who can call which VTC task (stranger, applicant, member, admin).
+- [ROOMS.md](ROOMS.md): read and post to a data room from the command line or an app; open and attributed room walkthroughs (both live), notes, files, search, limits.
 - [APPROVALS.md](APPROVALS.md): approve a gated task on a second device (a software approver first): `npm run approvals:demo`.
 - [MOBILE-WALLET.md](MOBILE-WALLET.md): what a phone wallet could add, what was and was not checked.
 - [MESSAGING.md](MESSAGING.md): what messaging gives in tunnel mode, the TSP ping client, and where it stops (the ping and its pong, and the credential frames, are verified; DIDComm is not).

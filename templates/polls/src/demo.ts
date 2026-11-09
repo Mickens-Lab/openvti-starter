@@ -1,10 +1,10 @@
 // The whole poll life, offline, against the in-process mock: a manager creates a poll, three members vote (one changes
 // their mind), the manager closes it early and everyone reads the result.
-//   npm run demo -w @buildathon/polls
-import { PollsClient, describePollError, formatSummary, pollManifest, summarize } from "@buildathon/polls-client";
-import { startPollsMock } from "@buildathon/polls-client/mock";
-import { VtaClient, newIdentity } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
+//   npm run demo -w @starter/polls
+import { PollsClient, describePollError, formatSummary, pollManifest, summarize } from "@starter/polls-client";
+import { startPollsMock } from "@starter/polls-client/mock";
+import { VtaClient, newIdentity } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
 
 const admin = newIdentity();
 const mock = await startPollsMock({ managers: [admin.did] });

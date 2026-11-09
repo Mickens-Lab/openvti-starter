@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { didPeerFromSeed } from "@buildathon/tsp-client";
+import { didPeerFromSeed } from "@starter/tsp-client";
 import { IdentityPanel } from "../../src/components/IdentityPanel.tsx";
 import type { MediatorRead } from "../../src/identity.ts";
 import { freshDb } from "./fake.ts";

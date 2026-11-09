@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { JoinCriterion, JoinManifest, VtcClient } from "@buildathon/vtc-client";
+import type { JoinCriterion, JoinManifest, VtcClient } from "@starter/vtc-client";
 import { describeCriterion, firstUsable } from "../criteria.ts";
 import { describeError, getClient, identity } from "../client.ts";
 import { formatDate, formatDateTime, shortDid } from "../format.ts";

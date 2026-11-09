@@ -1,4 +1,4 @@
-import { explainFetchFailure, VtaClient } from "@buildathon/vta-client";
+import { explainFetchFailure, VtaClient } from "@starter/vta-client";
 
 declare const __CRED__: { credential: string; url: string; target: string; context: string };
 const out = document.getElementById("out")!;

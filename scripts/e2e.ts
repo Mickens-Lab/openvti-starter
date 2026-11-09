@@ -15,7 +15,7 @@ import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { mkdirSync, rmSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { memberIdentity } from "./lib/member.js";
-import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
+import { TrustTaskError, VtcClient } from "@starter/vtc-client";
 import { env, vtcUrl } from "./env.js";
 import { Browser, findChrome, tmpProfile } from "./lib/cdp.js";
 import { skip, sleep, stackProblem } from "./lib/live.js";

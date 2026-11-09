@@ -4,8 +4,8 @@
 // its origin must be allowed (MEDIATOR_CORS_ALLOW_ORIGIN), both for that did.jsonl fetch and for the socket. When either is blocked
 // the browser reports a bare "Failed to fetch" (wrapped by the resolver as "did:webvh resolve failed: invalidDid — Failed to fetch"),
 // so the verdict adds the exact line to set and, when the mediator DID names its host, the command that recreates only the mediator.
-import { mediatorHostOf } from "@buildathon/tsp-client";
-import { explainFetchFailure, looksLikeFetchFailure } from "@buildathon/vta-client";
+import { mediatorHostOf } from "@starter/tsp-client";
+import { explainFetchFailure, looksLikeFetchFailure } from "@starter/vta-client";
 
 /** The verdict for a failed ping: the error, then for a fetch or socket the browser could not complete, how to open the mediator to `origin`. */
 export function noPongText(e: unknown, origin: string, mediatorDid: string): string {

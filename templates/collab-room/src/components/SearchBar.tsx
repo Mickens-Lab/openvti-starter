@@ -1,7 +1,7 @@
 // Two search modes, both in memory over decrypted content (no host search exists): "File names" and "Full text".
 // Results show a snippet with <mark> highlights and jump to the item.
 import { useEffect, useState } from "react";
-import type { NameResult, SessionItem, TextResult } from "@buildathon/rooms-client";
+import type { NameResult, SessionItem, TextResult } from "@starter/rooms-client";
 import { errorText, useRoomContext } from "../hooks.ts";
 import { SEARCH_MODES, highlight, resultLabel, type SearchMode } from "../state.ts";
 import { Author } from "./Author.tsx";

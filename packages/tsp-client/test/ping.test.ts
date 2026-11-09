@@ -12,7 +12,7 @@ test("documentSigner: on an exact second the ping carries no .000Z issuedAt or p
   const { mock } = await import("node:test");
   const { buildTrustTask, generateSigningIdentity } = await import("@openvtc/pnm-core");
   const { DataIntegrityProofVerifier } = await import("@openvtc/trust-tasks-proof");
-  const { rfc3339 } = await import("@buildathon/vta-client");
+  const { rfc3339 } = await import("@starter/vta-client");
   const { documentSigner } = await import("../src/index.js");
   mock.timers.enable({ apis: ["Date"], now: Date.parse("2026-10-31T12:00:00.000Z") });
   t.after(() => mock.timers.reset());

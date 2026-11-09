@@ -3,7 +3,7 @@
 // The side effects (processes, files) are in ./binary-run.ts. The first-boot logic mirrors vta-entrypoint.sh and
 // vtc-entrypoint.sh; scripts/test/binary.test.ts renders the entrypoints' own heredocs and compares them with these.
 import { join } from "node:path";
-import { corsTomlBody } from "@buildathon/vta-client";
+import { corsTomlBody } from "@starter/vta-client";
 
 export type Runtime = "docker" | "binary";
 

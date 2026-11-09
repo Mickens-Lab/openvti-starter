@@ -1,9 +1,9 @@
 // The "Identity" section's words and decoding: this page's applicant DID decoded from the identifier itself (no resolver), and a
 // summary of the mediator's DID document read from its did.jsonl. Pure except readMediatorDoc, which takes the fetch to use, so all
 // of it is unit-tested (test/identity.test.ts). Read-only: nothing here signs, and only public key material is ever shown.
-import { didDocFromLog, webvhLocation } from "@buildathon/status-panel";
-import { parseDidPeer2 } from "@buildathon/tsp-client";
-import { explainFetchFailure } from "@buildathon/vta-client";
+import { didDocFromLog, webvhLocation } from "@starter/status-panel";
+import { parseDidPeer2 } from "@starter/tsp-client";
+import { explainFetchFailure } from "@starter/vta-client";
 import type { ApplicantKind, RunMode } from "./delivery.ts";
 
 export interface KeyRow { id: string; type: string; purposes: string[]; publicKey: string }

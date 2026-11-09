@@ -8,7 +8,7 @@
 // Node only.
 import { createHash, randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type Server } from "node:http";
-import { newIdentity, rfc3339 } from "@buildathon/vta-client";
+import { newIdentity, rfc3339 } from "@starter/vta-client";
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
 import { validateSelections, type Ballot, type Selections } from "./ballot.js";
 import { validateManifest, type Manifest } from "./manifest.js";

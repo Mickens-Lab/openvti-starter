@@ -6,9 +6,9 @@ import { test } from "node:test";
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { canonicalBytes, fromMultibase } from "@openvtc/trust-tasks-proof";
-import { identityFromSeed } from "@buildathon/vta-client";
-import { didPeerFromSeed, parseDidPeer2 } from "@buildathon/tsp-client";
-import { memberVmc, signCredential } from "@buildathon/vtc-client";
+import { identityFromSeed } from "@starter/vta-client";
+import { didPeerFromSeed, parseDidPeer2 } from "@starter/tsp-client";
+import { memberVmc, signCredential } from "@starter/vtc-client";
 
 const seed = Uint8Array.from({ length: 32 }, (_, i) => 32 - i);
 const COMMUNITY = "did:example:community";

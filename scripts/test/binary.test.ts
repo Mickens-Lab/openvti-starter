@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { corsTomlBody } from "@buildathon/vta-client";
+import { corsTomlBody } from "@starter/vta-client";
 import {
   applyApproverPolicy, binaryCheck, judgeVersion, parseVersionOutput, semverFromTag, fillVtcCors, parseRuntime, renderVtaSetup, renderVtcSetup, resolveBinaries, runPaths, runtimeModeError, setupKeyDid, vtaDidFromLog,
 } from "../lib/binary.js";

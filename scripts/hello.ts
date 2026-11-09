@@ -1,6 +1,6 @@
 // The checkpoint: discover, authenticate, make one signed call.
 import "./lib/cli.js";
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 import { die, env, mode, reachable } from "./env.js";
 
 const cred = env("VTA_CREDENTIAL");

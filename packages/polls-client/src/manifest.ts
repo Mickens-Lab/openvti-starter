@@ -1,7 +1,7 @@
 // The election manifest (vtc/elections/create/0.5 `$defs/Manifest`) and a friendlier builder for the common case:
 // one choice question, single or multiple selection, a voting window. `validateManifest` mirrors the schema rules a
 // client can check before signing, so most `invalidManifest` refusals become a local message instead.
-import { rfc3339 } from "@buildathon/vta-client";
+import { rfc3339 } from "@starter/vta-client";
 
 export type Secrecy = "open" | "sealed" | "talliedEncrypted";
 export type Revote = "replace" | "refuse";

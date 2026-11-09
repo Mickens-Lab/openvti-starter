@@ -3,7 +3,7 @@
 //   npm run vtc:status
 import "./lib/cli.js";
 import { memberIdentity } from "./lib/member.js";
-import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
+import { TrustTaskError, VtcClient } from "@starter/vtc-client";
 import { die, env, reachable, refusal, vtcUrl } from "./env.js";
 
 const cred = env("VTA_CREDENTIAL");

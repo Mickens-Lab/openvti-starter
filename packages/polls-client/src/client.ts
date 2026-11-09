@@ -4,8 +4,8 @@
 //    crypto happens there; this client only carries the documents, byte for byte (re-serialising breaks digests).
 //  - The ballot box (plain HTTPS POST of a signed document): counts the cast, shows the result.
 // Sequence and rules: vta-cli-common/src/commands/elections.rs (upstream) and docs/plans/2026-11-07-polls-client-plan.md.
-import { classifyReply, rfc3339, unwrapReply, type VtaClient } from "@buildathon/vta-client";
-import type { VtcClient } from "@buildathon/vtc-client";
+import { classifyReply, rfc3339, unwrapReply, type VtaClient } from "@starter/vta-client";
+import type { VtcClient } from "@starter/vtc-client";
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
 import { buildBallot, resolveOptions, type Selections } from "./ballot.js";
 import { pollRefusal } from "./errors.js";

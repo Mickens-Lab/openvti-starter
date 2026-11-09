@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { tspMediatorOf } from "@buildathon/tsp-client";
+import { tspMediatorOf } from "@starter/tsp-client";
 import { applicant, applicantOverride } from "../lib/applicant.js";
 
 const seed = Uint8Array.from({ length: 32 }, (_, i) => 32 - i);

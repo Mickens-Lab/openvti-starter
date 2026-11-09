@@ -1,5 +1,5 @@
 // Helpers for `vta:call` and `repl`: task names, search, and the offline payload schema.
-import { TT } from "@buildathon/vta-client";
+import { TT } from "@starter/vta-client";
 
 /** `vta/memory/put/0.1` or a full URI -> the full Trust Task type URI. */
 export const taskType = (slug: string): string => (slug.startsWith("http") ? slug : `${TT}/${slug}`);

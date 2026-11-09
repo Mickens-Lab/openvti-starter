@@ -10,6 +10,23 @@ export interface Identity {
   /** 32-byte Ed25519 seed. */
   seed: Uint8Array;
   signer: Signer;
+  /**
+   * Set on an identity whose key the caller does not hold (a persona DID the member's VTA holds). Clients that support it (VtcClient)
+   * send each unsigned Trust Task document here instead of signing it with `signer`, and send back what comes out. `signer` then
+   * throws, and `seed` is empty: anything that needs the private key (a self-issued credential, a SIOP token) cannot be done for it.
+   */
+  signRemote?: (unsigned: Record<string, unknown>, proofPurpose: string) => Promise<Record<string, unknown>>;
+}
+
+/** An identity whose signatures come from elsewhere (`signRemote`); it holds no key. */
+export function remoteIdentity(did: string, signRemote: NonNullable<Identity["signRemote"]>): Identity {
+  const refuse = (): never => { throw new Error(`${did} is signed remotely by its key holder; it has no local key`); };
+  return {
+    did,
+    seed: new Uint8Array(0),
+    signer: { curve: "ed25519", verificationMethod: `${did}#key-0`, did, sign: refuse },
+    signRemote,
+  };
 }
 
 export function identityFromSeed(seed: Uint8Array): Identity {

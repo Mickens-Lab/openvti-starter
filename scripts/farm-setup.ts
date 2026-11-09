@@ -2,7 +2,7 @@
 // VTA Farm portal. Makes no network request.
 import "./lib/cli.js";
 import { existsSync } from "node:fs";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import { selectedFarm } from "./farm-config.js";
 import { restUrl } from "./farm-select.js";
 import { farmImageTag } from "./pins.js";

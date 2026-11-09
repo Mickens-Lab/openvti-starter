@@ -1,10 +1,10 @@
 // The one VtcClient for this page, its call log, and error wording. The identity is the user's own
 // generated credential (VTA_CREDENTIAL, as in web-vta-app), in MODE=tunnel as a did:peer:2 naming the mediator, otherwise (or VTC_APPLICANT=did:key) as its did:key;
 // the community is VTC_URL / VTC_DID.
-import { decodeCredential, explainFetchFailure, identityFromSeed, seedFromMultibase, type Identity } from "@buildathon/vta-client";
-import { didPeerFits, didPeerFromSeed } from "@buildathon/tsp-client";
+import { decodeCredential, explainFetchFailure, identityFromSeed, seedFromMultibase, type Identity } from "@starter/vta-client";
+import { didPeerFits, didPeerFromSeed } from "@starter/tsp-client";
 import { builtApplicant } from "./delivery.ts";
-import { TrustTaskError, VtcClient, refusalCode, type CallEvent } from "@buildathon/vtc-client";
+import { TrustTaskError, VtcClient, refusalCode, type CallEvent } from "@starter/vtc-client";
 import { explainRefusal } from "./format.ts";
 import { createStore } from "./store.ts";
 

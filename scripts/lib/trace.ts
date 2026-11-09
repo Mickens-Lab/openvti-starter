@@ -2,7 +2,7 @@
 // `npm run trace` reads it. The file holds task types, ids, DIDs, status and timing, never payloads or keys.
 import { appendFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { setTraceSink, type TraceEvent } from "@buildathon/vta-client";
+import { setTraceSink, type TraceEvent } from "@starter/vta-client";
 
 export const TRACE_FILE = process.env.TRACE_FILE ?? ".vta/trace.jsonl";
 

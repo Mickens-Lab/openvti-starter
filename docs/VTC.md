@@ -2,8 +2,8 @@
 
 Part of the [docs index](README.md). Walkthrough: exercises 3 and 5 in [TRY-THIS.md](TRY-THIS.md).
 
-**Can this starter talk to both a VTA and a VTC?** Yes. `@buildathon/vta-client`
-talks to the VTA, `@buildathon/vtc-client` talks to the VTC, and one app identity
+**Can this starter talk to both a VTA and a VTC?** Yes. `@starter/vta-client`
+talks to the VTA, `@starter/vtc-client` talks to the VTC, and one app identity
 (the `did:key` your VTA granted an ACL entry to) can be the applicant and member at
 a community. The **local Docker VTC path was run end to end** against a VTA
 (vta-service 0.65.0, tag `vta-service-v0.65.0`) and a VTC (vtc-service 0.15.0, tag `vtc-service-v0.15.0`; the two come
@@ -87,7 +87,7 @@ administrators; "no gate in this service may be a claims check"), so **do not bu
 | `renewMembership()` | `members/renew` | Returns the renewed `roleVac` |
 | `leaveCommunity({confirm:true})` | `members/self-remove` | **Immediate; an empty payload is enough.** The helper refuses without `confirm: true` |
 | `groups()`, `group()`, `joinGroup()`, `leaveGroup()`, `groupMembers()` | `groups/*` | List verified; the rest need the operator to enable `[groups]` (otherwise `noKeyHolder` on create, so nothing to join) |
-| `relationships({did})`, `roomOffers()`, `roomMemberships()` | `relationships/list`, `rooms/offers/list`, `rooms/memberships/list` | Verified (empty); rooms need the community's VTA room host |
+| `relationships({did})`, `roomOffers()`, `roomMemberships()`, `acceptRoomOffer()` | `relationships/list`, `rooms/offers/list`, `rooms/memberships/list`, `rooms/offers/accept` | Offers, memberships and accepting an open room's offer verified live against a 0.26.0 VTC with a room (2026-11-08); empty on the local stack (no rooms). [ROOMS.md](ROOMS.md) |
 | `memberProof()`, `portalSignIn()`, `portalMe()` | member portal | See above |
 
 The full matrix for stranger, applicant, member and admin, and every served task, is in [VTC-SURFACE.md](VTC-SURFACE.md).
@@ -100,7 +100,7 @@ The full matrix for stranger, applicant, member and admin, and every served task
 | List the roster, read another member's DID, show a member by DID | `members/list/show` need `vtc.members.manage`; the directory hides DIDs from members | Directory entries by `entryId`; have members share their DID out of band, or have an admin-run backend publish a roster |
 | Approve joins, invite, issue endorsements, edit profile/branding/directory fields, run groups/rooms/website | Each needs a named capability on the signer's live ACL row (`vtc.join.decide`, `vtc.invitations.manage`, `vtc.credentials.issue`, `vtc.surface.admin`, `vtc.groups.manage`, `vtc.rooms.manage`) | An admin grants the capability (`acl/update`), or the app uses an admin identity on the backend |
 | Receive their VMC or role VAC over HTTP | `status` carries no `vmc` (its `credentialsDelivered` is about the member's own credential sent back, not this); delivery is pushed over DIDComm/TSP, off in the local stack | `MODE=tunnel` turns messaging on, but the applicant also needs its own inbox, which a `did:key` lacks ([MESSAGING.md](MESSAGING.md)); or let an admin read it from the `decide` response |
-| Vote, chat, post, feed | No such tasks at this pin: `elections/*` are not served (feature off); rooms are credential-gated on a VTA room host | Build it in the app; use the VTC only to check membership. For polls on a VTC built with `voting`: [packages/polls-client](../packages/polls-client/README.md) (tested against a mock only) |
+| Vote, chat, post, feed | No such tasks at this pin: `elections/*` are not served (feature off); chat and posts live in data rooms ([ROOMS.md](ROOMS.md)), credential-gated | Build it in the app; use the VTC only to check membership. For polls on a VTC built with `voting`: [packages/polls-client](../packages/polls-client/README.md) (tested against a mock only) |
 | Undo `self-remove` | Immediate tombstone. The same DID can re-apply and be approved again (verified) | Guard it behind a confirmation |
 | Use the portal token for tasks | Different audience (`VTC-member`); consumers are `/v1/member/me` and passkey routes only | Sign each task |
 
@@ -117,7 +117,7 @@ npm run vtc:status    # join status + member proof (portal /v1/member/me), no se
 npm run vtc:profile   # member reads: community profile, my directory card, fields, entries, groups
 npm run vtc:withdraw  # applicant: withdraw the open join request (-- --reason "text")
 npm run vtc:leave -- --yes   # LEAVE the community now (members/self-remove); needs --yes
-npm run dev -w @buildathon/community-dashboard   # the same flow in a browser
+npm run dev -w @starter/community-dashboard   # the same flow in a browser
 ```
 
 All of them read `VTC_URL` (and `VTC_DID` if the VTC's DID is not at

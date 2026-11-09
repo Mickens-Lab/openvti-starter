@@ -1,7 +1,7 @@
 // No VTC needed: a fake fetch plays the community.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import { TrustTaskError, VTC_TASK, VtcClient, pickCriterion } from "../src/index.js";
 
 const VTC_DID = "did:webvh:Qmfake:localhost%3A8200";

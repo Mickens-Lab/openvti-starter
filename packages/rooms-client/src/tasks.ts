@@ -2,7 +2,7 @@
 // (docs/VTC-SURFACE.md for the VTC, the VTA source at the pin for rooms/keys/*).
 //  - rooms/{info,records,blobs,create}/* go to the room's host (a VTC or a standalone room-host).
 //  - rooms/keys/* go to the member's own VTA, which holds the MLS group and the room credentials.
-import { TT } from "@buildathon/vta-client";
+import { TT } from "@starter/vta-client";
 
 export const ROOMS_TASK = {
   create: `${TT}/rooms/create/0.2`,
@@ -18,6 +18,7 @@ export const ROOMS_TASK = {
   blobsUploadAbort: `${TT}/rooms/blobs/upload/abort/0.2`,
   blobsGet: `${TT}/rooms/blobs/get/0.2`,
   blobsChunk: `${TT}/rooms/blobs/chunk/0.1`,
+  epochCommits: `${TT}/rooms/epoch/commits/0.1`,
 } as const;
 
 export const KEYS_TASK = {
@@ -27,6 +28,10 @@ export const KEYS_TASK = {
   sealV01: `${TT}/rooms/keys/seal/0.1`,
   open: `${TT}/rooms/keys/open/0.2`,
   openV01: `${TT}/rooms/keys/open/0.1`,
+  list: `${TT}/rooms/keys/list/0.2`,
+  commit: `${TT}/rooms/keys/commit/0.1`,
+  keyPackage: `${TT}/rooms/keys/key-package/0.2`,
+  welcome: `${TT}/rooms/keys/welcome/0.1`,
 } as const;
 
 /** The largest page `rooms/records/list` returns (vti-rooms storage.rs). */

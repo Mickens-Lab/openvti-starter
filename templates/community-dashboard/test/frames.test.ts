@@ -1,7 +1,7 @@
 // The "Credential frames" panel's pure logic: mode gating, frame words, tally and verdict, and the connect-failure explanation.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { emptyTally, ISSUE_TYPE, record } from "@buildathon/tsp-client";
+import { emptyTally, ISSUE_TYPE, record } from "@starter/tsp-client";
 import { ConnectTimeout, connectFailureText, frameKind, framesGate, framesVerdict, mediatorHostOf, NOT_DELIVERED_FLAG, ONE_LISTENER, tallyLine } from "../src/frames.ts";
 
 const MED = "did:webvh:QmScid:med.example.test";

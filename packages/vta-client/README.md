@@ -1,9 +1,9 @@
-# @buildathon/vta-client
+# @starter/vta-client
 
 A small Trust Task client for a VTA: it reads the VTA's DID, signs in with a `did:key`, and signs and POSTs any Trust Task. Node and browser (plain `fetch`). DEV ONLY: see [docs/SECURITY.md](../../docs/SECURITY.md).
 
 ```ts
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 
 // VTA_CREDENTIAL is the base64 bundle `npm run up` writes to .env (it holds the app's private key).
 const vta = await VtaClient.fromCredential(process.env.VTA_CREDENTIAL!, process.env.VTA_URL);
@@ -20,6 +20,7 @@ await vta.call("https://trusttasks.org/spec/vta/memory/put/0.1", { contextId: "m
 | | |
 |---|---|
 | `VtaClient.fromCredential(credential, url?)` / `connect(url, identity)` | Build a client. Does not authenticate. `resolveDid: false` trusts the DID in the credential (farm mode). |
+| `vta.personaIdentity(did, keyId?)` / `remoteIdentity(did, signRemote)` | An `Identity` for a DID the VTA holds (a persona): documents are signed by the VTA's `keys/sign-document` instead of a local key. `VtcClient` supports it; the community and rooms then see that DID. Verified live: the VTC accepted a join request signed this way ([docs/ROOMS.md](../../docs/ROOMS.md)). |
 | `authenticate()`, `call(type, payload)` | Sign in; sign and POST any task. A refusal throws `TrustTaskError` with `status` and the error `body` (`body.payload.code`). `call<R>()` takes a result type. |
 | `whoami()`, `discover()`, `createContext`, `grantAcl` | Typed helpers; the last two need an admin identity. |
 | `newIdentity()`, `identityFromSeed`, `identityFromCredential`, `encodeCredential` / `decodeCredential` | did:key identities and the credential bundle. |

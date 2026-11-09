@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { TrustTaskError, newIdentity } from "@buildathon/vta-client";
+import { TrustTaskError, newIdentity } from "@starter/vta-client";
 import { HostClient, isVersionConflict, roomHostTransport, type Presenter } from "../src/index.js";
 import { MockRoomHost, mockPresentation } from "../src/mock/index.js";
 
@@ -113,4 +113,13 @@ test("curate retracts with a new room-wide version", async () => {
   assert.equal(r.version, 2);
   const l = await client.list(ROOM, { sinceVersion: 1 });
   assert.equal(l.records[0].status, "retracted");
+});
+
+test("the mock host refuses a document over the live host's 65536-byte cap", async () => {
+  const host = new MockRoomHost();
+  host.createRoom("did:example:cap", "open");
+  const me = newIdentity();
+  const t = roomHostTransport({ url: "http://mock", hostDid: host.hostDid, me, fetch: host.fetchHandler() });
+  const big = { presentation: mockPresentation("did:example:cap", me.did, "write"), roomId: "did:example:cap", pad: "x".repeat(70000) };
+  await assert.rejects(t.send("https://trusttasks.org/spec/rooms/info/0.3", big), (e: unknown) => e instanceof TrustTaskError && e.status === 400);
 });

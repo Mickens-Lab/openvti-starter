@@ -3,7 +3,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { accessSync, constants, existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, resolve } from "node:path";
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 import { pins } from "../pins.js";
 import { LOCAL_VTA_URL, die, env, loadAdmin, reachable } from "../env.js";
 import {

@@ -1,10 +1,10 @@
 // Log in to the mediator as this page's applicant and pass every TSP frame from the VTC to the panel: the browser version of
 // `npm run tsp:listen` (scripts/tsp-listen.ts). Side-effecting; the panel takes it as a prop so tests hand it a fake.
-import { connectTsp, didPeerFits, frameOf, type Frame, type PeerIdentity, type TspClient } from "@buildathon/tsp-client";
+import { connectTsp, didPeerFits, frameOf, type Frame, type PeerIdentity, type TspClient } from "@starter/tsp-client";
 import { builtApplicant } from "./delivery.ts";
 import { getClient, identity } from "./client.ts";
 import { CONNECT_TIMEOUT_MS, ConnectTimeout } from "./frames.ts";
-import { membershipGrantOf } from "@buildathon/vtc-client";
+import { membershipGrantOf } from "@starter/vtc-client";
 import { membershipGrant } from "./grant.ts";
 
 export interface ListenHandlers {

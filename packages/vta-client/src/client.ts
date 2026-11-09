@@ -5,6 +5,7 @@ import {
   decodeCredential,
   identityFromCredential,
   type CredentialBundle,
+  remoteIdentity,
   type Identity,
 } from "./identity.js";
 import { emitTrace } from "./trace.js";
@@ -40,6 +41,12 @@ export async function fetchVtaDid(baseUrl: string, fetchImpl: typeof fetch = fet
   const did = JSON.parse(lines[lines.length - 1])?.state?.id;
   if (typeof did !== "string") throw new Error("did.jsonl has no state.id");
   return did;
+}
+
+/** Whether a refusal says the bearer session is gone: 401 `token superseded`, `expired`, or `needs a session`. */
+export function isSessionLost(e: unknown): boolean {
+  if (!(e instanceof TrustTaskError) || e.status !== 401) return false;
+  return /token superseded|token expired|session expired|needs a session/i.test(JSON.stringify(e.body ?? ""));
 }
 
 /** One call the client made, reported to {@link VtaClient.onCall} after it settles. */
@@ -191,7 +198,31 @@ export class VtaClient {
     payload: Record<string, unknown> = {},
     opts: { bearer?: boolean } = {},
   ): Promise<R> {
-    return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+    try {
+      return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+    } catch (e) {
+      // A session is one token per identity: another process authenticating as the same identity supersedes it (HTTP 401
+      // "token superseded"). A client that had a session logs in again and retries that one call, so a long-running reader
+      // survives a second command. Bounded to one retry per call; two busy processes take turns, they do not loop.
+      if (opts.bearer !== false && this.token && isSessionLost(e)) {
+        await this.authenticate();
+        return unwrapReply<R>(await this.send(this.build(type, payload), opts));
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * An identity for a DID this VTA holds keys for (a persona): every document is signed by the VTA's `keys/sign-document`
+   * (needs the `sign-document` capability, which the application role has) under `keyId`, default `<did>#key-0`. Use it with
+   * VtcClient to apply to a community or act in rooms as that DID. Each call costs one VTA round trip.
+   */
+  personaIdentity(did: string, keyId = `${did}#key-0`): Identity {
+    return remoteIdentity(did, async (document, proofPurpose) => {
+      const r = await this.call<{ document: Record<string, unknown> }>(`${TT}/keys/sign-document/0.1`, { keyId, document, proofPurpose });
+      if (!r?.document || typeof r.document !== "object") throw new Error("keys/sign-document returned no document");
+      return r.document;
+    });
   }
 
   /** auth/challenge then auth/authenticate; stores the bearer in `token`. */

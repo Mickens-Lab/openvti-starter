@@ -2,9 +2,9 @@
 // The VTC decides by the signer's records at the moment of the call (see docs/VTC-SURFACE.md).
 //   npm run vtc:refusals
 import "./lib/cli.js";
-import { TT, newIdentity } from "@buildathon/vta-client";
+import { TT, newIdentity } from "@starter/vta-client";
 import { memberIdentity } from "./lib/member.js";
-import { TrustTaskError, VtcClient } from "@buildathon/vtc-client";
+import { TrustTaskError, VtcClient } from "@starter/vtc-client";
 import { die, env, reachable, vtcUrl } from "./env.js";
 
 const cred = env("VTA_CREDENTIAL");

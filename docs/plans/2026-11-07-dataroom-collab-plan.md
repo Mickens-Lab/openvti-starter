@@ -143,12 +143,12 @@ wallet client (React Native, private) was also read; what it showed is summarise
 
 ## 2. Where the code lives
 
-- **`packages/rooms-client`** (`@buildathon/rooms-client`): framework-free TypeScript for Node and browser, like `vtc-client`. It holds
+- **`packages/rooms-client`** (`@starter/rooms-client`): framework-free TypeScript for Node and browser, like `vtc-client`. It holds
   the wire layer, the crypto boundary, the content envelope, search, the change feed and profile resolution. Subpath
-  `@buildathon/rooms-client/mock` exports the in-process mock host and a mock VTA key oracle, used by tests and by the UI's no-Docker
+  `@starter/rooms-client/mock` exports the in-process mock host and a mock VTA key oracle, used by tests and by the UI's no-Docker
   demo mode.
   - Why a package: the logic is reusable by any template or app, and every piece is testable under `node:test` with no DOM.
-- **`templates/collab-room`** (`@buildathon/collab-room`): React 18 + Vite, structured like `templates/community-dashboard`:
+- **`templates/collab-room`** (`@starter/collab-room`): React 18 + Vite, structured like `templates/community-dashboard`:
   - plain modules (`state.ts`, `render.ts`) with `node:test` tests;
   - `hooks.ts` and `components/` as the React layer;
   - Vitest and jsdom UI tests with a fake;

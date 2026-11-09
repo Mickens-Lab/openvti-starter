@@ -14,9 +14,9 @@ import { signTrustTask } from "@openvtc/trust-tasks-proof";
 import {
   TASK as VTA_TASK, TT, TrustTaskError, classifyReply, emitTrace, fetchVtaDid, isUnsupportedVersion, purposeFor, refusalCode, replyCode, rfc3339, servedVersions,
   siopIdToken, unwrapReply, checkReplyProof, fetchDidDocument, digestMultibase, type Identity, type Reply, type ReplyKind, type ReplyProof,
-} from "@buildathon/vta-client";
+} from "@starter/vta-client";
 
-export { TrustTaskError, TrustTaskPending, refusalCode } from "@buildathon/vta-client";
+export { TrustTaskError, TrustTaskPending, refusalCode } from "@starter/vta-client";
 
 export const VTC_TASK = {
   challenge: VTA_TASK.challenge,
@@ -69,6 +69,7 @@ export const VTC_TASK = {
   // Rooms offered to the member.
   roomsOffersList: `${TT}/vtc/rooms/offers/list/0.4`,
   roomsMembershipsList: `${TT}/vtc/rooms/memberships/list/0.1`,
+  roomsOffersAccept: `${TT}/vtc/rooms/offers/accept/0.1`,
 } as const;
 
 export const DEFAULT_VTC_URL = "http://localhost:8200";
@@ -338,18 +339,28 @@ export class VtcClient {
   /** Build and sign one Trust Task document addressed to this VTC, without sending it. Keep it to resend the same bytes. */
   build(type: string, payload: Record<string, unknown> = {}, opts: { threadId?: string } = {}): Record<string, unknown> {
     return signTrustTask(
-      {
-        id: globalThis.crypto.randomUUID(),
-        ...(opts.threadId ? { threadId: opts.threadId } : {}),
-        type,
-        issuer: this.me.did,
-        recipient: this.vtcDid,
-        issuedAt: rfc3339(),
-        payload,
-      } as any,
+      this.unsigned(type, payload, opts) as any,
       this.me.signer,
       { proofPurpose: purposeFor(type) }, // authentication, except attestation tasks (SPEC 4.7.3)
     ) as unknown as Record<string, unknown>;
+  }
+
+  private unsigned(type: string, payload: Record<string, unknown>, opts: { threadId?: string } = {}): Record<string, unknown> {
+    return {
+      id: globalThis.crypto.randomUUID(),
+      ...(opts.threadId ? { threadId: opts.threadId } : {}),
+      type,
+      issuer: this.me.did,
+      recipient: this.vtcDid,
+      issuedAt: rfc3339(),
+      payload,
+    };
+  }
+
+  /** `build`, for an identity that signs remotely (`me.signRemote`, a persona the VTA holds); same as `build` otherwise. */
+  async buildAsync(type: string, payload: Record<string, unknown> = {}, opts: { threadId?: string } = {}): Promise<Record<string, unknown>> {
+    if (!this.me.signRemote) return this.build(type, payload, opts);
+    return this.me.signRemote(this.unsigned(type, payload, opts), purposeFor(type));
   }
 
   /** POST one already-signed document and classify the reply; throws only when nothing answered. Resending the same document is a SPEC 8.4 retry. */
@@ -389,7 +400,7 @@ export class VtcClient {
    * for a `trust-task-next-step` continuation or a 202.
    */
   async call<R = any>(type: string, payload: Record<string, unknown> = {}): Promise<R> {
-    return unwrapReply<R>(await this.send(this.build(type, payload)));
+    return unwrapReply<R>(await this.send(await this.buildAsync(type, payload)));
   }
 
   // --- applicant side (works before you are a member) ----------------------
@@ -584,6 +595,13 @@ export class VtcClient {
   relationships(opts: Record<string, unknown> = {}) { return this.call(VTC_TASK.relationshipsList, opts); }
   roomOffers(opts: Record<string, unknown> = {}) { return this.call(VTC_TASK.roomsOffersList, opts); }
   roomMemberships(opts: Record<string, unknown> = {}) { return this.call(VTC_TASK.roomsMembershipsList, opts); }
+  /**
+   * Accept a room offer (`rooms/offers/accept/0.1`). On an `open` room send no KeyPackage: the reply is `{roomId, state: "admitted", epoch}`.
+   * On an `attributed` or `private` room pass the KeyPackage your VTA minted (`rooms/keys/key-package`) and the reply also carries the
+   * `welcome` (and maybe a `ratchetTree`) to hand that VTA (`rooms/keys/welcome`). Refused `notFound` when no open or recently accepted
+   * offer to that room is addressed to the signer. Verified live on an open room; the sealed path is not.
+   */
+  acceptRoomOffer(roomId: string, keyPackage?: string) { return this.call(VTC_TASK.roomsOffersAccept, { roomId, ...(keyPackage ? { keyPackage } : {}) }); }
 
   // --- member: the portal session (the only member session there is) -------------------------
 

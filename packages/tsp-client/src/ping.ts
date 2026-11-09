@@ -8,7 +8,7 @@ import {
 } from "@openvtc/pnm-core";
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { signTrustTask } from "@openvtc/trust-tasks-proof";
-import { classifyDocument, rfc3339 } from "@buildathon/vta-client";
+import { classifyDocument, rfc3339 } from "@starter/vta-client";
 import { TspSession, type TspKeys } from "./session.js";
 import type { PeerIdentity } from "./peer.js";
 

@@ -2,7 +2,7 @@
 // version of `npm run tsp:listen`). Collapsed by default. It reports frame kinds; listener.ts keeps the community's membership
 // grant from an issue frame for the membership card's send-back (grant.ts). It never verifies the credential's proof.
 import { useEffect, useRef, useState } from "react";
-import { emptyTally, record, type Frame, type Tally } from "@buildathon/tsp-client";
+import { emptyTally, record, type Frame, type Tally } from "@starter/tsp-client";
 import { connectFailureText, frameKind, framesVerdict, NOT_DELIVERED_FLAG, ONE_LISTENER, tallyLine, type FramesGate } from "../frames.ts";
 import type { Listening, StartListener } from "../listener.ts";
 

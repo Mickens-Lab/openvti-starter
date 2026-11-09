@@ -7,7 +7,7 @@
 // Writes templates/mcp-agent/.mcp.json (gitignored: it contains the token).
 // UNVERIFIED against a real vta-mcp binary; see README.md.
 import { writeFileSync } from "node:fs";
-import { VtaClient } from "@buildathon/vta-client";
+import { VtaClient } from "@starter/vta-client";
 import { env } from "../../scripts/env.js";
 
 const cred = env("VTA_CREDENTIAL");

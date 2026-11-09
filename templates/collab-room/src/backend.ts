@@ -1,6 +1,6 @@
 // What the UI needs from a backend: the rooms to pick from and a RoomSession for one of them. Two implementations:
 // src/mock.ts (in-browser MockRoomHost, the default) and src/live.ts (VTC + VTA, unverified live).
-import type { RoomSession, Visibility } from "@buildathon/rooms-client";
+import type { RoomSession, Visibility } from "@starter/rooms-client";
 
 export interface RoomRef {
   roomId: string;

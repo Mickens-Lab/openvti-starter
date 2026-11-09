@@ -1,6 +1,6 @@
 // Browser TSP ping: the same tspPing() the CLI uses, with the browser's own WebSocket.
-import { describePong, tspPing } from "@buildathon/tsp-client";
-import { decodeCredential, seedFromMultibase } from "@buildathon/vta-client";
+import { describePong, tspPing } from "@starter/tsp-client";
+import { decodeCredential, seedFromMultibase } from "@starter/vta-client";
 import { noPongText } from "./verdict.ts";
 
 declare const __DEFAULTS__: { vtaDid: string; mediatorDid: string; credential: string };

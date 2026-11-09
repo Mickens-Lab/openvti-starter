@@ -139,7 +139,7 @@ negative space. All of this was run in a scratch copy of the starter **[run]**: 
 ```sh
 cp -r templates/inbox-verifier templates/my-inbox
 rm -rf templates/my-inbox/node_modules
-sed -i 's#@buildathon/inbox-verifier#@buildathon/my-inbox#' templates/my-inbox/package.json
+sed -i 's#@starter/inbox-verifier#@starter/my-inbox#' templates/my-inbox/package.json
 ```
 
 Add `"ajv": "8.17.1"` and `"ajv-formats": "3.0.1"` to its `dependencies`, then `npm install` at the repo root.
@@ -348,7 +348,7 @@ The mapping from front matter to `SpecPolicy` flags is the point: what the spec 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { newIdentity } from "@buildathon/vta-client";
+import { newIdentity } from "@starter/vta-client";
 import { createInbox } from "../src/inbox.js";
 import { validateRequest, validateResponse } from "../src/note-validator.js";
 import { makeNote } from "../src/send.js";
@@ -391,8 +391,8 @@ test("a replayed note runs once; a wrong-recipient note is refused", async () =>
 
 Run: `npx tsx --test templates/my-inbox/test/*.test.ts` and `npx tsc --noEmit -p templates/my-inbox`.
 
-**8. Send one.** `src/send.ts` already builds, signs and posts a note; `npm run send -w @buildathon/my-inbox -- --replay`
-against `npm start -w @buildathon/my-inbox` shows accept then duplicate (the `demo` script covers the same cases and was run; `send` itself was not).
+**8. Send one.** `src/send.ts` already builds, signs and posts a note; `npm run send -w @starter/my-inbox -- --replay`
+against `npm start -w @starter/my-inbox` shows accept then duplicate (the `demo` script covers the same cases and was run; `send` itself was not).
 
 Promote it later: change the slug and `$id` to a registry slug, move the files to `specs/<slug>/0.1/` upstream and open
 the PR above. Expect the slug and any `example` namespace to change (SPEC 6.5 item 5).

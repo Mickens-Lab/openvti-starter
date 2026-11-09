@@ -1,6 +1,6 @@
-import { VtaClient, decodeCredential, identityFromCredential, rfc3339 } from "@buildathon/vta-client";
-import { VtcClient } from "@buildathon/vtc-client";
-import { applicantRule, mountStatusPanel, tunnelBanner } from "@buildathon/status-panel";
+import { VtaClient, decodeCredential, identityFromCredential, rfc3339 } from "@starter/vta-client";
+import { VtcClient } from "@starter/vtc-client";
+import { applicantRule, mountStatusPanel, tunnelBanner } from "@starter/status-panel";
 
 // The status panel (packages/status-panel) shows connection, identity, version, session,
 // capabilities, wallet and the optional VTC link, live, with a Refresh button.

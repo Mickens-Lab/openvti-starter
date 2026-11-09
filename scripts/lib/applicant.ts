@@ -3,8 +3,8 @@
 // MODE=local and MODE=farm: the app's did:key (no mediator to name). VTC_APPLICANT=did:key in .env keeps the did:key in
 // tunnel mode too (it is then reached only after it has spoken TSP to the VTC; tsp:listen does that). If the did:peer cannot
 // be built (no mediator DID, or over the resolver's 1000-byte limit) the did:key applies and the note says why. docs/MESSAGING.md.
-import { identityFromSeed, type Identity } from "@buildathon/vta-client";
-import { didPeerFromSeed, type PeerIdentity } from "@buildathon/tsp-client";
+import { identityFromSeed, type Identity } from "@starter/vta-client";
+import { didPeerFromSeed, type PeerIdentity } from "@starter/tsp-client";
 
 export type ApplicantKind = "did:key" | "did:peer";
 

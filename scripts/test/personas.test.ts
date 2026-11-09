@@ -3,7 +3,7 @@ import { chmodSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync } f
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { decodeCredential } from "@buildathon/vta-client";
+import { decodeCredential } from "@starter/vta-client";
 import { collectEntries, createPersona, listPersonas, removePersonas, separationWarnings } from "../lib/personas.js";
 
 const tmp = () => join(mkdtempSync(join(tmpdir(), "personas-")), "p");

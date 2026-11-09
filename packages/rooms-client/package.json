@@ -1,5 +1,5 @@
 {
-  "name": "@buildathon/rooms-client",
+  "name": "@starter/rooms-client",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "private": true,
@@ -14,8 +14,8 @@
     "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
-    "@buildathon/vta-client": "*",
-    "@buildathon/vtc-client": "*",
+    "@starter/vta-client": "*",
+    "@starter/vtc-client": "*",
     "@noble/ciphers": "2.1.1",
     "@noble/hashes": "2.4.0",
     "@openvtc/trust-tasks-proof": "0.1.6",
