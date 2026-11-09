@@ -55,29 +55,40 @@ export class VtaKeyOracle implements KeyService {
   /**
    * Catch this member's group up to the room: ask the host for the commits above the epoch the VTA holds, apply them in order, repeat
    * until the host has no more. Without it, a member added after you joined makes records sealed at the new epoch unreadable.
+   *
+   * VTA 0.72.0 quirk, seen live: for a member that joined by Welcome, the VTA's commit tracker sits one epoch behind its group (the
+   * Welcome reply under-reports the epoch by one). It then refuses the next real commit with "commit produces epoch N but room is at
+   * K; resume from K+1", and the commit for the epoch the group already holds with MLS WrongEpoch. So: a WrongEpoch for an epoch we
+   * already hold is skipped, and a "resume from M" refusal is answered by sending the same commit stated as epoch M. MLS still
+   * validates the commit bytes, so a genuine gap fails there.
    */
   async catchUp(roomId: string, source: CommitSource): Promise<{ applied: number; epoch?: number }> {
+    const heldEpoch = async () => {
+      const mine = (await this.held()).filter((h) => h.roomId === roomId);
+      return mine.length ? Math.min(...mine.map((h) => h.epoch)) : undefined;
+    };
     let applied = 0;
     let epoch: number | undefined;
     for (let round = 0; round < 20; round++) {
-      const mine = (await this.held()).filter((h) => h.roomId === roomId);
-      if (!mine.length) break;
-      const since = Math.min(...mine.map((h) => h.epoch));
+      const since = await heldEpoch();
+      if (since === undefined) break;
       epoch = since;
       const page = await source.commits(roomId, since);
       if (!page.commits.length) break;
       for (const c of page.commits) {
-        const before = epoch ?? since;
-        let r: { epoch: number };
+        const before = (await heldEpoch()) ?? since;
         try {
-          r = await this.applyCommit(roomId, c.commit, c.epoch);
+          await this.applyCommit(roomId, c.commit, c.epoch);
         } catch (e) {
-          // The group is already past this commit (MLS WrongEpoch): it was applied by the Welcome that admitted us. Skip it.
-          if (c.epoch <= before && /WrongEpoch/.test(JSON.stringify((e as { body?: unknown }).body ?? ""))) continue;
-          throw e;
+          const body = JSON.stringify((e as { body?: unknown }).body ?? "");
+          if (c.epoch <= before && /WrongEpoch/.test(body)) continue;
+          const resume = /resume from (\d+)/.exec(body);
+          if (resume && Number(resume[1]) < c.epoch) await this.applyCommit(roomId, c.commit, Number(resume[1]));
+          else throw e;
         }
-        epoch = r.epoch;
-        if (r.epoch > before) applied++; // a replay leaves the epoch where it was
+        const after = (await heldEpoch()) ?? before;
+        epoch = after;
+        if (after > before) applied++; // a replay leaves the epoch where it was
       }
       if (page.roomEpoch !== undefined && epoch !== undefined && epoch >= page.roomEpoch) break;
     }
