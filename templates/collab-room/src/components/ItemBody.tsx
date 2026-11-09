@@ -4,10 +4,11 @@
 //    on unmount; SVG and anything unknown are download-only;
 //  - UTF-8 text files up to 1 MiB are shown as text, `.md` through the markdown renderer.
 import type { FileEnvelope, SessionItem } from "@buildathon/rooms-client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { downloadBytes, errorText, useFileBytes, useObjectUrl, useRoomContext } from "../hooks.ts";
 import { renderMarkdown, renderPlain } from "../render.ts";
 import { classifyFile, formatSize, wantsPreview } from "../state.ts";
+import { PreviewOverlay } from "./PreviewOverlay.tsx";
 
 export function TextBody({ text, format }: { text: string; format: "text/plain" | "text/markdown" }) {
   return <>{format === "text/markdown" ? renderMarkdown(text) : renderPlain(text)}</>;
@@ -20,6 +21,8 @@ export function FileBody({ file }: { file: FileEnvelope }) {
   const view = classifyFile(file, bytes);
   const url = useObjectUrl(view.show === "image" ? bytes : undefined, view.show === "image" ? view.mime : undefined);
   const [dlError, setDlError] = useState<string>();
+  const [open, setOpen] = useState(false);
+  const closeOverlay = useCallback(() => setOpen(false), []);
   const download = async () => {
     try { downloadBytes(bytes ?? await session.fileBytes(file), file.name); } catch (e) { setDlError(errorText(e)); }
   };
@@ -27,9 +30,18 @@ export function FileBody({ file }: { file: FileEnvelope }) {
   return (
     <div className="file-body" data-view={loading ? "loading" : view.show}>
       {loading && <p className="muted small-text">Loading preview…</p>}
-      {view.show === "image" && url && <img className="file-image" src={url} alt={file.name} />}
+      {view.show === "image" && url && (
+        <button type="button" className="preview-open" aria-label={`Preview ${file.name}`} onClick={() => setOpen(true)}>
+          <img className="file-image" src={url} alt={file.name} />
+        </button>
+      )}
       {view.show === "text" && <pre className="file-text">{view.text}</pre>}
-      {view.show === "markdown" && <div className="file-md">{renderMarkdown(view.text)}</div>}
+      {view.show === "markdown" && (
+        <div className="file-md-wrap">
+          <div className="file-md">{renderMarkdown(view.text)}</div>
+          <button type="button" className="small" onClick={() => setOpen(true)}>Preview</button>
+        </div>
+      )}
       {!loading && view.show === "download" && <p className="muted small-text">{view.reason}</p>}
       {error && <p className="note bad small-text" role="alert">Could not read the file: {error}</p>}
       <p className="file-meta small-text">
@@ -37,6 +49,12 @@ export function FileBody({ file }: { file: FileEnvelope }) {
         <button type="button" className="small" onClick={() => void download()}>Download</button>
       </p>
       {dlError && <p className="note bad small-text" role="alert">{dlError}</p>}
+      {open && view.show === "image" && url && (
+        <PreviewOverlay title={file.name} onClose={closeOverlay}><img className="overlay-image" src={url} alt={file.name} /></PreviewOverlay>
+      )}
+      {open && view.show === "markdown" && (
+        <PreviewOverlay title={file.name} onClose={closeOverlay}><div className="md overlay-md">{renderMarkdown(view.text)}</div></PreviewOverlay>
+      )}
     </div>
   );
 }

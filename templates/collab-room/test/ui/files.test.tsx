@@ -1,6 +1,6 @@
 // File items: PNG and GIF shown as <img> through blob: URLs by their sniffed type, revoked on unmount; SVG and a
 // mislabelled file (claims image/png, is HTML) are download-only; text and markdown files are shown inert.
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderApp, SLOW, tab } from "./harness.tsx";
 import { objectUrls } from "./setup.ts";
@@ -36,6 +36,33 @@ describe("files", () => {
       const shown = [png.getAttribute("src")!, gif.getAttribute("src")!];
       view.unmount();
       for (const u of shown) expect(objectUrls.revoked).toContain(u);
+    } finally { backend.close(); }
+  });
+});
+
+describe("preview overlay", () => {
+  it("opens for an image and a markdown file, closes on Escape, backdrop and Close, and never for download-only files", async () => {
+    const { backend } = await renderApp();
+    try {
+      await tab(/^Files/);
+      await screen.findByRole("img", { name: "site-plan.png" }, SLOW);
+      await waitFor(() => expect(fileCard("room-guide.md").querySelector(".md strong")).not.toBeNull(), SLOW);
+      expect(fileCard("diagram.svg").querySelector(".preview-open, .file-md-wrap")).toBeNull();
+
+      fireEvent.click(screen.getByRole("button", { name: "Preview site-plan.png" }));
+      const dlg = screen.getByRole("dialog", { name: "Preview of site-plan.png" });
+      expect(dlg.querySelector("img")?.getAttribute("src")).toMatch(/^blob:/);
+      fireEvent.keyDown(document, { key: "Escape" });
+      expect(screen.queryByRole("dialog")).toBeNull();
+
+      fireEvent.click(within(fileCard("room-guide.md")).getByRole("button", { name: "Preview" }));
+      expect(screen.getByRole("dialog", { name: "Preview of room-guide.md" }).querySelector(".md strong")?.textContent).toBe("notes");
+      fireEvent.click(screen.getByRole("button", { name: "Close" }));
+      expect(screen.queryByRole("dialog")).toBeNull();
+
+      fireEvent.click(screen.getByRole("button", { name: "Preview site-plan.png" }));
+      fireEvent.click(screen.getByTestId("preview-overlay"));
+      expect(screen.queryByRole("dialog")).toBeNull();
     } finally { backend.close(); }
   });
 });
